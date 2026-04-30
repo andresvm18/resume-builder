@@ -1,0 +1,69 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+
+\geometry{
+    top=0.75in,
+    bottom=0.75in,
+    left=0.75in,
+    right=0.75in,
+}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+    linkcolor=black,
+}
+
+\setlist{nosep, left=12pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.25em}
+
+\newcommand{\resumesection}[1]{
+    \vspace{0.5em}
+    \textbf{\large #1}
+    \vspace{0.2em}
+    \hrule
+    \vspace{0.5em}
+}
+
+\begin{document}
+
+\begin{flushleft}
+    {\huge \textbf{{{FULL_NAME}}}} \\[0.3em]
+    \href{mailto:{{EMAIL}}}{{{EMAIL}}} \\
+    {{PHONE}} \\
+    {{LOCATION}}
+\end{flushleft}
+
+\resumesection{PERFIL PROFESIONAL}
+
+{{SUMMARY}}
+
+\resumesection{EDUCACIÓN}
+
+{{EDUCATION}}
+
+\resumesection{EXPERIENCIA LABORAL}
+
+{{EXPERIENCE}}
+
+\resumesection{HABILIDADES}
+
+{{SKILLS}}
+
+\resumesection{IDIOMAS}
+
+{{LANGUAGES}}
+
+\resumesection{PROYECTOS}
+
+{{PROJECTS}}
+
+\end{document}
