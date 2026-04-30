@@ -3,6 +3,7 @@ import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
 import ResumeFormPanel from "../components/ResumeFormPanel";
+import AtsAnalysisPanel from "../components/AtsAnalysisPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
 import "./ResumeBuilderPage.css";
@@ -66,16 +67,16 @@ export default function ResumeBuilderPage() {
       description: "Tus datos básicos de contacto",
     },
     {
-      id: "summary",
-      label: "Resumen",
-      title: "Resumen profesional",
-      description: "Describe tu perfil en pocas líneas",
-    },
-    {
       id: "jobDescription",
       label: "Oferta",
       title: "Oferta laboral",
       description: "Pega la descripción del puesto objetivo",
+    },
+    {
+      id: "summary",
+      label: "Resumen",
+      title: "Resumen profesional",
+      description: "Describe tu perfil en pocas líneas",
     },
     {
       id: "experience",
@@ -205,6 +206,8 @@ export default function ResumeBuilderPage() {
             jobDescription={jobDescription}
             setJobDescription={setJobDescription}
           />
+
+          <AtsAnalysisPanel jobDescription={jobDescription ?? ""} />
 
           <StepNavigation
             currentIndex={steps.findIndex((s) => s.id === currentStep)}
