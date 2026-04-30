@@ -1,0 +1,45 @@
+:root {
+  /* ── Colores Base ── */
+  --color-bg: #fafaf8;
+  --color-surface: #f3f1ec;
+  --color-surface-white: #ffffff;
+  --color-border: #e8e4de;
+  --color-border-focus: #1a1814;
+  
+  /* ── Textos ── */
+  --text-primary: #1a1814;
+  --text-muted: #6b6760;
+  --text-hint: #9c9890;
+  
+  /* ── Acentos ── */
+  --accent: #c9a96e;
+  --accent-dark: #b8893a;
+  
+  /* ── Botones ── */
+  --btn-bg: #1a1814;
+  --btn-text: #fafaf8;
+  --btn-hover: #3d3830;
+  
+  /* ── Estados ── */
+  --error: #a32d2d;
+  --error-bg: #fcebeb;
+  --success: #3b6d11;
+  --success-bg: #eaf3de;
+  
+  /* ── Transiciones ── */
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* ── Tipografía ── */
+  --font-serif: 'DM Serif Display', serif;
+  --font-sans: 'DM Sans', sans-serif;
+  
+  /* ── Layout ── */
+  --header-height: 64px;
+  --container-max-width: 1200px;
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
+}
+
