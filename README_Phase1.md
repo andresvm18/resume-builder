@@ -1,5 +1,7 @@
 # ResumeBuilder 🚀
 
+[![CI](https://github.com/andresvm18/resume-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/andresvm18/resume-builder/actions/workflows/ci.yml)
+
 A full-stack web application for creating, optimizing, and managing professional resumes tailored for Applicant Tracking Systems (ATS).
 
 ---
@@ -153,6 +155,32 @@ This project was built as a **production-oriented MVP**, focusing on clean archi
 
 ---
 
+## 🧪 Testing
+
+### Backend
+- Jest + Supertest
+- Isolated PostgreSQL test database
+
+~~~
+  cd apps/api
+  npm test
+~~~
+
+### Frontend
+- Vitest + React Testing Library
+
+~~~
+  cd apps/web
+  npm test
+~~~
+---
+
+## 🚀 CI/CD
+- GitHub Actions pipeline
+- Runs backend tests
+- Runs frontend tests
+- Builds frontend application
+
 ## 🧪 Current Status
 
 ### ✅ Phase 1 — MVP (Completed)
@@ -184,12 +212,13 @@ This project was built as a **production-oriented MVP**, focusing on clean archi
 
 ## 🎯 What I Learned
 
-- Designing scalable full-stack architecture
-- Managing complex form state in React
-- Building REST APIs with authentication
-- Integrating LaTeX with Node.js
-- Working with Prisma and relational databases
-- Handling real-world CRUD workflows
+- Designing and implementing a full-stack architecture following real-world patterns
+- Building secure authentication systems using JWT
+- Structuring scalable frontend applications with modular architecture
+- Integrating external tools (LaTeX) into backend workflows
+- Managing relational databases with Prisma ORM
+- Implementing automated testing and CI pipelines
+- Handling production-like CRUD systems with versioning
 
 ---
 
