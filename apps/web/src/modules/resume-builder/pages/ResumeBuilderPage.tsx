@@ -207,7 +207,10 @@ export default function ResumeBuilderPage() {
             setJobDescription={setJobDescription}
           />
 
-          <AtsAnalysisPanel jobDescription={jobDescription ?? ""} />
+          <AtsAnalysisPanel
+            jobDescription={jobDescription ?? ""}
+            resumeData={resumeData}
+          />
 
           <StepNavigation
             currentIndex={steps.findIndex((s) => s.id === currentStep)}

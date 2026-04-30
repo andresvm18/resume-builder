@@ -1,29 +1,62 @@
+import type { ResumeData } from "../types/resume.types";
+import { analyzeResumeMatch } from "../utils/ats.utils";
 import "./AtsAnalysisPanel.css";
-import { getTopKeywords } from "../utils/ats.utils";
 
 type Props = {
   jobDescription?: string;
+  resumeData: ResumeData;
 };
 
-export default function AtsAnalysisPanel({ jobDescription = "" }: Props) {
+export default function AtsAnalysisPanel({
+  jobDescription = "",
+  resumeData,
+}: Props) {
   if (!jobDescription.trim()) return null;
 
-  const keywords = getTopKeywords(jobDescription);
+  const result = analyzeResumeMatch(resumeData, jobDescription);
 
   return (
     <div className="ats-panel">
       <h3 className="ats-panel__title">Análisis ATS</h3>
 
       <p className="ats-panel__subtitle">
-        Palabras clave detectadas en la oferta:
+        Coincidencia estimada con la oferta:
+      </p>
+
+      <div className="ats-panel__score">
+        {result.matchPercentage}%
+      </div>
+
+      <p className="ats-panel__subtitle">
+        Palabras clave encontradas:
       </p>
 
       <div className="ats-panel__keywords">
-        {keywords.length === 0 ? (
-          <span>No se detectaron palabras clave</span>
+        {result.matchedKeywords.length === 0 ? (
+          <span className="ats-panel__empty">
+            Aún no hay coincidencias detectadas.
+          </span>
         ) : (
-          keywords.map((word) => (
-            <span key={word} className="ats-panel__tag">
+          result.matchedKeywords.map((word) => (
+            <span key={word} className="ats-panel__tag ats-panel__tag--matched">
+              {word}
+            </span>
+          ))
+        )}
+      </div>
+
+      <p className="ats-panel__subtitle">
+        Palabras clave faltantes:
+      </p>
+
+      <div className="ats-panel__keywords">
+        {result.missingKeywords.length === 0 ? (
+          <span className="ats-panel__empty">
+            No se detectaron palabras clave faltantes.
+          </span>
+        ) : (
+          result.missingKeywords.map((word) => (
+            <span key={word} className="ats-panel__tag ats-panel__tag--missing">
               {word}
             </span>
           ))
@@ -31,9 +64,7 @@ export default function AtsAnalysisPanel({ jobDescription = "" }: Props) {
       </div>
 
       <p className="ats-panel__disclaimer">
-        ⚠️ Los resultados se generan mediante análisis heurístico y pueden no
-        ser 100% precisos. Úsalos como guía orientativa, no como evaluación
-        definitiva.
+        Este score es una estimación heurística basada en coincidencia de palabras clave y no representa el resultado de una plataforma ATS real.
       </p>
     </div>
   );

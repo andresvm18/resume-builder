@@ -2,6 +2,9 @@
  * NLP Engine
  */
 
+
+import type { ResumeData } from "../types/resume.types";
+
 // Set of common stopwords to filter out
 const STOPWORDS = new Set([
   "el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "a", "al", "en", "por", "para", "con", "sin",
@@ -144,4 +147,77 @@ export function getTopKeywords(jobDescription: string, limit = 10): string[] {
     .map(t => t.replace(/\./g, "").trim())
     .filter(t => t.length > 0)
     .slice(0, limit);
+}
+
+
+export type AtsMatchResult = {
+  keywords: string[];
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  matchPercentage: number;
+};
+
+export function buildResumeText(resumeData: ResumeData): string {
+  return [
+    resumeData.fullName,
+    resumeData.summary,
+    resumeData.skills.join(" "),
+    resumeData.languages
+      .map((language) => `${language.name} ${language.level}`)
+      .join(" "),
+    resumeData.experiences
+      .map((experience) =>
+        [
+          experience.title,
+          experience.location,
+          experience.description,
+        ].join(" ")
+      )
+      .join(" "),
+    resumeData.education
+      .map((education) =>
+        [
+          education.institution,
+          education.degree,
+        ].join(" ")
+      )
+      .join(" "),
+    resumeData.projects
+      .map((project) =>
+        [
+          project.name,
+          project.technologies,
+          project.description,
+        ].join(" ")
+      )
+      .join(" "),
+  ].join(" ");
+}
+
+export function analyzeResumeMatch(
+  resumeData: ResumeData,
+  jobDescription: string
+): AtsMatchResult {
+  const keywords = getTopKeywords(jobDescription, 12);
+  const normalizedResumeText = normalizeWithBoundaries(buildResumeText(resumeData));
+
+  const matchedKeywords = keywords.filter((keyword) =>
+    normalizedResumeText.includes(normalizeWithBoundaries(keyword))
+  );
+
+  const missingKeywords = keywords.filter(
+    (keyword) => !matchedKeywords.includes(keyword)
+  );
+
+  const matchPercentage =
+    keywords.length > 0
+      ? Math.round((matchedKeywords.length / keywords.length) * 100)
+      : 0;
+
+  return {
+    keywords,
+    matchedKeywords,
+    missingKeywords,
+    matchPercentage,
+  };
 }
