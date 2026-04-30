@@ -1,50 +1,80 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import "./LoginModal.css";
 
 export default function LoginModal() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <div className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-8 shadow-xl">
-      <div className="mb-6 text-center">
-        <h2 className="text-3xl font-bold tracking-tight">Welcome back</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Sign in to continue building your ATS-optimized resume.
+    <div className="login-modal">
+      <div className="login-modal__header">
+        <h2 className="login-modal__title">Bienvenido de nuevo</h2>
+        <p className="login-modal__subtitle">
+          Inicia sesión para continuar construyendo tu currículum optimizado para ATS.
         </p>
       </div>
 
-      <form className="space-y-5">
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            placeholder="you@example.com"
-            className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
-          />
+      <form className="login-modal__form">
+        <div className="login-modal__field">
+          <label className="login-modal__label">Correo electrónico</label>
+          <div className="login-modal__input-wrapper">
+            <svg className="login-modal__input-icon" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
+              <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+            </svg>
+            <input 
+              type="email" 
+              placeholder="tu@ejemplo.com" 
+              className="login-modal__input" 
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            placeholder="••••••••"
-            className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
-          />
+        <div className="login-modal__field">
+          <label className="login-modal__label">Contraseña</label>
+          <div className="login-modal__password-wrapper">
+            <input 
+              type={showPassword ? "text" : "password"} 
+              placeholder="••••••••" 
+              className="login-modal__input" 
+            />
+            <button
+              type="button"
+              className="login-modal__toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              {showPassword ? (
+                <svg className="login-modal__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                  <line x1="3" y1="3" x2="21" y2="21" />
+                </svg>
+              ) : (
+                <svg className="login-modal__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full rounded-2xl bg-black py-3 text-sm font-semibold text-white transition hover:opacity-90"
-        >
-          Sign In
+        {/* <div className="login-modal__forgot">
+          <Link to="/forgot-password" className="login-modal__forgot-link">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div> */}
+
+        <button type="submit" className="login-modal__submit">
+          Iniciar sesión
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-600">
-        Don’t have an account?{" "}
-        <Link to="/register" className="font-semibold text-black">
-          Create one
+      <p className="login-modal__footer">
+        ¿No tienes una cuenta?{" "}
+        <Link to="/register" className="login-modal__footer-link">
+          Crear una
         </Link>
       </p>
     </div>
