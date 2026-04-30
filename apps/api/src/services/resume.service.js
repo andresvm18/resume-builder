@@ -149,6 +149,20 @@ async function generateResumePdf(data, userId) {
   return pdfBuffer;
 }
 
+async function getUserResumes(userId) {
+  return prisma.resume.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      versions: {
+        orderBy: { createdAt: "desc" },
+        take: 1, // last version
+      },
+    },
+  });
+}
+
 module.exports = {
   generateResumePdf,
+  getUserResumes,
 };

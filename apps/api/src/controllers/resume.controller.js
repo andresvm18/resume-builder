@@ -1,5 +1,5 @@
 const express = require("express");
-const { generateResumePdf } = require("../services/resume.service");
+const { generateResumePdf, getUserResumes } = require("../services/resume.service");
 
 const router = express.Router();
 
@@ -18,6 +18,18 @@ router.post("/generate", authMiddleware, async (req, res) => {
     console.error("Error generating resume:", error);
     return res.status(500).json({
       message: "Error al generar el CV",
+    });
+  }
+});
+
+router.get("/", authMiddleware, async (req, res) => {
+  try {
+    const resumes = await getUserResumes(req.user.userId);
+    return res.json(resumes);
+  } catch (error) {
+    console.error("Error fetching resumes:", error);
+    return res.status(500).json({
+      message: "Error al obtener los CVs",
     });
   }
 });
