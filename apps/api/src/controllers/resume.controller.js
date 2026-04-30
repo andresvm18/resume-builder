@@ -1,6 +1,7 @@
 const {
   generateResumePdf,
   getUserResumes,
+  generateResumePdfById,
 } = require("../services/resume.service");
 
 async function generateResume(req, res) {
@@ -34,7 +35,29 @@ async function getResumes(req, res) {
   }
 }
 
+async function downloadResume(req, res) {
+  try {
+    const pdfBuffer = await generateResumePdfById(
+      req.params.id,
+      req.user.userId
+    );
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=cv.pdf");
+    res.setHeader("Content-Length", pdfBuffer.length);
+
+    return res.end(pdfBuffer);
+  } catch (error) {
+    console.error("Error downloading resume:", error);
+
+    return res.status(500).json({
+      message: "Error al descargar el CV",
+    });
+  }
+}
+
 module.exports = {
   generateResume,
   getResumes,
+  downloadResume,
 };

@@ -162,7 +162,31 @@ async function getUserResumes(userId) {
   });
 }
 
+async function generateResumePdfById(resumeId, userId) {
+  const resume = await prisma.resume.findFirst({
+    where: {
+      id: resumeId,
+      userId,
+    },
+    include: {
+      versions: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
+  });
+
+  if (!resume || resume.versions.length === 0) {
+    throw new Error("RESUME_NOT_FOUND");
+  }
+
+  const latestVersion = resume.versions[0];
+
+  return generateResumePdf(latestVersion.data, userId);
+}
+
 module.exports = {
   generateResumePdf,
   getUserResumes,
+  generateResumePdfById,
 };

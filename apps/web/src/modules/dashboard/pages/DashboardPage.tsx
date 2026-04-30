@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchUserResumes } from "../../resume-builder/services/resume.service";
+import { fetchUserResumes, downloadResumeById } from "../../resume-builder/services/resume.service";
 import type { Resume } from "../../resume-builder/types/resume.types";
 import Header from "../../../shared/components/layout/Header";
 import "./DashboardPage.css";
@@ -48,6 +48,29 @@ export default function DashboardPage() {
     latestResumeDate,
   };
 
+  const handleDownloadResume = async (resumeId: string, title: string) => {
+    try {
+      const blob = await downloadResumeById(resumeId);
+      const url = URL.createObjectURL(blob);
+
+      const fileName = `${title
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]/g, "") || "cv"}.pdf`;
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("No se pudo descargar el CV.");
+    }
+  };
 
   return (
     <main className="dashboard-page">
@@ -94,7 +117,7 @@ export default function DashboardPage() {
           <div className="stat-card">
             <div className="stat-card__label">Última Actualización</div>
             <div className="stat-card__value stat-card__value--date">
-              {stats.latestResumeDate}
+              {formatDate(stats.latestResumeDate)}
             </div>
           </div>
         </div>
@@ -147,8 +170,16 @@ export default function DashboardPage() {
                       Editar
                     </Link>
 
-                    <button className="resume-card__delete-btn">
+                    {/* <button className="resume-card__delete-btn">
                       Eliminar
+                    </button> */}
+
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadResume(resume.id, resume.title)}
+                      className="resume-card__delete-btn"
+                    >
+                      Descargar
                     </button>
                   </div>
                 </div>
