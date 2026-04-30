@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-const resumeController = require("./controllers/resume.controller");
+const resumeRoutes = require("./routes/resume.routes");
 const authRoutes = require("./routes/auth.routes");
 
 const app = express();
@@ -15,7 +15,7 @@ app.use(express.json());         // Parse JSON request bodies
 
 // Route registration
 app.use("/api/auth", authRoutes);    // Authentication endpoints
-app.use("/api/resume", resumeController); // Resume-related endpoints
+app.use("/api/resume", resumeRoutes); // Resume-related endpoints
 
 // Start server
 const PORT = process.env.PORT || 8080;
