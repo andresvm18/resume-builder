@@ -100,6 +100,39 @@ export default function ResumeBuilderPage() {
     },
   ];
 
+
+  const validateResumeData = () => {
+    if (!resumeData.fullName.trim()) {
+      alert("Debes ingresar tu nombre completo.");
+      setCurrentStep("personal");
+      return false;
+    }
+
+    if (!resumeData.email.trim()) {
+      alert("Debes ingresar tu correo electrónico.");
+      setCurrentStep("personal");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(resumeData.email)) {
+      alert("Debes ingresar un correo electrónico válido.");
+      setCurrentStep("personal");
+      return false;
+    }
+
+    if (!resumeData.summary.trim()) {
+      alert("Debes agregar un resumen profesional.");
+      setCurrentStep("summary");
+      return false;
+    }
+
+    return true;
+  };
+
+
+
   return (
     <main className="resume-builder-page">
       <Header />
@@ -176,6 +209,8 @@ export default function ResumeBuilderPage() {
               }
             }}
             onFinish={() => {
+              if (!validateResumeData()) return;
+
               navigate("/resume/generate", {
                 state: resumeData,
               });

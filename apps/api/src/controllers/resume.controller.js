@@ -8,6 +8,14 @@ const {
 
 async function generateResume(req, res) {
   try {
+    const { fullName, email, summary } = req.body;
+
+    if (!fullName || !email || !summary) {
+      return res.status(400).json({
+        message: "Nombre, correo y resumen son requeridos",
+      });
+    }
+
     const pdfBuffer = await generateResumePdf(
       req.body,
       req.user.userId

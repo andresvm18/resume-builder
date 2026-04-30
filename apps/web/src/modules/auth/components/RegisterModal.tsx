@@ -28,6 +28,11 @@ export default function RegisterModal() {
       return;
     }
 
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
@@ -97,8 +102,8 @@ export default function RegisterModal() {
           <label className="register-modal__label">Correo electrónico</label>
           <div className="register-modal__input-wrapper">
             <svg className="register-modal__input-icon" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
-              <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2" />
+              <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
 
             <input
