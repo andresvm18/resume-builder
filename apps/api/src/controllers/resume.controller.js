@@ -72,7 +72,9 @@ async function getResumeById(req, res) {
 
     return res.json(resume);
   } catch (error) {
-    console.error("Error fetching resume:", error);
+    if (process.env.NODE_ENV !== "test") {
+      console.error("Error fetching resume:", error);
+    }
 
     return res.status(404).json({
       message: "CV no encontrado",

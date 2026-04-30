@@ -4,7 +4,7 @@ const { execFile } = require("child_process");
 const { promisify } = require("util");
 
 const execFileAsync = promisify(execFile);
-const prisma = require("../lib/prisma");
+const { prisma } = require("../lib/prisma");
 
 function escapeLatex(value = "") {
   return String(value)

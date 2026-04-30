@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const prisma = require("../lib/prisma");
+const { prisma } = require("../lib/prisma");
 
 // JWT secret key - use environment variable in production
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_change_later";
