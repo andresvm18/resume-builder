@@ -69,13 +69,17 @@ Contar con un diseño estratégico, técnico y funcional completamente definido 
 ## Fase 1 - MVP Funcional
 
 ### Objetivo 
-Tener una versión usable que
-  - recoja los datos del usuario
-  - genere un CV bien estructurado
-  - exporte PDF
+Desarrollar una versión funcional de la plataforma que permita al usuario:
+  - Ingresar su información profesional mediante un formulario estructurado
+  - Generar un currículum profesional con formato ATS-friendly
+  - Exportar el currículum en PDF utilizando LaTeX
+  - Visualizar y descargar el documento generado
 
 ### Funcionalidades
-1. Formulario dinámico con las siguientes secciones
+1. Formulario dinámico multi-step 
+
+    Se implementa un sistema de formulario por pasos que permite capturar información del usuario de forma organizada:
+
     - Datos personales
     - Resumen profesional
     - Experiencia
@@ -84,36 +88,107 @@ Tener una versión usable que
     - Idiomas
     - Proyectos
 
-2. Vista previa en tiempo real
-3. Exportación PDF
+    Características:
+
+      - Navegación entre pasos (wizard)
+      - Componentes reutilizables por sección
+      - Manejo de estado centralizado con custom hook (useResumeBuilder)
+      - Actualización dinámica de datos
+
+2. Generación de CV en PDF (LaTeX)
+
+    Se implementa un sistema de generación de currículum utilizando LaTeX en el backend:
+
+    - Template ATS-friendly estructurado
+    - Reemplazo dinámico de contenido desde el frontend
+    - Sanitización de texto para evitar errores en LaTeX
+    - Compilación del documento con pdflatex
+    - Generación de PDF listo para descarga
+
+3. Integración Frontend ↔ Backend
+
+    - Envío de datos del formulario al backend mediante API REST
+    - Endpoint /api/resume/generate
+    - Recepción del PDF como respuesta binaria
+    - Manejo de estados de carga y error
+
+4. Descarga automática del CV
+    - Generación automática del archivo PDF al completar el proceso
+    - Descarga automática en el navegador
+    - Nombre dinámico del archivo basado en el nombre del usuario (sin espacios ni caracteres especiales)
+
+5. Vista previa del PDF
+    - Visualización del CV generado dentro de la aplicación
+    - Uso de iframe para renderizar el PDF
+    - Mejora de experiencia de usuario sin necesidad de descarga inmediata
+
+6. Página de generación de CV
+
+    Se implementa una página dedicada al proceso de generación:
+
+    - Estados de progreso:
+      - Enviando datos
+      - Generando PDF
+      - Completado
+      - Error
+    - Indicador visual de carga (loader)
+    - Opciones:
+      - Descargar CV
+      - Volver a editar
+
+
+7. Estructura modular del frontend
+
+    Arquitectura organizada por módulos:
+
+    - landing
+    - auth (login/register UI)
+    - dashboard (con datos mock)
+    - resume-builder (core del sistema)
+    - shared (componentes globales)
+
+    Esto permite escalabilidad y mantenibilidad del proyecto.
+
+8. Backend básico funcional
+    - Servidor Express configurado
+    - Controlador para generación de CV
+    - Servicio de generación LaTeX
+    - Sistema de archivos temporal para compilación
 
 ### Stack
   #### Frontend
   - React + TypeScript
-  - Tailwind CSS
+  - CSS modular (sin framework externo)
   - React Hook Form
 
   #### Backend
   - Node.js + Express
 
   #### PDF
-  - Puppeteer (HTML → PDF)
+  - LaTeX (pdflatex)
 
   ### Base de datos
   - PostgreSQL + Prisma
 
 ## Resultado Esperado 
-Entregar una plataforma web funcional, moderna y profesional que permita a cualquier usuario construir un currículum sólido y bien estructurado de manera intuitiva. El sistema debe centralizar toda la información relevante del perfil profesional, transformándola en un documento organizado y listo para procesos de reclutamiento.
+Entregar una plataforma web funcional que permita a los usuarios crear currículums profesionales de forma estructurada, rápida y eficiente.
 
-La solución final debe ofrecer una experiencia fluida desde el llenado del formulario hasta la generación del archivo PDF, el documento generado debe mantener un diseño limpio, legible y adaptable a distintos perfiles laborales.
+El sistema debe:
 
-Además, el producto debe sentar una base tecnológica escalable para futuras mejoras, como personalización avanzada, optimización para sistemas ATS y funcionalidades impulsadas por IA. En esta primera etapa, el objetivo es validar un MVP robusto que resuelva una necesidad real: crear currículums profesionales de forma rápida, accesible y eficiente.
+- Guiar al usuario mediante un flujo claro y segmentado
+- Transformar datos en un documento profesional ATS-friendly
+- Generar un PDF de alta calidad utilizando LaTeX
+- Proveer una experiencia fluida desde la captura de datos hasta la descarga del documento
+
+Además, esta fase establece una base sólida para futuras mejoras como persistencia de datos, optimización ATS y generación automática con IA.
 
 ## Criterios de Cierre
-- El usuario puede completar todas las secciones del formulario sin errores críticos.
-- El sistema genera un currículum estructurado y visualmente consistente.
-- La exportación a PDF funciona correctamente en al menos un navegador moderno.
-- El tiempo promedio para generar un CV completo es menor a 10 minutos.
+- El usuario puede completar todas las secciones del formulario sin errores críticos
+- El sistema genera un currículum estructurado y consistente
+- La exportación a PDF funciona correctamente
+- El archivo PDF se descarga automáticamente con nombre personalizado
+- El usuario puede visualizar el CV antes o después de descargarlo
+- El tiempo de generación del CV es razonable (menos de 10 segundos en condiciones normales)
 
 
 

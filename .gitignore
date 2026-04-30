@@ -28,6 +28,7 @@ Thumbs.db
 
 # generated files
 coverage/
+generated/
 *.tsbuildinfo
 
 # prisma
