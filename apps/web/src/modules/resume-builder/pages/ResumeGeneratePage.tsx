@@ -36,12 +36,20 @@ export default function ResumeGeneratePage() {
 
     const generateResume = async () => {
       try {
+        const token = localStorage.getItem("auth_token");
+
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+
         setStatus("Enviando información al servidor...");
 
         const response = await fetch("http://localhost:8080/api/resume/generate", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(resumeData),
         });
