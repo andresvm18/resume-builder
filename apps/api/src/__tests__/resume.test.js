@@ -1,5 +1,12 @@
+jest.mock("child_process", () => ({
+  execFile: jest.fn((command, args, callback) => {
+    callback(null, "", "");
+  }),
+}));
+
 const request = require("supertest");
 const app = require("../app");
+const fs = require("fs/promises");
 const { prisma, pool } = require("../lib/prisma");
 
 async function createTestUserAndToken() {
@@ -95,5 +102,65 @@ describe("Resume API", () => {
     });
 
     expect(deletedResume).toBeNull();
+  });
+
+  it("generates a resume PDF for authenticated user", async () => {
+    const { token } = await createTestUserAndToken();
+
+    jest.spyOn(fs, "readFile").mockImplementation(async (filePath) => {
+      if (String(filePath).endsWith(".tex")) {
+        return `
+        {{FULL_NAME}}
+        {{EMAIL}}
+        {{PHONE}}
+        {{LOCATION}}
+        {{SUMMARY}}
+        {{EDUCATION}}
+        {{EXPERIENCE}}
+        {{SKILLS}}
+        {{LANGUAGES}}
+        {{PROJECTS}}
+      `;
+      }
+
+      return Buffer.from("fake-pdf");
+    });
+
+    jest.spyOn(fs, "writeFile").mockResolvedValue();
+    jest.spyOn(fs, "mkdir").mockResolvedValue();
+    jest.spyOn(fs, "unlink").mockResolvedValue();
+
+    const response = await request(app)
+      .post("/api/resume/generate")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        fullName: "Test User",
+        email: "test@test.com",
+        phone: "123456",
+        location: "Costa Rica",
+        summary: "Professional summary",
+        skills: ["React", "Node.js"],
+        languages: [
+          {
+            id: "1",
+            name: "Spanish",
+            level: "Native",
+          },
+        ],
+        experiences: [],
+        education: [],
+        projects: [],
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("application/pdf");
+    expect(response.body).toBeDefined();
+
+    const resumes = await prisma.resume.findMany();
+
+    expect(resumes).toHaveLength(1);
+    expect(resumes[0].title).toBe("Test User");
+
+    jest.restoreAllMocks();
   });
 });
