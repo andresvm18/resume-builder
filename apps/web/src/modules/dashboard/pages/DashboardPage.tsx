@@ -4,6 +4,14 @@ import { fetchUserResumes } from "../../resume-builder/services/resume.service";
 import Header from "../../../shared/components/layout/Header";
 import "./DashboardPage.css";
 
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("es-CR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 export default function DashboardPage() {
   const [resumes, setResumes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,20 +31,22 @@ export default function DashboardPage() {
     loadResumes();
   }, []);
 
-  // Dynamic Stats
+  const totalVersions = resumes.reduce(
+    (acc, resume) => acc + resume.versions.length,
+    0
+  );
+
+  const latestResumeDate =
+    resumes.length > 0
+      ? new Date(resumes[0].updatedAt || resumes[0].createdAt).toLocaleDateString()
+      : "Sin actividad";
+
   const stats = {
     totalResumes: resumes.length,
-    avgAtsScore:
-      resumes.length > 0
-        ? Math.round(
-            resumes.reduce((acc, r) => acc + (r.atsScore || 0), 0) /
-              resumes.length
-          )
-        : 0,
-    pendingOptimizations: resumes.filter(
-      (r) => (r.atsScore || 0) < 85
-    ).length,
+    totalVersions,
+    latestResumeDate,
   };
+
 
   return (
     <main className="dashboard-page">
@@ -63,7 +73,6 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Stats */}
         <div className="dashboard-page__stats">
           <div className="stat-card">
             <div className="stat-card__label">Total de Currículums</div>
@@ -74,28 +83,17 @@ export default function DashboardPage() {
           </div>
 
           <div className="stat-card">
-            <div className="stat-card__label">Puntuación ATS Promedio</div>
+            <div className="stat-card__label">Versiones Guardadas</div>
             <div className="stat-card__value">
-              {stats.avgAtsScore}
-              <span className="stat-card__unit">%</span>
+              {stats.totalVersions}
+              <span className="stat-card__unit">versiones</span>
             </div>
-
-            {stats.avgAtsScore >= 85 ? (
-              <div className="stat-card__trend stat-card__trend--up">
-                ↑ Excelente
-              </div>
-            ) : (
-              <div className="stat-card__trend stat-card__trend--down">
-                ↓ Necesita mejorar
-              </div>
-            )}
           </div>
 
           <div className="stat-card">
-            <div className="stat-card__label">Necesitan Optimización</div>
-            <div className="stat-card__value">
-              {stats.pendingOptimizations}
-              <span className="stat-card__unit">currículums</span>
+            <div className="stat-card__label">Última Actualización</div>
+            <div className="stat-card__value stat-card__value--date">
+              {stats.latestResumeDate}
             </div>
           </div>
         </div>
@@ -125,8 +123,9 @@ export default function DashboardPage() {
                       📄 CV guardado
                     </span>
 
+                    {/* ToDo: Try to change this dyamically according to the country */}
                     <span className="resume-card__date">
-                      {new Date(resume.createdAt).toLocaleDateString()}
+                      {formatDate(resume.createdAt)}
                     </span>
                   </div>
 
@@ -134,6 +133,7 @@ export default function DashboardPage() {
                     {resume.title}
                   </h3>
 
+                  {/* ToDo: Add job-based description */}
                   <p className="resume-card__description">
                     CV generado automáticamente
                   </p>
