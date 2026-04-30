@@ -1,0 +1,111 @@
+.ats-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+}
+
+.ats-card__ring-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.ats-card__ring-progress {
+  --dash: 50.24;
+  animation: ats-ring 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+@keyframes ats-ring {
+  from { stroke-dashoffset: 251.2; }
+  to   { stroke-dashoffset: var(--dash); }
+}
+
+.ats-card__badge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--success);
+  background-color: var(--success-bg);
+  padding: 3px 10px;
+  border-radius: 50px;
+}
+
+.ats-card__breakdown {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+.ats-card__row { animation: ats-fade-up 0.4s ease both; }
+.ats-card__row:nth-child(1) { animation-delay: 0.3s; }
+.ats-card__row:nth-child(2) { animation-delay: 0.45s; }
+.ats-card__row:nth-child(3) { animation-delay: 0.6s; }
+.ats-card__row:nth-child(4) { animation-delay: 0.75s; }
+
+@keyframes ats-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ats-card__row-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.ats-card__row-label { 
+  font-size: 0.75rem; 
+  color: var(--text-muted); 
+}
+
+.ats-card__row-value { 
+  font-size: 0.75rem; 
+  font-weight: 500; 
+  color: var(--text-primary); 
+}
+
+.ats-card__row-weight { 
+  font-weight: 300; 
+  color: var(--text-muted); 
+}
+
+.ats-card__bar-track {
+  height: 5px;
+  background-color: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+
+.ats-card__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  width: 0;
+  animation: ats-bar 0.8s var(--transition-base) forwards;
+  animation-delay: inherit;
+}
+
+@keyframes ats-bar {
+  to { width: var(--bar-width); }
+}
+
+.ats-card__bar-fill--teal { background-color: #1D9E75; }
+.ats-card__bar-fill--blue { background-color: #378ADD; }
+
+.ats-card__formula {
+  border-top: 1px solid var(--color-border);
+  padding-top: 8px;
+  text-align: right;
+  font-size: 0.6875rem;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-hint);
+  animation: ats-fade-up 0.4s 0.95s both;
+}

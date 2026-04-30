@@ -1,79 +1,54 @@
 import { Link } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
+import AtsScoreCard from "../components/AtsScoreCard";
+import "./LandingPage.css";
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <main className="landing-page">
       <Header />
 
       {/* Hero */}
-      <section className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
+      <section className="hero">
         <div>
-          <span className="rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700">
-            ATS-Optimized Resume Platform
-          </span>
-
-          <h2 className="mt-6 text-5xl font-extrabold leading-tight tracking-tight">
-            Build resumes that pass filters and get interviews.
-          </h2>
-
-          <p className="mt-6 max-w-xl text-lg text-gray-600">
-            Create clean, ATS-friendly resumes with real-time previews,
-            optimized structure, and downloadable PDF exports.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              to="/register"
-              className="rounded-2xl bg-black px-6 py-3 text-base font-semibold text-white transition hover:opacity-90"
-            >
-              Create Your Resume
-            </Link>
+          <span className="hero__badge">Plataforma de Currículums Optimizados para ATS</span>
+          <h2 className="hero__title">Crea currículums que pasan filtros y consiguen entrevistas.</h2>
+          <p className="hero__description">Crea currículums limpios y compatibles con ATS con vista previa en tiempo real...</p>
+          <div className="hero__actions">
+            <Link to="/resume-builder" className="btn-primary">Crear tu Currículum</Link>
           </div>
+        </div>
+        <div className="hero__visual">
+          <AtsScoreCard />
         </div>
       </section>
 
       {/* Features */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <h3 className="text-center text-4xl font-bold tracking-tight">
-          Why choose ResumeBuilder
-        </h3>
-
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
-          <div className="rounded-2xl border border-gray-200 p-6">
-            <h4 className="text-xl font-semibold">ATS Optimization</h4>
-            <p className="mt-3 text-gray-600">
-              Built specifically to maximize compatibility with applicant
-              tracking systems.
-            </p>
+      <section className="features">
+        <p className="features__eyebrow">Por qué elegir ResumeBuilder</p>
+        <h3 className="features__title">Todo lo que necesitas para conseguir el puesto.</h3>
+        <div className="features__grid">
+          <div className="feature-card">
+            <div className="feature-card__icon">📄</div>
+            <h4 className="feature-card__title">Optimización ATS</h4>
+            <p className="feature-card__description">Maximiza la compatibilidad con los sistemas de seguimiento de candidatos desde el primer día.</p>
           </div>
-
-          <div className="rounded-2xl border border-gray-200 p-6">
-            <h4 className="text-xl font-semibold">PDF Export</h4>
-            <p className="mt-3 text-gray-600">
-              Download polished, recruiter-ready resumes in one click.
-            </p>
+          <div className="feature-card">
+            <div className="feature-card__icon">⬇</div>
+            <h4 className="feature-card__title">Exportar a PDF</h4>
+            <p className="feature-card__description">Descarga currículums profesionales listos para reclutadores con un solo clic.</p>
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="border-t border-gray-200 bg-gray-50 py-20">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <h3 className="text-4xl font-bold tracking-tight">
-            Start building your next opportunity today.
-          </h3>
-
-          <p className="mt-4 text-lg text-gray-600">
-            Join professionals creating resumes that stand out where it matters.
-          </p>
-
-          <Link
-            to="/register"
-            className="mt-8 inline-block rounded-2xl bg-black px-8 py-4 text-lg font-semibold text-white transition hover:opacity-90"
-          >
-            Get Started
-          </Link>
+      <section className="cta">
+        <div className="cta__inner">
+          <h3 className="cta__title">Comienza a construir tu próxima <em>oportunidad</em> hoy.</h3>
+          <p className="cta__description">Únete a profesionales que crean currículums que destacan.</p>
+          <div className="cta__action">
+            <Link to="/register" className="btn-primary">Comenzar</Link>
+          </div>
         </div>
       </section>
     </main>
