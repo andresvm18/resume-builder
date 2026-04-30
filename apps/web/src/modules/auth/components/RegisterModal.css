@@ -16,6 +16,7 @@
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -311,6 +312,17 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.register-modal__error {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+}
+
+.register-modal__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ── Responsive ── */

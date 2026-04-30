@@ -1,10 +1,49 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { registerUser, saveAuthSession } from "../services/auth.service";
 import "./RegisterModal.css";
 
 export default function RegisterModal() {
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [name, setName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const fullName = `${name} ${middleName} ${lastName}`.trim();
+
+      const data = await registerUser(fullName, email, password);
+      saveAuthSession(data);
+
+      navigate("/dashboard");
+    } catch {
+      setError("No se pudo crear la cuenta. Intenta con otro correo.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="register-modal">
@@ -15,22 +54,43 @@ export default function RegisterModal() {
         </p>
       </div>
 
-      <form className="register-modal__form">
-        {/* Name + Middle Name on the same row */}
+      <form className="register-modal__form" onSubmit={handleRegister}>
+        {/* Name row */}
         <div className="register-modal__row">
           <div className="register-modal__field">
             <label className="register-modal__label">Nombre</label>
-            <input type="text" placeholder="Juan" className="register-modal__input" />
+            <input
+              type="text"
+              placeholder="Juan"
+              className="register-modal__input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
           </div>
+
           <div className="register-modal__field">
             <label className="register-modal__label">Segundo nombre</label>
-            <input type="text" placeholder="Carlos" className="register-modal__input" />
+            <input
+              type="text"
+              placeholder="Carlos"
+              className="register-modal__input"
+              value={middleName}
+              onChange={(e) => setMiddleName(e.target.value)}
+            />
           </div>
         </div>
 
         <div className="register-modal__field">
           <label className="register-modal__label">Apellido</label>
-          <input type="text" placeholder="Pérez" className="register-modal__input" />
+          <input
+            type="text"
+            placeholder="Pérez"
+            className="register-modal__input"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
         </div>
 
         <div className="register-modal__field">
@@ -40,80 +100,81 @@ export default function RegisterModal() {
               <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
               <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
             </svg>
-            <input type="email" placeholder="tu@ejemplo.com" className="register-modal__input" />
+
+            <input
+              type="email"
+              placeholder="tu@ejemplo.com"
+              className="register-modal__input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
         </div>
 
-        {/* Password + Confirm on the same row */}
+        {/* Password row */}
         <div className="register-modal__row">
           <div className="register-modal__field">
             <label className="register-modal__label">Contraseña</label>
             <div className="register-modal__password-wrapper">
-              <input 
-                type={showPassword ? "text" : "password"} 
-                placeholder="••••••••" 
-                className="register-modal__input" 
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="register-modal__input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
+
               <button
                 type="button"
                 className="register-modal__toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
-                {showPassword ? (
-                  <svg className="register-modal__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                    <line x1="3" y1="3" x2="21" y2="21" />
-                  </svg>
-                ) : (
-                  <svg className="register-modal__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
+                👁
               </button>
             </div>
           </div>
+
           <div className="register-modal__field">
             <label className="register-modal__label">Confirmar</label>
             <div className="register-modal__password-wrapper">
-              <input 
-                type={showConfirmPassword ? "text" : "password"} 
-                placeholder="••••••••" 
-                className="register-modal__input" 
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="register-modal__input"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
               />
+
               <button
                 type="button"
                 className="register-modal__toggle-btn"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
-                {showConfirmPassword ? (
-                  <svg className="register-modal__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                    <line x1="3" y1="3" x2="21" y2="21" />
-                  </svg>
-                ) : (
-                  <svg className="register-modal__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
+                👁
               </button>
             </div>
           </div>
         </div>
 
-        <button type="submit" className="register-modal__submit">
-          Crear cuenta
+        {error && <p className="register-modal__error">{error}</p>}
+
+        <button
+          type="submit"
+          className="register-modal__submit"
+          disabled={loading}
+        >
+          {loading ? "Creando cuenta..." : "Crear cuenta"}
         </button>
       </form>
 
       <p className="register-modal__footer">
         ¿Ya tienes una cuenta?{" "}
-        <Link to="/login" className="register-modal__footer-link">Iniciar sesión</Link>
+        <Link to="/login" className="register-modal__footer-link">
+          Iniciar sesión
+        </Link>
       </p>
     </div>
   );

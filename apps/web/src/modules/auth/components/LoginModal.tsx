@@ -1,9 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { loginUser, saveAuthSession } from "../services/auth.service";
 import "./LoginModal.css";
 
 export default function LoginModal() {
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await loginUser(email, password);
+      saveAuthSession(data);
+
+      navigate("/dashboard");
+    } catch {
+      setError("Correo o contraseña inválidos.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-modal">
@@ -14,18 +40,22 @@ export default function LoginModal() {
         </p>
       </div>
 
-      <form className="login-modal__form">
+      <form className="login-modal__form" onSubmit={handleLogin}>
         <div className="login-modal__field">
           <label className="login-modal__label">Correo electrónico</label>
           <div className="login-modal__input-wrapper">
             <svg className="login-modal__input-icon" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
-              <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2" />
+              <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
-            <input 
-              type="email" 
-              placeholder="tu@ejemplo.com" 
-              className="login-modal__input" 
+
+            <input
+              type="email"
+              placeholder="tu@ejemplo.com"
+              className="login-modal__input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
         </div>
@@ -33,11 +63,15 @@ export default function LoginModal() {
         <div className="login-modal__field">
           <label className="login-modal__label">Contraseña</label>
           <div className="login-modal__password-wrapper">
-            <input 
-              type={showPassword ? "text" : "password"} 
-              placeholder="••••••••" 
-              className="login-modal__input" 
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              className="login-modal__input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
+
             <button
               type="button"
               className="login-modal__toggle-btn"
@@ -60,14 +94,10 @@ export default function LoginModal() {
           </div>
         </div>
 
-        {/* <div className="login-modal__forgot">
-          <Link to="/forgot-password" className="login-modal__forgot-link">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </div> */}
+        {error && <p className="login-modal__error">{error}</p>}
 
-        <button type="submit" className="login-modal__submit">
-          Iniciar sesión
+        <button type="submit" className="login-modal__submit" disabled={loading}>
+          {loading ? "Iniciando sesión..." : "Iniciar sesión"}
         </button>
       </form>
 
