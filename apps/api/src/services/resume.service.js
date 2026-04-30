@@ -206,9 +206,31 @@ async function getUserResumeById(resumeId, userId) {
   return resume;
 }
 
+async function deleteUserResume(resumeId, userId) {
+  const resume = await prisma.resume.findFirst({
+    where: {
+      id: resumeId,
+      userId,
+    },
+  });
+
+  if (!resume) {
+    throw new Error("RESUME_NOT_FOUND");
+  }
+
+  await prisma.resume.delete({
+    where: {
+      id: resumeId,
+    },
+  });
+
+  return resume;
+}
+
 module.exports = {
   generateResumePdf,
   getUserResumes,
   generateResumePdfById,
   getUserResumeById,
+  deleteUserResume,
 };

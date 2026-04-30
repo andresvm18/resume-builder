@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchUserResumes, downloadResumeById } from "../../resume-builder/services/resume.service";
+import { fetchUserResumes, downloadResumeById, deleteResumeById } from "../../resume-builder/services/resume.service";
 import type { Resume } from "../../resume-builder/types/resume.types";
 import Header from "../../../shared/components/layout/Header";
 import "./DashboardPage.css";
@@ -69,6 +69,24 @@ export default function DashboardPage() {
       URL.revokeObjectURL(url);
     } catch {
       alert("No se pudo descargar el CV.");
+    }
+  };
+
+  const handleDeleteResume = async (resumeId: string) => {
+    const confirmed = window.confirm(
+      "¿Estás seguro de que quieres eliminar este CV? Esta acción no se puede deshacer."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteResumeById(resumeId);
+
+      setResumes((prev) =>
+        prev.filter((resume) => resume.id !== resumeId)
+      );
+    } catch {
+      alert("No se pudo eliminar el CV.");
     }
   };
 
@@ -170,9 +188,13 @@ export default function DashboardPage() {
                       Editar
                     </Link>
 
-                    {/* <button className="resume-card__delete-btn">
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteResume(resume.id)}
+                      className="resume-card__delete-btn"
+                    >
                       Eliminar
-                    </button> */}
+                    </button>
 
                     <button
                       type="button"

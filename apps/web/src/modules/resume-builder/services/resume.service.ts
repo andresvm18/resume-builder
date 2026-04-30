@@ -48,3 +48,20 @@ export async function fetchResumeById(resumeId: string) {
 
   return response.json();
 }
+
+export async function deleteResumeById(resumeId: string) {
+  const token = localStorage.getItem("auth_token");
+
+  const response = await fetch(`http://localhost:8080/api/resume/${resumeId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Error deleting resume");
+  }
+
+  return response.json();
+}

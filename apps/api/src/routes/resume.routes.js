@@ -7,6 +7,7 @@ const {
   getResumes,
   downloadResume,
   getResumeById,
+  deleteResume,
 } = require("../controllers/resume.controller");
 
 // Generate PDF
@@ -20,5 +21,8 @@ router.get("/:id/download", authMiddleware, downloadResume);
 
 // Get specific PDF (edit)
 router.get("/:id", authMiddleware, getResumeById);
+
+// Delete
+router.delete("/:id", authMiddleware, deleteResume);
 
 module.exports = router;

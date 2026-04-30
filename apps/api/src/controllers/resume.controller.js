@@ -3,6 +3,7 @@ const {
   getUserResumes,
   generateResumePdfById,
   getUserResumeById,
+  deleteUserResume,
 } = require("../services/resume.service");
 
 async function generateResume(req, res) {
@@ -71,9 +72,26 @@ async function getResumeById(req, res) {
   }
 }
 
+async function deleteResume(req, res) {
+  try {
+    await deleteUserResume(req.params.id, req.user.userId);
+
+    return res.json({
+      message: "CV eliminado correctamente",
+    });
+  } catch (error) {
+    console.error("Error deleting resume:", error);
+
+    return res.status(404).json({
+      message: "CV no encontrado",
+    });
+  }
+}
+
 module.exports = {
   generateResume,
   getResumes,
   downloadResume,
   getResumeById,
+  deleteResume,
 };
