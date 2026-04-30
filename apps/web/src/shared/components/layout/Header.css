@@ -126,14 +126,6 @@
   transition: background-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
 }
 
-/* Arrow icon via pseudo-element */
-.header__cta::after {
-  font-size: 0.85rem;
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity var(--transition-base), transform var(--transition-base);
-}
-
 .header__cta:hover {
   background-color: var(--btn-hover);
   transform: translateY(-1px);
@@ -176,6 +168,35 @@
   }
 }
 
+.header__user-name {
+  font-weight: 500;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.header__logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--error);
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--border-radius-sm);
+  transition: color var(--transition-base), background-color var(--transition-base);
+}
+
+.header__logout:hover {
+  background-color: rgba(220, 38, 38, 0.08);
+}
+
+.header__logout:focus-visible {
+  outline: 2px solid var(--error);
+  outline-offset: 2px;
+}
+
 /* ── Responsive: Mobile ── */
 @media (max-width: 480px) {
   .header__nav {
@@ -188,7 +209,8 @@
   }
 
   .header__link {
-    display: none; /* Hide login on very small screens, keep CTA */
+    display: none;
+    /* Hide login on very small screens, keep CTA */
   }
 
   .header__cta {
