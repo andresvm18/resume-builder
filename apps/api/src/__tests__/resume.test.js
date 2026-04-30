@@ -206,4 +206,32 @@ describe("Resume API", () => {
 
     expect(response.statusCode).toBe(404);
   });
+
+  it("rejects resume generation without token", async () => {
+    const response = await request(app)
+      .post("/api/resume/generate")
+      .send({
+        fullName: "Test User",
+        email: "test@test.com",
+        summary: "Professional summary",
+      });
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it("rejects resume generation when required fields are missing", async () => {
+    const { token } = await createTestUserAndToken();
+
+    const response = await request(app)
+      .post("/api/resume/generate")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        fullName: "",
+        email: "test@test.com",
+        summary: "Professional summary",
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("Nombre, correo y resumen son requeridos");
+  });
 });
