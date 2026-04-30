@@ -2,6 +2,7 @@ const {
   generateResumePdf,
   getUserResumes,
   generateResumePdfById,
+  getUserResumeById,
 } = require("../services/resume.service");
 
 async function generateResume(req, res) {
@@ -56,8 +57,23 @@ async function downloadResume(req, res) {
   }
 }
 
+async function getResumeById(req, res) {
+  try {
+    const resume = await getUserResumeById(req.params.id, req.user.userId);
+
+    return res.json(resume);
+  } catch (error) {
+    console.error("Error fetching resume:", error);
+
+    return res.status(404).json({
+      message: "CV no encontrado",
+    });
+  }
+}
+
 module.exports = {
   generateResume,
   getResumes,
   downloadResume,
+  getResumeById,
 };

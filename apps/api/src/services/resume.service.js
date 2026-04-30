@@ -185,8 +185,30 @@ async function generateResumePdfById(resumeId, userId) {
   return generateResumePdf(latestVersion.data, userId);
 }
 
+async function getUserResumeById(resumeId, userId) {
+  const resume = await prisma.resume.findFirst({
+    where: {
+      id: resumeId,
+      userId,
+    },
+    include: {
+      versions: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
+  });
+
+  if (!resume || resume.versions.length === 0) {
+    throw new Error("RESUME_NOT_FOUND");
+  }
+
+  return resume;
+}
+
 module.exports = {
   generateResumePdf,
   getUserResumes,
   generateResumePdfById,
+  getUserResumeById,
 };

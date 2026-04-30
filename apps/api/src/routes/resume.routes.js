@@ -6,6 +6,7 @@ const {
   generateResume,
   getResumes,
   downloadResume,
+  getResumeById,
 } = require("../controllers/resume.controller");
 
 // Generate PDF
@@ -14,7 +15,10 @@ router.post("/generate", authMiddleware, generateResume);
 // Get user resumes
 router.get("/", authMiddleware, getResumes);
 
-// Get specific PDF
+// Get specific PDF (download)
 router.get("/:id/download", authMiddleware, downloadResume);
+
+// Get specific PDF (edit)
+router.get("/:id", authMiddleware, getResumeById);
 
 module.exports = router;

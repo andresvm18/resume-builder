@@ -36,6 +36,10 @@ export const router = createBrowserRouter([
         path: "/resume/generate",
         element: <ResumeGeneratePage />,
       },
+      {
+        path: "/resume-builder/:id",
+        element: <ResumeBuilderPage />,
+      },
     ],
   },
 ]);

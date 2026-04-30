@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { DEFAULT_RESUME_DATA } from "../types/resume.types";
+import { fetchResumeById } from "../services/resume.service";
 import type {
   ResumeData,
   Experience,
@@ -12,7 +13,7 @@ import type {
 
 const STORAGE_KEY = "resume-data";
 
-export function useResumeBuilder() {
+export function useResumeBuilder(resumeId?: string) {
   const resumeRef = useRef<HTMLDivElement>(null);
 
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
@@ -33,12 +34,33 @@ export function useResumeBuilder() {
   const [skillInput, setSkillInput] = useState("");
 
   useEffect(() => {
+    if (!resumeId) return;
+
+    const loadResume = async () => {
+      try {
+        const resume = await fetchResumeById(resumeId);
+        const latestVersion = resume.versions?.[0];
+
+        if (latestVersion?.data) {
+          setResumeData(latestVersion.data);
+        }
+      } catch (error) {
+        console.error("Error loading resume:", error);
+      }
+    };
+
+    loadResume();
+  }, [resumeId]);
+
+  useEffect(() => {
+    if (resumeId) return;
+
     const timeout = setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
     }, 400);
 
     return () => clearTimeout(timeout);
-  }, [resumeData]);
+  }, [resumeData, resumeId]);
 
   const updateField = <K extends keyof ResumeData>(
     field: K,
@@ -87,9 +109,9 @@ export function useResumeBuilder() {
       resumeData.languages.map((lang) =>
         lang.id === id
           ? {
-              ...lang,
-              [field]: field === "level" ? (value as LanguageLevel) : value,
-            }
+            ...lang,
+            [field]: field === "level" ? (value as LanguageLevel) : value,
+          }
           : lang
       )
     );

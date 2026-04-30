@@ -32,3 +32,19 @@ export async function downloadResumeById(resumeId: string) {
 
   return response.blob();
 }
+
+export async function fetchResumeById(resumeId: string) {
+  const token = localStorage.getItem("auth_token");
+
+  const response = await fetch(`http://localhost:8080/api/resume/${resumeId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Error fetching resume");
+  }
+
+  return response.json();
+}

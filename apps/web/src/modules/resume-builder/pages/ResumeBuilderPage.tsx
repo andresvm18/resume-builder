@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
@@ -9,6 +9,7 @@ import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const {
     resumeData,
     currentStep,
@@ -52,7 +53,7 @@ export default function ResumeBuilderPage() {
     updateProject,
     removeProject,
 
-  } = useResumeBuilder();
+  } = useResumeBuilder(id);
 
   const steps: StepItem[] = [
     {
