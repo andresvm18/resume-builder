@@ -1,0 +1,94 @@
+.resume-builder-page__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.resume-builder-page__nav-btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
+  font-family: var(--font-sans);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resume-builder-page__nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.resume-builder-page__nav-btn--prev {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.resume-builder-page__nav-btn--prev:hover:not(:disabled) {
+  background-color: var(--color-surface);
+  border-color: var(--text-muted);
+  transform: translateX(-2px);
+}
+
+.resume-builder-page__nav-btn--prev::before {
+  content: '←';
+  transition: transform var(--transition-base);
+}
+
+.resume-builder-page__nav-btn--prev:hover:not(:disabled)::before {
+  transform: translateX(-4px);
+}
+
+.resume-builder-page__nav-btn--next {
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
+}
+
+.resume-builder-page__nav-btn--next:hover:not(:disabled) {
+  background-color: var(--btn-hover);
+  transform: translateX(2px);
+}
+
+.resume-builder-page__nav-btn--next::after {
+  content: '→';
+  transition: transform var(--transition-base);
+}
+
+.resume-builder-page__nav-btn--next:hover:not(:disabled)::after {
+  transform: translateX(4px);
+}
+
+.resume-builder-page__nav-btn--finish {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.resume-builder-page__nav-btn--finish:hover:not(:disabled) {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .resume-builder-page__navigation {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .resume-builder-page__nav-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
