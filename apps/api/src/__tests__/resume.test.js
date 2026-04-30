@@ -163,4 +163,47 @@ describe("Resume API", () => {
 
     jest.restoreAllMocks();
   });
+
+  it("returns a specific resume by id for authenticated user", async () => {
+    const { token, user } = await createTestUserAndToken();
+
+    const resume = await prisma.resume.create({
+      data: {
+        title: "Resume By ID",
+        userId: user.id,
+      },
+    });
+
+    await prisma.resumeVersion.create({
+      data: {
+        resumeId: resume.id,
+        data: {
+          fullName: "Test User",
+          email: "test@test.com",
+          summary: "Test summary",
+        },
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/resume/${resume.id}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.id).toBe(resume.id);
+    expect(response.body.title).toBe("Resume By ID");
+    expect(response.body.versions).toHaveLength(1);
+  });
+
+  it("returns 404 if resume does not belong to user", async () => {
+    const { token } = await createTestUserAndToken();
+
+    const fakeId = "00000000-0000-0000-0000-000000000000";
+
+    const response = await request(app)
+      .get(`/api/resume/${fakeId}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.statusCode).toBe(404);
+  });
 });
