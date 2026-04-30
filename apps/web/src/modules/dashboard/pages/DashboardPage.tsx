@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchUserResumes } from "../../resume-builder/services/resume.service";
+import type { Resume } from "../../resume-builder/types/resume.types";
 import Header from "../../../shared/components/layout/Header";
 import "./DashboardPage.css";
 
@@ -13,7 +14,7 @@ function formatDate(date: string) {
 }
 
 export default function DashboardPage() {
-  const [resumes, setResumes] = useState<any[]>([]);
+  const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

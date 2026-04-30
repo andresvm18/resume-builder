@@ -64,6 +64,20 @@ export type ResumeData = {
   projects: Project[];
 };
 
+export type ResumeVersion = {
+  id: string;
+  data: unknown; // 👈 en vez de any
+  createdAt: string;
+};
+
+export type Resume = {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt?: string;
+  versions: ResumeVersion[];
+};
+
 
 export const DEFAULT_RESUME_DATA: ResumeData = {
   fullName: "",
