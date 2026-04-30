@@ -7,6 +7,7 @@ import EducationStep from "./steps/EducationStep";
 import SkillsStep from "./steps/SkillsStep";
 import LanguagesStep from "./steps/LanguagesStep";
 import ProjectsStep from "./steps/ProjectsStep";
+import JobDescriptionStep from "./steps/JobDescriptionStep";
 import type {
   Step,
   Experience,
@@ -71,6 +72,9 @@ type ResumeFormPanelProps = {
     value: string
   ) => void;
   removeProject: (id: string | number) => void;
+
+  jobDescription: string;
+  setJobDescription: (value: string) => void;
 };
 
 export default function ResumeFormPanel(props: ResumeFormPanelProps) {
@@ -95,6 +99,11 @@ export default function ResumeFormPanel(props: ResumeFormPanelProps) {
 
     case "projects":
       return <ProjectsStep {...props} />;
+
+    case "jobDescription":
+      return (
+        <JobDescriptionStep {...props} />
+      );
 
     default:
       return null;

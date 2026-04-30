@@ -53,6 +53,9 @@ export default function ResumeBuilderPage() {
     updateProject,
     removeProject,
 
+    jobDescription,
+    setJobDescription,
+
   } = useResumeBuilder(id);
 
   const steps: StepItem[] = [
@@ -67,6 +70,12 @@ export default function ResumeBuilderPage() {
       label: "Resumen",
       title: "Resumen profesional",
       description: "Describe tu perfil en pocas líneas",
+    },
+    {
+      id: "jobDescription",
+      label: "Oferta",
+      title: "Oferta laboral",
+      description: "Pega la descripción del puesto objetivo",
     },
     {
       id: "experience",
@@ -193,6 +202,8 @@ export default function ResumeBuilderPage() {
             addProject={addProject}
             updateProject={updateProject}
             removeProject={removeProject}
+            jobDescription={jobDescription}
+            setJobDescription={setJobDescription}
           />
 
           <StepNavigation

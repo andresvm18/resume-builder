@@ -257,6 +257,9 @@ export function useResumeBuilder(resumeId?: string) {
     summary: resumeData.summary,
     setSummary: (value: string) => updateField("summary", value),
 
+    jobDescription: resumeData.jobDescription,
+    setJobDescription: (value: string) => updateField("jobDescription", value),
+
     skills: resumeData.skills,
     languages: resumeData.languages,
     experiences: resumeData.experiences,
