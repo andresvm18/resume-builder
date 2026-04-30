@@ -4,6 +4,7 @@ const { execFile } = require("child_process");
 const { promisify } = require("util");
 
 const execFileAsync = promisify(execFile);
+const prisma = require("../lib/prisma");
 
 function escapeLatex(value = "") {
   return String(value)
@@ -84,7 +85,26 @@ ${escapeLatex(project.technologies)}
     .join("\n");
 }
 
-async function generateResumePdf(data) {
+async function saveResumeVersion(userId, data) {
+  const resume = await prisma.resume.create({
+    data: {
+      title: data.fullName || "CV sin nombre",
+      userId,
+    },
+  });
+
+  await prisma.resumeVersion.create({
+    data: {
+      resumeId: resume.id,
+      data,
+    },
+  });
+
+  return resume;
+}
+
+async function generateResumePdf(data, userId) {
+  await saveResumeVersion(userId, data);
   const templatePath = path.join(__dirname, "../templates/resume-template.tex");
   const outputDir = path.join(__dirname, "../../generated");
 
@@ -104,8 +124,10 @@ async function generateResumePdf(data) {
     .replaceAll("{{LANGUAGES}}", buildLanguages(data.languages))
     .replaceAll("{{PROJECTS}}", buildProjects(data.projects));
 
-  const texPath = path.join(outputDir, "cv.tex");
-  const pdfPath = path.join(outputDir, "cv.pdf");
+  const fileId = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+
+  const texPath = path.join(outputDir, `cv-${fileId}.tex`);
+  const pdfPath = path.join(outputDir, `cv-${fileId}.pdf`);
 
   await fs.writeFile(texPath, texContent, "utf-8");
 
@@ -118,6 +140,12 @@ async function generateResumePdf(data) {
   ]);
 
   const pdfBuffer = await fs.readFile(pdfPath);
+
+  // Cleanup
+  await fs.unlink(texPath).catch(() => { });
+  await fs.unlink(path.join(outputDir, `cv-${fileId}.aux`)).catch(() => { });
+  await fs.unlink(path.join(outputDir, `cv-${fileId}.log`)).catch(() => { });
+
   return pdfBuffer;
 }
 

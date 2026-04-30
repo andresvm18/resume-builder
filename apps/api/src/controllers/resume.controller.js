@@ -3,9 +3,11 @@ const { generateResumePdf } = require("../services/resume.service");
 
 const router = express.Router();
 
-router.post("/generate", async (req, res) => {
+const authMiddleware = require("../middleware/auth.middleware");
+
+router.post("/generate", authMiddleware, async (req, res) => {
   try {
-    const pdfBuffer = await generateResumePdf(req.body);
+    const pdfBuffer = await generateResumePdf(req.body, req.user.userId);
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "attachment; filename=cv.pdf");
