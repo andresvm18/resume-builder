@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { getAuthToken } from "../../auth/services/auth.service";
 import Header from "../../../shared/components/layout/Header";

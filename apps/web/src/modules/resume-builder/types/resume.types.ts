@@ -64,6 +64,7 @@ export type ResumeData = {
   projects: Project[];
 };
 
+
 export const DEFAULT_RESUME_DATA: ResumeData = {
   fullName: "",
   email: "",
