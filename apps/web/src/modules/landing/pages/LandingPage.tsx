@@ -1,9 +1,32 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getAuthToken } from "../../auth/services/auth.service";
 import Header from "../../../shared/components/layout/Header";
 import AtsScoreCard from "../components/AtsScoreCard";
 import "./LandingPage.css";
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+
+  const handleCreateResume = () => {
+    const token = getAuthToken();
+
+    if (token) {
+      navigate("/resume-builder");
+    } else {
+      navigate("/login");
+    }
+  };
+
+  const handleCTA = () => {
+    const token = getAuthToken();
+
+    if (token) {
+      navigate("/resume-builder");
+    } else {
+      navigate("/register");
+    }
+  };
   return (
     <main className="landing-page">
       <Header />
@@ -15,7 +38,12 @@ export default function LandingPage() {
           <h2 className="hero__title">Crea currículums que pasan filtros y consiguen entrevistas.</h2>
           <p className="hero__description">Crea currículums limpios y compatibles con ATS con vista previa en tiempo real...</p>
           <div className="hero__actions">
-            <Link to="/resume-builder" className="btn-primary">Crear tu Currículum</Link>
+            <button
+              onClick={handleCreateResume}
+              className="btn-primary"
+            >
+              Crear tu Currículum
+            </button>
           </div>
         </div>
         <div className="hero__visual">
@@ -47,7 +75,9 @@ export default function LandingPage() {
           <h3 className="cta__title">Comienza a construir tu próxima <em>oportunidad</em> hoy.</h3>
           <p className="cta__description">Únete a profesionales que crean currículums que destacan.</p>
           <div className="cta__action">
-            <Link to="/register" className="btn-primary">Comenzar</Link>
+            <button onClick={handleCTA} className="btn-primary">
+              Comenzar
+            </button>
           </div>
         </div>
       </section>
