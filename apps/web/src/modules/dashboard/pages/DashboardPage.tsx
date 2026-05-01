@@ -135,7 +135,9 @@ export default function DashboardPage() {
           <div className="stat-card">
             <div className="stat-card__label">Última Actualización</div>
             <div className="stat-card__value stat-card__value--date">
-              {formatDate(stats.latestResumeDate)}
+              {resumes.length > 0
+                ? formatDate(resumes[0].updatedAt || resumes[0].createdAt)
+                : "Sin actividad"}
             </div>
           </div>
         </div>
