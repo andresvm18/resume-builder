@@ -15,69 +15,121 @@ export default function AtsAnalysisPanel({
 
   const result = analyzeResumeMatch(resumeData, jobDescription);
 
+  const metrics = [
+    {
+      label: "Keyword Match",
+      value: `${result.matchPercentage}%`,
+      description: "Coincidencia de palabras clave",
+    },
+    {
+      label: "Completitud",
+      value: `${result.sectionCompleteness}%`,
+      description: "Secciones importantes del CV",
+    },
+    {
+      label: "Formato",
+      value: `${result.formatQuality}%`,
+      description: "Claridad y estructura del CV",
+    },
+    {
+      label: "Alineación",
+      value: `${result.roleAlignment}%`,
+      description: "Relación con el puesto",
+    },
+  ];
+
   return (
-    <div className="ats-panel">
-      <h3 className="ats-panel__title">Análisis ATS</h3>
+    <section className="ats-panel">
+      <header className="ats-panel__header">
+        <div>
+          <h3 className="ats-panel__title">Análisis ATS</h3>
+          <p className="ats-panel__description">
+            Evaluación estimada de compatibilidad entre tu currículum y la oferta laboral.
+          </p>
+        </div>
 
-      <p className="ats-panel__subtitle">
-        Coincidencia estimada con la oferta:
-      </p>
+        <div className="ats-panel__score-card">
+          <span className="ats-panel__score">{result.atsScore}%</span>
+          <span className="ats-panel__score-label">Score ATS</span>
+        </div>
+      </header>
 
-      <div className="ats-panel__score">
-        {result.atsScore}%
+      <div className="ats-panel__metrics">
+        {metrics.map((metric) => (
+          <article key={metric.label} className="ats-panel__metric">
+            <span className="ats-panel__metric-value">{metric.value}</span>
+            <span className="ats-panel__metric-label">{metric.label}</span>
+            <p className="ats-panel__metric-description">{metric.description}</p>
+          </article>
+        ))}
       </div>
 
-      <p className="ats-panel__subtitle">
-        Keyword Match: {result.matchPercentage}%
-      </p>
-
-      <p className="ats-panel__subtitle">
-        Completitud: {result.sectionCompleteness}%
-      </p>
-
-      <p className="ats-panel__subtitle">
-        Formato: {result.formatQuality}%
-      </p>
-
-      <p className="ats-panel__subtitle">
-        Alineación: {result.roleAlignment}%
-      </p>
-
-      <div className="ats-panel__keywords">
-        {result.matchedKeywords.length === 0 ? (
-          <span className="ats-panel__empty">
-            Aún no hay coincidencias detectadas.
+      <div className="ats-panel__section">
+        <div className="ats-panel__section-header">
+          <h4 className="ats-panel__section-title">Palabras clave encontradas</h4>
+          <span className="ats-panel__counter">
+            {result.matchedKeywords.length}
           </span>
-        ) : (
-          result.matchedKeywords.map((word) => (
-            <span key={word} className="ats-panel__tag ats-panel__tag--matched">
-              {word}
+        </div>
+
+        <div className="ats-panel__keywords">
+          {result.matchedKeywords.length === 0 ? (
+            <span className="ats-panel__empty">
+              Aún no hay coincidencias detectadas.
             </span>
-          ))
-        )}
+          ) : (
+            result.matchedKeywords.map((word) => (
+              <span key={word} className="ats-panel__tag ats-panel__tag--matched">
+                {word}
+              </span>
+            ))
+          )}
+        </div>
       </div>
 
-      <p className="ats-panel__subtitle">
-        Palabras clave faltantes:
-      </p>
-
-      <div className="ats-panel__keywords">
-        {result.missingKeywords.length === 0 ? (
-          <span className="ats-panel__empty">
-            No se detectaron palabras clave faltantes.
+      <div className="ats-panel__section">
+        <div className="ats-panel__section-header">
+          <h4 className="ats-panel__section-title">Palabras clave faltantes</h4>
+          <span className="ats-panel__counter">
+            {result.missingKeywords.length}
           </span>
-        ) : (
-          result.missingKeywords.map((word) => (
-            <span key={word} className="ats-panel__tag ats-panel__tag--missing">
-              {word}
+        </div>
+
+        <div className="ats-panel__keywords">
+          {result.missingKeywords.length === 0 ? (
+            <span className="ats-panel__empty">
+              No se detectaron palabras clave faltantes.
             </span>
-          ))
-        )}
+          ) : (
+            result.missingKeywords.map((word) => (
+              <span key={word} className="ats-panel__tag ats-panel__tag--missing">
+                {word}
+              </span>
+            ))
+          )}
+        </div>
+      </div>
+
+      <div className="ats-panel__section">
+        <h4 className="ats-panel__section-title">Recomendaciones</h4>
+
+        <ul className="ats-panel__recommendations">
+          {result.recommendations.map((recommendation) => (
+            <li
+              key={recommendation.message}
+              className={`ats-panel__recommendation ats-panel__recommendation--${recommendation.type}`}
+            >
+              {recommendation.message}
+            </li>
+          ))}
+        </ul>
       </div>
 
       <p className="ats-panel__disclaimer">
-        Este score es una estimación heurística basada en coincidencia de palabras clave y no representa el resultado de una plataforma ATS real.
+        Este score es una estimación heurística basada en coincidencia de palabras clave,
+        estructura del currículum y alineación con la oferta. No representa el resultado
+        exacto de una plataforma ATS real.
       </p>
-    </div>
+    </section>
   );
 }
