@@ -1,18 +1,28 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { getAuthUser, logoutUser } from "../../../modules/auth/services/auth.service";
 import { useNavigate, Link } from "react-router-dom";
 import "./Header.css";
 
 export default function Header() {
   const navigate = useNavigate();
-  const user = useMemo(() => getAuthUser(), []);
+  const [user, setUser] = useState(getAuthUser());
 
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-    } finally {
-      navigate("/");
-    }
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setUser(getAuthUser());
+    };
+
+    window.addEventListener("auth-change", handleAuthChange);
+
+    return () => {
+      window.removeEventListener("auth-change", handleAuthChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    logoutUser();
+    setUser(null);
+    navigate("/");
   };
 
   return (
@@ -25,10 +35,19 @@ export default function Header() {
         <div className="header__actions">
           {user ? (
             <>
+              <Link to="/dashboard" className="header__link">
+                Dashboard
+              </Link>
+
               <span className="header__user-name">
                 {user.name.split(" ")[0]}
               </span>
-              <button onClick={handleLogout} className="header__logout">
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="header__logout"
+              >
                 Salir
               </button>
             </>
@@ -37,6 +56,7 @@ export default function Header() {
               <Link to="/login" className="header__link">
                 Iniciar sesión
               </Link>
+
               <Link to="/register" className="header__cta">
                 Comenzar
               </Link>

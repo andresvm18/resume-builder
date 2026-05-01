@@ -16,19 +16,7 @@ const STORAGE_KEY = "resume-data";
 export function useResumeBuilder(resumeId?: string) {
   const resumeRef = useRef<HTMLDivElement>(null);
 
-  const [resumeData, setResumeData] = useState<ResumeData>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return DEFAULT_RESUME_DATA;
-      }
-    }
-
-    return DEFAULT_RESUME_DATA;
-  });
+  const [resumeData, setResumeData] = useState<ResumeData>(DEFAULT_RESUME_DATA);
 
   const [currentStep, setCurrentStep] = useState<Step>("personal");
   const [skillInput, setSkillInput] = useState("");
@@ -52,15 +40,6 @@ export function useResumeBuilder(resumeId?: string) {
     loadResume();
   }, [resumeId]);
 
-  useEffect(() => {
-    if (resumeId) return;
-
-    const timeout = setTimeout(() => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
-    }, 400);
-
-    return () => clearTimeout(timeout);
-  }, [resumeData, resumeId]);
 
   const updateField = <K extends keyof ResumeData>(
     field: K,
@@ -256,6 +235,9 @@ export function useResumeBuilder(resumeId?: string) {
 
     summary: resumeData.summary,
     setSummary: (value: string) => updateField("summary", value),
+
+    jobDescription: resumeData.jobDescription,
+    setJobDescription: (value: string) => updateField("jobDescription", value),
 
     skills: resumeData.skills,
     languages: resumeData.languages,

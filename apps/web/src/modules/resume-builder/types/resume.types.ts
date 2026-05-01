@@ -42,7 +42,8 @@ export type Step =
   | "education"
   | "skills"
   | "projects"
-  | "languages";
+  | "languages"
+  | "jobDescription";
 
 export type StepItem = {
   id: Step;
@@ -62,6 +63,7 @@ export type ResumeData = {
   experiences: Experience[];
   education: Education[];
   projects: Project[];
+  jobDescription: string;
 };
 
 export type ResumeVersion = {
@@ -120,6 +122,7 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
       link: "",
     },
   ],
+  jobDescription: "",
 };
 
 export const RESUME_STEPS: StepItem[] = [

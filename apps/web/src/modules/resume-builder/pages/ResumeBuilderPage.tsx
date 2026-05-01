@@ -3,6 +3,7 @@ import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
 import ResumeFormPanel from "../components/ResumeFormPanel";
+import AtsAnalysisPanel from "../components/AtsAnalysisPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
 import "./ResumeBuilderPage.css";
@@ -53,6 +54,9 @@ export default function ResumeBuilderPage() {
     updateProject,
     removeProject,
 
+    jobDescription,
+    setJobDescription,
+
   } = useResumeBuilder(id);
 
   const steps: StepItem[] = [
@@ -61,6 +65,12 @@ export default function ResumeBuilderPage() {
       label: "Personal",
       title: "Información personal",
       description: "Tus datos básicos de contacto",
+    },
+    {
+      id: "jobDescription",
+      label: "Oferta",
+      title: "Oferta laboral",
+      description: "Pega la descripción del puesto objetivo",
     },
     {
       id: "summary",
@@ -100,7 +110,6 @@ export default function ResumeBuilderPage() {
     },
   ];
 
-
   const validateResumeData = () => {
     if (!resumeData.fullName.trim()) {
       alert("Debes ingresar tu nombre completo.");
@@ -131,7 +140,14 @@ export default function ResumeBuilderPage() {
     return true;
   };
 
+  const goToStep = (stepId: StepItem["id"]) => {
+    setCurrentStep(stepId);
 
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <main className="resume-builder-page">
@@ -157,7 +173,7 @@ export default function ResumeBuilderPage() {
             getStepIndex={(step) =>
               steps.findIndex((s) => s.id === step)
             }
-            onStepClick={setCurrentStep}
+            onStepClick={goToStep}
           />
 
           <ResumeFormPanel
@@ -193,6 +209,13 @@ export default function ResumeBuilderPage() {
             addProject={addProject}
             updateProject={updateProject}
             removeProject={removeProject}
+            jobDescription={jobDescription}
+            setJobDescription={setJobDescription}
+          />
+
+          <AtsAnalysisPanel
+            jobDescription={jobDescription ?? ""}
+            resumeData={resumeData}
           />
 
           <StepNavigation
@@ -200,16 +223,17 @@ export default function ResumeBuilderPage() {
             totalSteps={steps.length}
             onPrev={() => {
               const index = steps.findIndex((s) => s.id === currentStep);
-              if (index > 0) setCurrentStep(steps[index - 1].id);
+              if (index > 0) goToStep(steps[index - 1].id);
             }}
             onNext={() => {
               const index = steps.findIndex((s) => s.id === currentStep);
               if (index < steps.length - 1) {
-                setCurrentStep(steps[index + 1].id);
+                goToStep(steps[index + 1].id);
               }
             }}
             onFinish={() => {
               if (!validateResumeData()) return;
+              localStorage.removeItem("resume-data");
 
               navigate("/resume/generate", {
                 state: resumeData,
