@@ -149,7 +149,6 @@ export function getTopKeywords(jobDescription: string, limit = 10): string[] {
     .slice(0, limit);
 }
 
-
 export type AtsMatchResult = {
   keywords: string[];
   matchedKeywords: string[];
@@ -194,15 +193,47 @@ export function buildResumeText(resumeData: ResumeData): string {
   ].join(" ");
 }
 
+function getRelevantTokens(text: string): string[] {
+  return normalizeWithBoundaries(text)
+    .split(/\s+/)
+    .filter((word) => {
+      return (
+        word.length > 2 &&
+        word !== "." &&
+        !STOPWORDS.has(word) &&
+        !GENERIC_WORDS.has(word)
+      );
+    });
+}
+
+function isKeywordMatched(keyword: string, resumeText: string): boolean {
+  const keywordTokens = getRelevantTokens(keyword);
+  const resumeTokens = new Set(getRelevantTokens(resumeText));
+
+  if (keywordTokens.length === 0) return false;
+
+  const matchedCount = keywordTokens.filter((token) =>
+    resumeTokens.has(token)
+  ).length;
+
+  const matchRatio = matchedCount / keywordTokens.length;
+
+  if (keywordTokens.length === 1) {
+    return matchRatio === 1;
+  }
+
+  return matchRatio >= 0.6;
+}
+
 export function analyzeResumeMatch(
   resumeData: ResumeData,
   jobDescription: string
 ): AtsMatchResult {
   const keywords = getTopKeywords(jobDescription, 12);
-  const normalizedResumeText = normalizeWithBoundaries(buildResumeText(resumeData));
+  const resumeText = buildResumeText(resumeData);
 
   const matchedKeywords = keywords.filter((keyword) =>
-    normalizedResumeText.includes(normalizeWithBoundaries(keyword))
+    isKeywordMatched(keyword, resumeText)
   );
 
   const missingKeywords = keywords.filter(
