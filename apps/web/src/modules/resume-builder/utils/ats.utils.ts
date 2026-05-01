@@ -2,6 +2,9 @@
  * NLP Engine
  */
 
+
+import type { ResumeData } from "../types/resume.types";
+
 // Set of common stopwords to filter out
 const STOPWORDS = new Set([
   "el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "a", "al", "en", "por", "para", "con", "sin",
@@ -144,4 +147,108 @@ export function getTopKeywords(jobDescription: string, limit = 10): string[] {
     .map(t => t.replace(/\./g, "").trim())
     .filter(t => t.length > 0)
     .slice(0, limit);
+}
+
+export type AtsMatchResult = {
+  keywords: string[];
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  matchPercentage: number;
+};
+
+export function buildResumeText(resumeData: ResumeData): string {
+  return [
+    resumeData.fullName,
+    resumeData.summary,
+    resumeData.skills.join(" "),
+    resumeData.languages
+      .map((language) => `${language.name} ${language.level}`)
+      .join(" "),
+    resumeData.experiences
+      .map((experience) =>
+        [
+          experience.title,
+          experience.location,
+          experience.description,
+        ].join(" ")
+      )
+      .join(" "),
+    resumeData.education
+      .map((education) =>
+        [
+          education.institution,
+          education.degree,
+        ].join(" ")
+      )
+      .join(" "),
+    resumeData.projects
+      .map((project) =>
+        [
+          project.name,
+          project.technologies,
+          project.description,
+        ].join(" ")
+      )
+      .join(" "),
+  ].join(" ");
+}
+
+function getRelevantTokens(text: string): string[] {
+  return normalizeWithBoundaries(text)
+    .split(/\s+/)
+    .filter((word) => {
+      return (
+        word.length > 2 &&
+        word !== "." &&
+        !STOPWORDS.has(word) &&
+        !GENERIC_WORDS.has(word)
+      );
+    });
+}
+
+function isKeywordMatched(keyword: string, resumeText: string): boolean {
+  const keywordTokens = getRelevantTokens(keyword);
+  const resumeTokens = new Set(getRelevantTokens(resumeText));
+
+  if (keywordTokens.length === 0) return false;
+
+  const matchedCount = keywordTokens.filter((token) =>
+    resumeTokens.has(token)
+  ).length;
+
+  const matchRatio = matchedCount / keywordTokens.length;
+
+  if (keywordTokens.length === 1) {
+    return matchRatio === 1;
+  }
+
+  return matchRatio >= 0.6;
+}
+
+export function analyzeResumeMatch(
+  resumeData: ResumeData,
+  jobDescription: string
+): AtsMatchResult {
+  const keywords = getTopKeywords(jobDescription, 12);
+  const resumeText = buildResumeText(resumeData);
+
+  const matchedKeywords = keywords.filter((keyword) =>
+    isKeywordMatched(keyword, resumeText)
+  );
+
+  const missingKeywords = keywords.filter(
+    (keyword) => !matchedKeywords.includes(keyword)
+  );
+
+  const matchPercentage =
+    keywords.length > 0
+      ? Math.round((matchedKeywords.length / keywords.length) * 100)
+      : 0;
+
+  return {
+    keywords,
+    matchedKeywords,
+    missingKeywords,
+    matchPercentage,
+  };
 }
