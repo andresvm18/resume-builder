@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
 import type { ResumeData } from "../types/resume.types";
@@ -17,6 +17,7 @@ function formatFileName(name: string) {
 export default function ResumeGeneratePage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const hasGenerated = useRef(false);
 
   const resumeData = location.state as ResumeData | null;
 
@@ -27,6 +28,9 @@ export default function ResumeGeneratePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (hasGenerated.current) return;
+    hasGenerated.current = true;
+
     if (!resumeData) {
       navigate("/resume-builder");
       return;
@@ -124,6 +128,14 @@ export default function ResumeGeneratePage() {
                 className="resume-generate-page__secondary"
               >
                 Volver a editar
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard")}
+                className="resume-generate-page__secondary"
+              >
+                Ir al dashboard
               </button>
             </div>
 
