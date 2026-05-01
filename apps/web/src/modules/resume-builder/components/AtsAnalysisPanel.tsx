@@ -24,11 +24,23 @@ export default function AtsAnalysisPanel({
       </p>
 
       <div className="ats-panel__score">
-        {result.matchPercentage}%
+        {result.atsScore}%
       </div>
 
       <p className="ats-panel__subtitle">
-        Palabras clave encontradas:
+        Keyword Match: {result.matchPercentage}%
+      </p>
+
+      <p className="ats-panel__subtitle">
+        Completitud: {result.sectionCompleteness}%
+      </p>
+
+      <p className="ats-panel__subtitle">
+        Formato: {result.formatQuality}%
+      </p>
+
+      <p className="ats-panel__subtitle">
+        Alineación: {result.roleAlignment}%
       </p>
 
       <div className="ats-panel__keywords">
