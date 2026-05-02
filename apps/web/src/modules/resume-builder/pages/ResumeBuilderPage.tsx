@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
@@ -6,11 +7,13 @@ import ResumeFormPanel from "../components/ResumeFormPanel";
 import AtsAnalysisPanel from "../components/AtsAnalysisPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
+import { optimizeSummary } from "../services/ai.services";
 import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [isOptimizingSummary, setIsOptimizingSummary] = useState(false);
   const {
     resumeData,
     currentStep,
@@ -149,6 +152,20 @@ export default function ResumeBuilderPage() {
     });
   };
 
+  const handleOptimizeSummary = async () => {
+    try {
+      setIsOptimizingSummary(true);
+
+      const result = await optimizeSummary(resumeData, jobDescription ?? "");
+
+      setSummary(result.optimizedSummary);
+    } catch {
+      alert("No se pudo optimizar el resumen.");
+    } finally {
+      setIsOptimizingSummary(false);
+    }
+  };
+
   return (
     <main className="resume-builder-page">
       <Header />
@@ -211,6 +228,8 @@ export default function ResumeBuilderPage() {
             removeProject={removeProject}
             jobDescription={jobDescription}
             setJobDescription={setJobDescription}
+            isOptimizingSummary={isOptimizingSummary}
+            onOptimizeSummary={handleOptimizeSummary}
           />
 
           <AtsAnalysisPanel

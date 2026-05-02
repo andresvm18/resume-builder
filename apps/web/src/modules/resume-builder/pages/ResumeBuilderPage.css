@@ -14,8 +14,8 @@
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(var(--rp-grid-color, rgba(26,24,20,0.04)) 1px, transparent 1px),
-    linear-gradient(90deg, var(--rp-grid-color, rgba(26,24,20,0.04)) 1px, transparent 1px);
+    linear-gradient(var(--rp-grid-color, rgba(26, 24, 20, 0.04)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rp-grid-color, rgba(26, 24, 20, 0.04)) 1px, transparent 1px);
   background-size: 48px 48px;
   pointer-events: none;
   z-index: 0;
@@ -94,16 +94,16 @@
     justify-content: flex-start;
     padding-bottom: 0.5rem;
   }
-  
+
   .resume-builder-page__steps::-webkit-scrollbar {
     height: 4px;
   }
-  
+
   .resume-builder-page__steps::-webkit-scrollbar-track {
     background: var(--color-border);
     border-radius: 2px;
   }
-  
+
   .resume-builder-page__steps::-webkit-scrollbar-thumb {
     background: var(--accent);
     border-radius: 2px;
@@ -219,6 +219,7 @@
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -287,7 +288,7 @@
   .resume-builder-page__skills-row {
     flex-direction: column;
   }
-  
+
   .resume-builder-page__skills-add-btn {
     width: 100%;
     justify-content: center;
@@ -499,16 +500,99 @@
   transform: translateX(2px);
 }
 
+/* ── AI Optimize Button ── */
+.resume-builder-page__ai-button {
+  margin-top: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+
+  color: #92712a;
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.18) 0%, rgba(201, 169, 110, 0.08) 100%);
+
+  border: 1.5px solid rgba(201, 169, 110, 0.5);
+  border-radius: 999px;
+
+  padding: 0.55rem 1.25rem 0.55rem 1rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(201, 169, 110, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Shimmer sweep on hover */
+.resume-builder-page__ai-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.45) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.resume-builder-page__ai-button:hover::before {
+  transform: translateX(100%);
+}
+
+.resume-builder-page__ai-button:hover {
+  color: #7a5e22;
+  border-color: rgba(201, 169, 110, 0.85);
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.28) 0%, rgba(201, 169, 110, 0.14) 100%);
+  box-shadow: 0 3px 10px rgba(201, 169, 110, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.resume-builder-page__ai-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(201, 169, 110, 0.15);
+}
+
+.resume-builder-page__ai-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.resume-builder-page__ai-button-icon {
+  font-size: 1rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 3px rgba(201, 169, 110, 0.6));
+}
+
+.resume-builder-page__ai-button-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(146, 113, 42, 0.25);
+  border-top-color: #92712a;
+  border-radius: 50%;
+  animation: ai-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ai-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .resume-builder-page__content {
     padding: 1rem 1.5rem 3rem;
   }
-  
+
   .resume-builder-page__hero {
     padding: 3rem 1.5rem 2rem;
   }
-  
+
   .resume-builder-page__title {
     font-size: 2.5rem;
   }
@@ -518,15 +602,15 @@
   .resume-builder-page__content {
     padding: 0.5rem 1rem 2rem;
   }
-  
+
   .resume-builder-page__hero {
     padding: 2rem 1rem 1.5rem;
   }
-  
+
   .resume-builder-page__title {
     font-size: 2rem;
   }
-  
+
   .resume-builder-page__subtitle {
     font-size: 1rem;
   }
@@ -536,19 +620,19 @@
   .resume-builder-page__content {
     padding: 0.5rem 0.75rem 1.5rem;
   }
-  
+
   .resume-builder-page__hero {
     padding: 1.5rem 0.75rem 1rem;
   }
-  
+
   .resume-builder-page__title {
     font-size: 1.75rem;
   }
-  
+
   .resume-builder-page__wizard {
     padding: 1rem;
   }
-  
+
   .resume-builder-page__form-panel {
     padding: 1rem;
   }
