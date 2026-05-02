@@ -75,6 +75,9 @@ type ResumeFormPanelProps = {
 
   jobDescription: string;
   setJobDescription: (value: string) => void;
+
+  isOptimizingSummary: boolean;
+  onOptimizeSummary: () => void;
 };
 
 export default function ResumeFormPanel(props: ResumeFormPanelProps) {
