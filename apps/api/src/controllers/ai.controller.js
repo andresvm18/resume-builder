@@ -1,4 +1,4 @@
-const { optimizeSummary } = require("../services/ai.service");
+const { optimizeSummary, generateAiRecommendations } = require("../services/ai.service");
 
 async function optimizeResumeSummary(req, res) {
   try {
@@ -10,7 +10,7 @@ async function optimizeResumeSummary(req, res) {
       });
     }
 
-    const result = optimizeSummary({
+    const result = await optimizeSummary({
       resumeData,
       jobDescription,
     });
@@ -25,6 +25,33 @@ async function optimizeResumeSummary(req, res) {
   }
 }
 
+async function getAiRecommendations(req, res) {
+  try {
+    const { resumeData, jobDescription, atsResult } = req.body;
+
+    if (!resumeData || !jobDescription) {
+      return res.status(400).json({
+        message: "resumeData y jobDescription son requeridos",
+      });
+    }
+
+    const result = await generateAiRecommendations({
+      resumeData,
+      jobDescription,
+      atsResult,
+    });
+
+    return res.json(result);
+  } catch (error) {
+    console.error("Error generating AI recommendations:", error);
+
+    return res.status(500).json({
+      message: "Error al generar recomendaciones con IA",
+    });
+  }
+}
+
 module.exports = {
   optimizeResumeSummary,
+  getAiRecommendations,
 };
