@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{ragged2e}
+\usepackage{needspace}
 
 \geometry{
     top=0.75in,
@@ -21,11 +22,14 @@
     linkcolor=black,
 }
 
+\pagestyle{empty}
+
 \setlist{nosep, left=12pt}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.25em}
 
 \newcommand{\resumesection}[1]{
+    \Needspace{6\baselineskip}
     \vspace{0.5em}
     \textbf{\large #1}
     \vspace{0.2em}
