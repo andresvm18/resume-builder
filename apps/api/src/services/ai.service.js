@@ -27,11 +27,11 @@ Habilidades: ${(resumeData.skills || []).join(", ")}
 
 Experiencia:
 ${(resumeData.experiences || [])
-  .map(
-    (exp) =>
-      `- ${exp.title || ""} ${exp.location || ""}: ${exp.description || ""}`
-  )
-  .join("\n")}
+      .map(
+        (exp) =>
+          `- ${exp.title || ""} ${exp.location || ""}: ${exp.description || ""}`
+      )
+      .join("\n")}
 
 Oferta laboral:
 ${jobDescription || "No se proporcionó oferta laboral."}
@@ -60,24 +60,39 @@ async function optimizeSummary({ resumeData, jobDescription }) {
   };
 }
 
-function buildRecommendationsPrompt({ resumeData, jobDescription, atsResult }) {
+function buildRecommendationsPrompt({ resumeData, jobDescription }) {
   return `
-Eres un experto en currículums, reclutamiento y optimización ATS.
+Eres un experto en reclutamiento, currículums y optimización ATS.
 
-Analiza el CV, la oferta laboral y el resultado ATS actual.
+Analiza la oferta laboral y el CV del usuario.
+
+Tu tarea:
+1. Extraer palabras clave importantes de la oferta laboral.
+2. Clasificarlas por categoría.
+3. Compararlas contra el CV del usuario.
+4. Identificar palabras clave presentes y faltantes.
+5. Generar recomendaciones claras y accionables.
 
 Reglas:
 - Escribe en español.
-- Da recomendaciones claras, accionables y específicas.
-- No inventes experiencia, empresas, certificaciones ni habilidades.
-- Si sugieres agregar una keyword, aclara que debe agregarse solo si el usuario realmente tiene esa experiencia.
-- Máximo 5 recomendaciones.
-- Devuelve únicamente un JSON válido con esta forma:
+- No inventes experiencia, certificaciones, empresas ni habilidades.
+- Si una keyword falta, recomienda agregarla solo si el usuario realmente tiene esa experiencia.
+- No uses markdown.
+- Devuelve únicamente JSON válido.
+- Máximo 8 keywords por categoría.
+- Máximo 6 recomendaciones.
+
+Formato exacto:
 {
-  "recommendations": [
-    "recomendación 1",
-    "recomendación 2"
-  ]
+  "keywords": {
+    "technical": [],
+    "softSkills": [],
+    "certifications": [],
+    "responsibilities": []
+  },
+  "matchedKeywords": [],
+  "missingKeywords": [],
+  "recommendations": []
 }
 
 CV:
@@ -87,20 +102,27 @@ Habilidades: ${(resumeData.skills || []).join(", ")}
 
 Experiencia:
 ${(resumeData.experiences || [])
-  .map(
-    (exp) =>
-      `- ${exp.title || ""} ${exp.location || ""}: ${exp.description || ""}`
-  )
-  .join("\n")}
+      .map(
+        (exp) =>
+          `- ${exp.title || ""} ${exp.location || ""}: ${exp.description || ""}`
+      )
+      .join("\n")}
+
+Educación:
+${(resumeData.education || [])
+      .map((edu) => `- ${edu.degree || ""} ${edu.institution || ""}`)
+      .join("\n")}
+
+Proyectos:
+${(resumeData.projects || [])
+      .map(
+        (project) =>
+          `- ${project.name || ""}: ${project.technologies || ""} ${project.description || ""}`
+      )
+      .join("\n")}
 
 Oferta laboral:
-${jobDescription || "No se proporcionó oferta laboral."}
-
-Resultado ATS actual:
-Score: ${atsResult?.atsScore ?? "N/A"}
-Keyword Match: ${atsResult?.matchPercentage ?? "N/A"}
-Keywords encontradas: ${(atsResult?.matchedKeywords || []).join(", ")}
-Keywords faltantes: ${(atsResult?.missingKeywords || []).join(", ")}
+${jobDescription || ""}
 `;
 }
 
@@ -116,7 +138,6 @@ function parseGeminiJson(text) {
 async function generateAiRecommendations({
   resumeData,
   jobDescription,
-  atsResult,
 }) {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY is not configured");
@@ -125,7 +146,6 @@ async function generateAiRecommendations({
   const prompt = buildRecommendationsPrompt({
     resumeData,
     jobDescription,
-    atsResult,
   });
 
   const response = await ai.models.generateContent({
@@ -136,6 +156,14 @@ async function generateAiRecommendations({
   const parsed = parseGeminiJson(response.text);
 
   return {
+    keywords: {
+      technical: parsed.keywords?.technical || [],
+      softSkills: parsed.keywords?.softSkills || [],
+      certifications: parsed.keywords?.certifications || [],
+      responsibilities: parsed.keywords?.responsibilities || [],
+    },
+    matchedKeywords: parsed.matchedKeywords || [],
+    missingKeywords: parsed.missingKeywords || [],
     recommendations: parsed.recommendations || [],
     source: "gemini",
   };

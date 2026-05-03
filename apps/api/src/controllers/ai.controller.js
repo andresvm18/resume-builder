@@ -27,7 +27,7 @@ async function optimizeResumeSummary(req, res) {
 
 async function getAiRecommendations(req, res) {
   try {
-    const { resumeData, jobDescription, atsResult } = req.body;
+    const { resumeData, jobDescription } = req.body;
 
     if (!resumeData || !jobDescription) {
       return res.status(400).json({
@@ -38,10 +38,7 @@ async function getAiRecommendations(req, res) {
     const result = await generateAiRecommendations({
       resumeData,
       jobDescription,
-      atsResult,
     });
-
-    console.log("Recomendaciones IA: ", result)
 
     return res.json(result);
   } catch (error) {
