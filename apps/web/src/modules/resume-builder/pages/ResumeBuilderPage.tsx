@@ -7,7 +7,7 @@ import ResumeFormPanel from "../components/ResumeFormPanel";
 import AtsAnalysisPanel from "../components/AtsAnalysisPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
-import { optimizeSummary } from "../services/ai.services";
+import { optimizeSummary } from "../services/ai.service";
 import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
@@ -232,10 +232,13 @@ export default function ResumeBuilderPage() {
             onOptimizeSummary={handleOptimizeSummary}
           />
 
-          <AtsAnalysisPanel
-            jobDescription={jobDescription ?? ""}
-            resumeData={resumeData}
-          />
+          {steps.findIndex((step) => step.id === currentStep) >=
+            steps.findIndex((step) => step.id === "summary") && (
+              <AtsAnalysisPanel
+                jobDescription={jobDescription ?? ""}
+                resumeData={resumeData}
+              />
+            )}
 
           <StepNavigation
             currentIndex={steps.findIndex((s) => s.id === currentStep)}

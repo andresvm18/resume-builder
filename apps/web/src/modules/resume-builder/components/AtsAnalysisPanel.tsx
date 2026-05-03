@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+import { getAiRecommendations } from "../services/ai.service";
 import type { ResumeData } from "../types/resume.types";
 import { analyzeResumeMatch } from "../utils/ats.utils";
 import "./AtsAnalysisPanel.css";
@@ -11,9 +13,43 @@ export default function AtsAnalysisPanel({
   jobDescription = "",
   resumeData,
 }: Props) {
-  if (!jobDescription.trim()) return null;
+  const [aiRecommendations, setAiRecommendations] = useState<string[]>([]);
+  const [isLoadingAiRecommendations, setIsLoadingAiRecommendations] =
+    useState(false);
+  const [aiFailed, setAiFailed] = useState(false);
 
-  const result = analyzeResumeMatch(resumeData, jobDescription);
+  const result = useMemo(() => {
+    return analyzeResumeMatch(resumeData, jobDescription);
+  }, [resumeData, jobDescription]);
+
+  useEffect(() => {
+    if (!jobDescription.trim()) return;
+
+    const loadAiRecommendations = async () => {
+      try {
+        setIsLoadingAiRecommendations(true);
+        setAiFailed(false);
+        setAiRecommendations([]);
+
+        const response = await getAiRecommendations(
+          resumeData,
+          jobDescription,
+          result
+        );
+
+        setAiRecommendations(response.recommendations);
+      } catch {
+        setAiFailed(true);
+        setAiRecommendations([]);
+      } finally {
+        setIsLoadingAiRecommendations(false);
+      }
+    };
+
+    loadAiRecommendations();
+  }, [jobDescription, resumeData, result]);
+
+  if (!jobDescription.trim()) return null;
 
   const metrics = [
     {
@@ -111,18 +147,45 @@ export default function AtsAnalysisPanel({
       </div>
 
       <div className="ats-panel__section">
-        <h4 className="ats-panel__section-title">Recomendaciones</h4>
+        <h4 className="ats-panel__section-title">Recomendaciones IA</h4>
 
-        <ul className="ats-panel__recommendations">
-          {result.recommendations.map((recommendation) => (
-            <li
-              key={recommendation.message}
-              className={`ats-panel__recommendation ats-panel__recommendation--${recommendation.type}`}
-            >
-              {recommendation.message}
-            </li>
-          ))}
-        </ul>
+        {isLoadingAiRecommendations && (
+          <p className="ats-panel__empty">
+            Generando recomendaciones con IA...
+          </p>
+        )}
+
+        {!isLoadingAiRecommendations && aiRecommendations.length > 0 && (
+          <ul className="ats-panel__recommendations">
+            {aiRecommendations.map((recommendation) => (
+              <li
+                key={recommendation}
+                className="ats-panel__recommendation ats-panel__recommendation--alignment"
+              >
+                {recommendation}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {!isLoadingAiRecommendations && aiFailed && (
+          <>
+            <p className="ats-panel__empty">
+              No se pudo generar la recomendación con IA. Mostrando recomendaciones básicas.
+            </p>
+
+            <ul className="ats-panel__recommendations">
+              {result.recommendations.map((recommendation) => (
+                <li
+                  key={recommendation.message}
+                  className={`ats-panel__recommendation ats-panel__recommendation--${recommendation.type}`}
+                >
+                  {recommendation.message}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
       <p className="ats-panel__disclaimer">

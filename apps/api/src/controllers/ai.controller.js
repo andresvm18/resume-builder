@@ -41,6 +41,8 @@ async function getAiRecommendations(req, res) {
       atsResult,
     });
 
+    console.log("Recomendaciones IA: ", result)
+
     return res.json(result);
   } catch (error) {
     console.error("Error generating AI recommendations:", error);
