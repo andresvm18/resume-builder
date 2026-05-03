@@ -1,4 +1,8 @@
-const { optimizeSummary, generateAiRecommendations } = require("../services/ai.service");
+const {
+  optimizeSummary,
+  generateAiRecommendations,
+  optimizeFullResume,
+} = require("../services/ai.service");
 
 async function optimizeResumeSummary(req, res) {
   try {
@@ -50,7 +54,33 @@ async function getAiRecommendations(req, res) {
   }
 }
 
+async function optimizeResume(req, res) {
+  try {
+    const { resumeData, jobDescription } = req.body;
+
+    if (!resumeData) {
+      return res.status(400).json({
+        message: "resumeData es requerido",
+      });
+    }
+
+    const result = await optimizeFullResume({
+      resumeData,
+      jobDescription,
+    });
+
+    return res.json(result);
+  } catch (error) {
+    console.error("Error optimizing resume:", error);
+
+    return res.status(500).json({
+      message: "Error al optimizar el CV con IA",
+    });
+  }
+}
+
 module.exports = {
   optimizeResumeSummary,
   getAiRecommendations,
+  optimizeResume,
 };

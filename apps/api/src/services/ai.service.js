@@ -169,7 +169,81 @@ async function generateAiRecommendations({
   };
 }
 
+function buildFullResumeOptimizationPrompt({ resumeData, jobDescription }) {
+  return `
+Eres un experto en currículums profesionales, redacción ATS y reclutamiento.
+
+Tu tarea es optimizar el CV completo del usuario para la oferta laboral proporcionada.
+
+Reglas estrictas:
+- Escribe en español.
+- No inventes experiencia, empresas, cargos, estudios, certificaciones ni habilidades.
+- Conserva la estructura original del CV.
+- Mejora redacción, claridad y alineación con la oferta.
+- Usa palabras clave de la oferta solo si son coherentes con la información del usuario.
+- Mantén los datos personales exactamente iguales.
+- Devuelve únicamente JSON válido.
+- No uses markdown.
+- No expliques nada fuera del JSON.
+
+Formato exacto de respuesta:
+{
+  "optimizedResumeData": {
+    "fullName": "",
+    "email": "",
+    "phone": "",
+    "location": "",
+    "summary": "",
+    "skills": [],
+    "languages": [],
+    "experiences": [],
+    "education": [],
+    "projects": [],
+    "jobDescription": ""
+  }
+}
+
+CV original:
+${JSON.stringify(resumeData, null, 2)}
+
+Oferta laboral:
+${jobDescription || "No se proporcionó oferta laboral."}
+`;
+}
+
+async function optimizeFullResume({ resumeData, jobDescription }) {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY is not configured");
+  }
+
+  const prompt = buildFullResumeOptimizationPrompt({
+    resumeData,
+    jobDescription,
+  });
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+  });
+
+  const parsed = parseGeminiJson(response.text);
+
+  return {
+    optimizedResumeData: {
+      ...resumeData,
+      ...parsed.optimizedResumeData,
+      fullName: resumeData.fullName,
+      email: resumeData.email,
+      phone: resumeData.phone,
+      location: resumeData.location,
+      jobDescription,
+    },
+    source: "gemini",
+  };
+}
+
 module.exports = {
   optimizeSummary,
   generateAiRecommendations,
+  optimizeFullResume,
 };
