@@ -126,7 +126,7 @@
 }
 
 .ats-panel__section-title {
-  margin: 0;
+  margin: 0 0 1rem 0;
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 600;
@@ -274,6 +274,24 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.ats-panel__keyword-groups {
+  display: grid;
+  gap: 1rem;
+}
+
+.ats-panel__keyword-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.ats-panel__keyword-group-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b6760);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* ── Responsive ── */

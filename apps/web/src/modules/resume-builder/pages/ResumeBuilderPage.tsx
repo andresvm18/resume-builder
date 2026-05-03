@@ -166,6 +166,14 @@ export default function ResumeBuilderPage() {
     }
   };
 
+  const handleFinish = () => {
+    if (!validateResumeData()) return;
+
+    navigate("/resume/optimize", {
+      state: resumeData,
+    });
+  };
+
   return (
     <main className="resume-builder-page">
       <Header />
@@ -253,14 +261,7 @@ export default function ResumeBuilderPage() {
                 goToStep(steps[index + 1].id);
               }
             }}
-            onFinish={() => {
-              if (!validateResumeData()) return;
-              localStorage.removeItem("resume-data");
-
-              navigate("/resume/generate", {
-                state: resumeData,
-              });
-            }}
+            onFinish={handleFinish}
           />
         </div>
       </section>

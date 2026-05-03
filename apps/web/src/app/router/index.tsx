@@ -7,6 +7,7 @@ import DashboardPage from "../../modules/dashboard/pages/DashboardPage";
 import ResumeBuilderPage from "../../modules/resume-builder/pages/ResumeBuilderPage";
 import ResumeGeneratePage from "../../modules/resume-builder/pages/ResumeGeneratePage";
 import ProtectedRoute from "../../shared/components/auth/ProtectedRoute";
+import ResumeOptimizePage from "../../modules/resume-builder/pages/ResumeOptimizePage";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
       {
         path: "/resume-builder/:id",
         element: <ResumeBuilderPage />,
+      },
+      {
+        path: "/resume/optimize",
+        element: <ResumeOptimizePage />,
       },
     ],
   },

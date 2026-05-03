@@ -1,12 +1,26 @@
 import type { ResumeData } from "../types/resume.types";
-import type { AtsMatchResult } from "../utils/ats.utils";
 
 const API_URL = "http://localhost:8080/api/ai";
 
 type OptimizeSummaryResponse = {
   optimizedSummary: string;
-  source: "mock" | "ai";
+  source: "mock" | "gemini";
   jobContextUsed: boolean;
+};
+
+export type AiKeywordCategories = {
+  technical: string[];
+  softSkills: string[];
+  certifications: string[];
+  responsibilities: string[];
+};
+
+export type AiRecommendationsResponse = {
+  keywords: AiKeywordCategories;
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  recommendations: string[];
+  source: "gemini";
 };
 
 export async function optimizeSummary(
@@ -34,15 +48,9 @@ export async function optimizeSummary(
   return response.json();
 }
 
-type AiRecommendationsResponse = {
-  recommendations: string[];
-  source: "gemini";
-};
-
 export async function getAiRecommendations(
   resumeData: ResumeData,
-  jobDescription: string,
-  atsResult: AtsMatchResult
+  jobDescription: string
 ): Promise<AiRecommendationsResponse> {
   const token = localStorage.getItem("auth_token");
 
@@ -55,12 +63,41 @@ export async function getAiRecommendations(
     body: JSON.stringify({
       resumeData,
       jobDescription,
-      atsResult,
     }),
   });
 
   if (!response.ok) {
     throw new Error("Error generating AI recommendations");
+  }
+
+  return response.json();
+}
+
+type OptimizeResumeResponse = {
+  optimizedResumeData: ResumeData;
+  source: "gemini";
+};
+
+export async function optimizeFullResume(
+  resumeData: ResumeData,
+  jobDescription: string
+): Promise<OptimizeResumeResponse> {
+  const token = localStorage.getItem("auth_token");
+
+  const response = await fetch(`${API_URL}/optimize-resume`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      resumeData,
+      jobDescription,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error optimizing full resume");
   }
 
   return response.json();
