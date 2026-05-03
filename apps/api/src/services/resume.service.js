@@ -380,7 +380,8 @@ function buildExperience(experiences = []) {
     .filter((exp) => exp.title || exp.location || exp.description)
     .map((exp) => {
       const bullets = String(exp.description || "")
-        .split("\n")
+        .replace(/<br\s*\/?>/gi, "\n")
+        .split(/\n|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ])/g)
         .map(cleanBulletLine)
         .filter(Boolean)
         .map((line) => `\\item ${escapeLatex(line)}`)

@@ -52,6 +52,16 @@ export type StepItem = {
   description: string;
 };
 
+export type TechnicalSkillGroup = {
+  category: string;
+  items: string[];
+};
+
+export type SoftSkill = {
+  name: string;
+  description: string;
+};
+
 export type ResumeData = {
   fullName: string;
   email: string;
@@ -59,6 +69,8 @@ export type ResumeData = {
   location: string;
   summary: string;
   skills: string[];
+  technicalSkills?: TechnicalSkillGroup[];
+  softSkills?: SoftSkill[];
   languages: Language[];
   experiences: Experience[];
   education: Education[];
