@@ -126,7 +126,7 @@
 }
 
 .ats-panel__section-title {
-  margin: 0;
+  margin: 0 0 1rem 0;
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 600;
@@ -235,6 +235,63 @@
   font-size: 0.75rem;
   color: #888;
   line-height: 1.5;
+}
+
+.ats-panel__ai-actions {
+  margin-top: 1rem;
+}
+
+.ats-panel__ai-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  color: var(--accent-dark, #a07d45);
+  background-color: rgba(201, 169, 110, 0.12);
+
+  border: 1px solid rgba(201, 169, 110, 0.35);
+  border-radius: var(--border-radius-sm, 8px);
+
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+
+  transition: all var(--transition-base, 200ms ease);
+}
+
+.ats-panel__ai-button:hover {
+  background-color: rgba(201, 169, 110, 0.2);
+  border-color: var(--accent, #c9a96e);
+  color: var(--accent-dark, #a07d45);
+  transform: translateY(-1px);
+}
+
+.ats-panel__ai-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ats-panel__keyword-groups {
+  display: grid;
+  gap: 1rem;
+}
+
+.ats-panel__keyword-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.ats-panel__keyword-group-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b6760);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* ── Responsive ── */

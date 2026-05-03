@@ -7,7 +7,7 @@ import ResumeFormPanel from "../components/ResumeFormPanel";
 import AtsAnalysisPanel from "../components/AtsAnalysisPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
-import { optimizeSummary } from "../services/ai.services";
+import { optimizeSummary } from "../services/ai.service";
 import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
@@ -166,6 +166,14 @@ export default function ResumeBuilderPage() {
     }
   };
 
+  const handleFinish = () => {
+    if (!validateResumeData()) return;
+
+    navigate("/resume/optimize", {
+      state: resumeData,
+    });
+  };
+
   return (
     <main className="resume-builder-page">
       <Header />
@@ -232,10 +240,13 @@ export default function ResumeBuilderPage() {
             onOptimizeSummary={handleOptimizeSummary}
           />
 
-          <AtsAnalysisPanel
-            jobDescription={jobDescription ?? ""}
-            resumeData={resumeData}
-          />
+          {steps.findIndex((step) => step.id === currentStep) >=
+            steps.findIndex((step) => step.id === "summary") && (
+              <AtsAnalysisPanel
+                jobDescription={jobDescription ?? ""}
+                resumeData={resumeData}
+              />
+            )}
 
           <StepNavigation
             currentIndex={steps.findIndex((s) => s.id === currentStep)}
@@ -250,14 +261,7 @@ export default function ResumeBuilderPage() {
                 goToStep(steps[index + 1].id);
               }
             }}
-            onFinish={() => {
-              if (!validateResumeData()) return;
-              localStorage.removeItem("resume-data");
-
-              navigate("/resume/generate", {
-                state: resumeData,
-              });
-            }}
+            onFinish={handleFinish}
           />
         </div>
       </section>
