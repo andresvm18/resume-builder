@@ -4,16 +4,31 @@ import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
 import ResumeFormPanel from "../components/ResumeFormPanel";
-import AtsAnalysisPanel from "../components/AtsAnalysisPanel";
+import AtsRecommendationsPanel from "../components/AtsRecommendationsPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
-import { optimizeSummary } from "../services/ai.service";
+import {
+  getAiRecommendations,
+  optimizeSummary,
+  type AiRecommendationsResponse,
+} from "../services/ai.service";
 import "./ResumeBuilderPage.css";
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export default function ResumeBuilderPage() {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const [isOptimizingSummary, setIsOptimizingSummary] = useState(false);
+  const [isGeneratingRecommendations, setIsGeneratingRecommendations] =
+    useState(false);
+  const [recommendationsFailed, setRecommendationsFailed] = useState(false);
+  const [aiRecommendations, setAiRecommendations] =
+    useState<AiRecommendationsResponse | null>(null);
+
   const {
     resumeData,
     currentStep,
@@ -59,7 +74,6 @@ export default function ResumeBuilderPage() {
 
     jobDescription,
     setJobDescription,
-
   } = useResumeBuilder(id);
 
   const steps: StepItem[] = [
@@ -166,13 +180,77 @@ export default function ResumeBuilderPage() {
     }
   };
 
+  const generateRecommendationsBeforeSummary = async () => {
+    if (!jobDescription.trim()) {
+      goToStep("summary");
+      return;
+    }
+
+    try {
+      setIsGeneratingRecommendations(true);
+      setRecommendationsFailed(false);
+      setAiRecommendations(null);
+
+      const result = await getAiRecommendations(resumeData, jobDescription);
+
+      setAiRecommendations(result);
+
+      // Temporal: permite ver la pantalla de carga durante 10 segundos.
+      await delay(5000);
+
+      goToStep("summary");
+    } catch {
+      setRecommendationsFailed(true);
+      alert("No se pudieron generar recomendaciones con IA. Puedes continuar manualmente.");
+      goToStep("summary");
+    } finally {
+      setIsGeneratingRecommendations(false);
+    }
+  };
+
+  const handleNext = async () => {
+    const index = steps.findIndex((s) => s.id === currentStep);
+
+    if (currentStep === "jobDescription") {
+      await generateRecommendationsBeforeSummary();
+      return;
+    }
+
+    if (index < steps.length - 1) {
+      goToStep(steps[index + 1].id);
+    }
+  };
+
   const handleFinish = () => {
     if (!validateResumeData()) return;
 
     navigate("/resume/optimize", {
-      state: resumeData,
+      state: {
+        ...resumeData,
+        aiRecommendations,
+      },
     });
   };
+
+  if (isGeneratingRecommendations) {
+    return (
+      <main className="resume-builder-page">
+        <Header />
+
+        <section className="resume-builder-page__loading-card">
+          <div className="resume-builder-page__loading-spinner" />
+
+          <h1 className="resume-builder-page__loading-title">
+            Generando recomendaciones
+          </h1>
+
+          <p className="resume-builder-page__loading-text">
+            La IA está revisando la oferta laboral para sugerirte mejoras antes de continuar.
+          </p>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="resume-builder-page">
@@ -195,9 +273,7 @@ export default function ResumeBuilderPage() {
             steps={steps}
             currentStep={currentStep}
             isStepCompleted={() => false}
-            getStepIndex={(step) =>
-              steps.findIndex((s) => s.id === step)
-            }
+            getStepIndex={(step) => steps.findIndex((s) => s.id === step)}
             onStepClick={goToStep}
           />
 
@@ -240,11 +316,11 @@ export default function ResumeBuilderPage() {
             onOptimizeSummary={handleOptimizeSummary}
           />
 
-          {steps.findIndex((step) => step.id === currentStep) >=
-            steps.findIndex((step) => step.id === "summary") && (
-              <AtsAnalysisPanel
-                jobDescription={jobDescription ?? ""}
-                resumeData={resumeData}
+          {currentStep === "summary" &&
+            (aiRecommendations || recommendationsFailed) && (
+              <AtsRecommendationsPanel
+                recommendations={aiRecommendations}
+                hasError={recommendationsFailed}
               />
             )}
 
@@ -255,13 +331,9 @@ export default function ResumeBuilderPage() {
               const index = steps.findIndex((s) => s.id === currentStep);
               if (index > 0) goToStep(steps[index - 1].id);
             }}
-            onNext={() => {
-              const index = steps.findIndex((s) => s.id === currentStep);
-              if (index < steps.length - 1) {
-                goToStep(steps[index + 1].id);
-              }
-            }}
+            onNext={handleNext}
             onFinish={handleFinish}
+            disableNext={isGeneratingRecommendations}
           />
         </div>
       </section>

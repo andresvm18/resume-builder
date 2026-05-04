@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
 import type { ResumeData } from "../types/resume.types";
-import { optimizeFullResume } from "../services/ai.service";
+import {
+  analyzeFinalAts,
+  optimizeFullResume,
+} from "../services/ai.service";
 import "./ResumeOptimizePage.css";
 
 export default function ResumeOptimizePage() {
@@ -25,17 +28,35 @@ export default function ResumeOptimizePage() {
 
     const optimizeResume = async () => {
       try {
-        setStatus("Analizando tu CV y la oferta laboral...");
+        setStatus("Optimizando tu CV con IA...");
 
         const result = await optimizeFullResume(
           resumeData,
           resumeData.jobDescription ?? ""
         );
 
-        setStatus("Aplicando mejoras al contenido...");
+        let finalAtsAnalysis = null;
+
+        if (resumeData.jobDescription?.trim()) {
+          try {
+            setStatus("Analizando el CV final como un sistema ATS...");
+
+            finalAtsAnalysis = await analyzeFinalAts(
+              result.optimizedResumeData,
+              resumeData.jobDescription
+            );
+          } catch {
+            console.warn("No se pudo completar el análisis ATS final.");
+          }
+        }
+
+        setStatus("Preparando generación del PDF...");
 
         navigate("/resume/generate", {
-          state: result.optimizedResumeData,
+          state: {
+            ...result.optimizedResumeData,
+            finalAtsAnalysis,
+          },
           replace: true,
         });
       } catch {
@@ -65,7 +86,7 @@ export default function ResumeOptimizePage() {
         <p className="resume-optimize-page__status">{status}</p>
 
         <p className="resume-optimize-page__hint">
-          La IA está ajustando el contenido para alinearlo mejor con la oferta laboral.
+          Estamos optimizando tu CV, analizando su compatibilidad ATS y preparando tu PDF final.
         </p>
       </section>
     </main>

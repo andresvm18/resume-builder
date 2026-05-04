@@ -23,6 +23,18 @@ export type AiRecommendationsResponse = {
   source: "gemini";
 };
 
+export type FinalAtsAnalysisResponse = {
+  atsScore: number;
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  recommendations: string[];
+  source: string;
+};
+
+
 export async function optimizeSummary(
   resumeData: ResumeData,
   jobDescription: string
@@ -98,6 +110,31 @@ export async function optimizeFullResume(
 
   if (!response.ok) {
     throw new Error("Error optimizing full resume");
+  }
+
+  return response.json();
+}
+
+export async function analyzeFinalAts(
+  resumeData: ResumeData,
+  jobDescription: string
+): Promise<FinalAtsAnalysisResponse> {
+  const token = localStorage.getItem("auth_token");
+
+  const response = await fetch(`${API_URL}/final-ats-analysis`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      resumeData,
+      jobDescription,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error analyzing final ATS");
   }
 
   return response.json();

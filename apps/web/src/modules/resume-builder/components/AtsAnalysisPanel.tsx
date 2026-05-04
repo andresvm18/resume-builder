@@ -199,7 +199,7 @@ export default function AtsAnalysisPanel({
       </div> */}
 
       <div className="ats-panel__section">
-        <h4 className="ats-panel__section-title">Recomendaciones IA</h4>
+        <h4 className="ats-panel__section-title">Recomendaciones</h4>
 
         {isLoadingAiRecommendations && (
           <p className="ats-panel__empty">

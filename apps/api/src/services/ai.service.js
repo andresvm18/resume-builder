@@ -455,8 +455,74 @@ async function optimizeFullResume({ resumeData, jobDescription }) {
   }
 }
 
+function buildFinalAtsAnalysisPrompt({ resumeData, jobDescription }) {
+  return `
+Actúa como un sistema ATS profesional y reclutador técnico.
+
+Tu tarea es analizar el CV final optimizado frente a la oferta laboral y devolver una calificación ATS.
+
+Reglas:
+- Escribe en español.
+- Evalúa únicamente la información del CV y la oferta.
+- No inventes experiencia, certificaciones, habilidades ni logros.
+- Sé estricto pero útil.
+- Devuelve únicamente JSON válido.
+- No uses markdown.
+- La calificación debe ser de 0 a 100.
+- Máximo 5 fortalezas.
+- Máximo 5 debilidades.
+- Máximo 6 recomendaciones.
+
+Formato exacto:
+{
+  "atsScore": 0,
+  "summary": "",
+  "strengths": [],
+  "weaknesses": [],
+  "matchedKeywords": [],
+  "missingKeywords": [],
+  "recommendations": []
+}
+
+CV final optimizado:
+${JSON.stringify(resumeData, null, 2)}
+
+Oferta laboral:
+${jobDescription || "No se proporcionó oferta laboral."}
+`;
+}
+
+async function analyzeFinalAts({ resumeData, jobDescription }) {
+  const result = await generateWithFallback(
+    buildFinalAtsAnalysisPrompt({
+      resumeData,
+      jobDescription,
+    })
+  );
+
+  const parsed = parseAiJson(result.text);
+
+  return {
+    atsScore: Number(parsed.atsScore) || 0,
+    summary: parsed.summary || "",
+    strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+    weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
+    matchedKeywords: Array.isArray(parsed.matchedKeywords)
+      ? parsed.matchedKeywords
+      : [],
+    missingKeywords: Array.isArray(parsed.missingKeywords)
+      ? parsed.missingKeywords
+      : [],
+    recommendations: Array.isArray(parsed.recommendations)
+      ? parsed.recommendations
+      : [],
+    source: result.provider,
+  };
+}
+
 module.exports = {
   optimizeSummary,
   generateAiRecommendations,
   optimizeFullResume,
+  analyzeFinalAts,
 };
