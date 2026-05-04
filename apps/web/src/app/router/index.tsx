@@ -6,14 +6,15 @@ import RegisterPage from "../../modules/auth/pages/RegisterPage";
 import DashboardPage from "../../modules/dashboard/pages/DashboardPage";
 import ResumeBuilderPage from "../../modules/resume-builder/pages/ResumeBuilderPage";
 import ResumeGeneratePage from "../../modules/resume-builder/pages/ResumeGeneratePage";
-import ProtectedRoute from "../../shared/components/auth/ProtectedRoute";
 import ResumeOptimizePage from "../../modules/resume-builder/pages/ResumeOptimizePage";
+import ProtectedRoute from "../../shared/components/auth/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <LandingPage />,
   },
+
   {
     path: "/login",
     element: <LoginPage />,
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
     path: "/register",
     element: <RegisterPage />,
   },
+
   {
     element: <ProtectedRoute />,
     children: [
@@ -31,20 +33,30 @@ export const router = createBrowserRouter([
       },
       {
         path: "/resume-builder",
-        element: <ResumeBuilderPage />,
+        children: [
+          {
+            index: true,
+            element: <ResumeBuilderPage />,
+          },
+          {
+            path: ":id",
+            element: <ResumeBuilderPage />,
+          },
+        ],
       },
       {
         path: "/resume/generate",
         element: <ResumeGeneratePage />,
       },
       {
-        path: "/resume-builder/:id",
-        element: <ResumeBuilderPage />,
-      },
-      {
         path: "/resume/optimize",
         element: <ResumeOptimizePage />,
       },
     ],
+  },
+
+  {
+    path: "*",
+    element: <div>404 Not Found</div>,
   },
 ]);
