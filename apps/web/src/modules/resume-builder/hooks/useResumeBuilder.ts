@@ -30,7 +30,25 @@ export function useResumeBuilder(resumeId?: string) {
         const latestVersion = resume.versions?.[0];
 
         if (latestVersion?.data) {
-          setResumeData(latestVersion.data as ResumeData);
+          setResumeData({
+            ...DEFAULT_RESUME_DATA,
+            ...(latestVersion.data as Partial<ResumeData>),
+            skills: Array.isArray((latestVersion.data as Partial<ResumeData>).skills)
+              ? (latestVersion.data as Partial<ResumeData>).skills!
+              : [],
+            languages: Array.isArray((latestVersion.data as Partial<ResumeData>).languages)
+              ? (latestVersion.data as Partial<ResumeData>).languages!
+              : DEFAULT_RESUME_DATA.languages,
+            experiences: Array.isArray((latestVersion.data as Partial<ResumeData>).experiences)
+              ? (latestVersion.data as Partial<ResumeData>).experiences!
+              : DEFAULT_RESUME_DATA.experiences,
+            education: Array.isArray((latestVersion.data as Partial<ResumeData>).education)
+              ? (latestVersion.data as Partial<ResumeData>).education!
+              : DEFAULT_RESUME_DATA.education,
+            projects: Array.isArray((latestVersion.data as Partial<ResumeData>).projects)
+              ? (latestVersion.data as Partial<ResumeData>).projects!
+              : DEFAULT_RESUME_DATA.projects,
+          });
         }
       } catch (error) {
         console.error("Error loading resume:", error);
