@@ -17,7 +17,7 @@ async function createTestUserAndToken() {
     .send({
       name: "Resume Test User",
       email,
-      password: "123456",
+      password: "12345678",
     });
 
   return {
@@ -233,5 +233,115 @@ describe("Resume API", () => {
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe("Nombre, correo y resumen son requeridos");
+  });
+
+  it("does not allow deleting another user's resume", async () => {
+    const owner = await createTestUserAndToken();
+    const attacker = await createTestUserAndToken();
+
+    const resume = await prisma.resume.create({
+      data: {
+        title: "Private Resume",
+        userId: owner.user.id,
+      },
+    });
+
+    const response = await request(app)
+      .delete(`/api/resume/${resume.id}`)
+      .set("Authorization", `Bearer ${attacker.token}`);
+
+    expect(response.statusCode).toBe(404);
+
+    const existingResume = await prisma.resume.findUnique({
+      where: { id: resume.id },
+    });
+
+    expect(existingResume).not.toBeNull();
+  });
+
+  it("returns 404 when deleting a non-existing resume", async () => {
+    const { token } = await createTestUserAndToken();
+
+    const response = await request(app)
+      .delete("/api/resume/00000000-0000-0000-0000-000000000000")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("downloads a resume PDF by id without creating a duplicate resume", async () => {
+    const { token, user } = await createTestUserAndToken();
+
+    jest.spyOn(fs, "readFile").mockImplementation(async (filePath) => {
+      if (String(filePath).endsWith(".tex")) {
+        return `
+        {{FULL_NAME}}
+        {{EMAIL}}
+        {{PHONE}}
+        {{LOCATION}}
+        {{SUMMARY}}
+        {{EDUCATION}}
+        {{EXPERIENCE}}
+        {{SKILLS}}
+        {{LANGUAGES}}
+        {{PROJECTS}}
+      `;
+      }
+
+      return Buffer.from("fake-pdf");
+    });
+
+    jest.spyOn(fs, "writeFile").mockResolvedValue();
+    jest.spyOn(fs, "mkdir").mockResolvedValue();
+    jest.spyOn(fs, "unlink").mockResolvedValue();
+
+    const resume = await prisma.resume.create({
+      data: {
+        title: "Download Resume",
+        userId: user.id,
+      },
+    });
+
+    await prisma.resumeVersion.create({
+      data: {
+        resumeId: resume.id,
+        data: {
+          fullName: "Download User",
+          email: "download@test.com",
+          phone: "123456",
+          location: "Costa Rica",
+          summary: "Summary",
+          skills: ["React"],
+          languages: [],
+          experiences: [],
+          education: [],
+          projects: [],
+        },
+      },
+    });
+
+    const beforeCount = await prisma.resume.count();
+
+    const response = await request(app)
+      .get(`/api/resume/${resume.id}/download`)
+      .set("Authorization", `Bearer ${token}`);
+
+    const afterCount = await prisma.resume.count();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("application/pdf");
+    expect(afterCount).toBe(beforeCount);
+
+    jest.restoreAllMocks();
+  });
+
+  it("returns 404 when downloading a resume that does not exist", async () => {
+    const { token } = await createTestUserAndToken();
+
+    const response = await request(app)
+      .get("/api/resume/00000000-0000-0000-0000-000000000000/download")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.statusCode).toBe(404);
   });
 });

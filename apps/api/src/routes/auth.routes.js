@@ -2,13 +2,26 @@ const express = require("express");
 const { register, login, me } = require("../controllers/auth.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 
+const {
+  validateBody,
+  registerSchema,
+  loginSchema,
+} = require("../validators/schemas");
+
 const router = express.Router();
 
-// Public routes (no authentication required)
-router.post("/register", register);  // Create new account
-router.post("/login", login);        // Authenticate and get token
+router.post(
+  "/register",
+  validateBody(registerSchema, "Name, email and password are required"),
+  register
+);
 
-// Protected route (requires valid JWT token)
-router.get("/me", authMiddleware, me);  // Get current user profile
+router.post(
+  "/login",
+  validateBody(loginSchema, "Email and password are required"),
+  login
+);
+
+router.get("/me", authMiddleware, me);
 
 module.exports = router;

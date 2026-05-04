@@ -58,6 +58,12 @@ async function downloadResume(req, res) {
 
     return res.end(pdfBuffer);
   } catch (error) {
+    if (error.message === "RESUME_NOT_FOUND") {
+      return res.status(404).json({
+        message: "CV no encontrado",
+      });
+    }
+
     console.error("Error downloading resume:", error);
 
     return res.status(500).json({
@@ -90,10 +96,16 @@ async function deleteResume(req, res) {
       message: "CV eliminado correctamente",
     });
   } catch (error) {
+    if (error.message === "RESUME_NOT_FOUND") {
+      return res.status(404).json({
+        message: "CV no encontrado",
+      });
+    }
+
     console.error("Error deleting resume:", error);
 
-    return res.status(404).json({
-      message: "CV no encontrado",
+    return res.status(500).json({
+      message: "Error al eliminar el CV",
     });
   }
 }
