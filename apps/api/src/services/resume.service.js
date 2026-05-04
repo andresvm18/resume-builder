@@ -416,27 +416,7 @@ ${escapeLatex(project.technologies)}
     .join("\n");
 }
 
-async function saveResumeVersion(userId, data) {
-  const resume = await prisma.resume.create({
-    data: {
-      title: data.fullName || "CV sin nombre",
-      userId,
-    },
-  });
-
-  await prisma.resumeVersion.create({
-    data: {
-      resumeId: resume.id,
-      data,
-    },
-  });
-
-  return resume;
-}
-
-async function generateResumePdf(data, userId) {
-  await saveResumeVersion(userId, data);
-
+async function renderResumePdf(data) {
   const templatePath = path.join(__dirname, "../templates/resume-template.tex");
   const outputDir = path.join(__dirname, "../../generated");
 
@@ -476,8 +456,32 @@ async function generateResumePdf(data, userId) {
   await fs.unlink(texPath).catch(() => { });
   await fs.unlink(path.join(outputDir, `cv-${fileId}.aux`)).catch(() => { });
   await fs.unlink(path.join(outputDir, `cv-${fileId}.log`)).catch(() => { });
+  await fs.unlink(pdfPath).catch(() => { });
 
   return pdfBuffer;
+}
+
+async function saveResumeVersion(userId, data) {
+  const resume = await prisma.resume.create({
+    data: {
+      title: data.fullName || "CV sin nombre",
+      userId,
+    },
+  });
+
+  await prisma.resumeVersion.create({
+    data: {
+      resumeId: resume.id,
+      data,
+    },
+  });
+
+  return resume;
+}
+
+async function generateResumePdf(data, userId) {
+  await saveResumeVersion(userId, data);
+  return renderResumePdf(data);
 }
 
 async function getUserResumes(userId) {
@@ -513,7 +517,7 @@ async function generateResumePdfById(resumeId, userId) {
 
   const latestVersion = resume.versions[0];
 
-  return generateResumePdf(latestVersion.data, userId);
+  return renderResumePdf(latestVersion.data);
 }
 
 async function getUserResumeById(resumeId, userId) {
@@ -559,6 +563,7 @@ async function deleteUserResume(resumeId, userId) {
 }
 
 module.exports = {
+  renderResumePdf,
   generateResumePdf,
   getUserResumes,
   generateResumePdfById,
