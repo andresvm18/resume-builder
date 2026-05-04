@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
 import type { ResumeData } from "../types/resume.types";
 import type { FinalAtsAnalysisResponse } from "../services/ai.service";
+import { generateResumePdf } from "../services/resume.service";
 import "./ResumeGeneratePage.css";
 
 type ResumeGenerateState = ResumeData & {
@@ -46,35 +47,17 @@ export default function ResumeGeneratePage() {
 
     const generateResume = async () => {
       try {
-        const token = localStorage.getItem("auth_token");
-
-        if (!token) {
-          navigate("/login");
-          return;
-        }
 
         setStatus("Enviando información al servidor...");
 
         const resumePayload = Object.fromEntries(
           Object.entries(resumeData).filter(([key]) => key !== "finalAtsAnalysis")
-        );
-
-        const response = await fetch("http://localhost:8080/api/resume/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(resumePayload),
-        });
+        ) as ResumeData;
 
         setStatus("Generando PDF con LaTeX...");
 
-        if (!response.ok) {
-          throw new Error("No se pudo generar el CV.");
-        }
+        const blob = await generateResumePdf(resumePayload);
 
-        const blob = await response.blob();
         generatedUrl = URL.createObjectURL(blob);
 
         const generatedFileName = `${formatFileName(resumeData.fullName || "cv")}.pdf`;

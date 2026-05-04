@@ -30,7 +30,7 @@ export function useResumeBuilder(resumeId?: string) {
         const latestVersion = resume.versions?.[0];
 
         if (latestVersion?.data) {
-          setResumeData(latestVersion.data);
+          setResumeData(latestVersion.data as ResumeData);
         }
       } catch (error) {
         console.error("Error loading resume:", error);
@@ -53,9 +53,23 @@ export function useResumeBuilder(resumeId?: string) {
 
   // Skills
   const addSkill = () => {
-    if (!skillInput.trim()) return;
+    const normalizedSkill = skillInput.trim();
 
-    updateField("skills", [...resumeData.skills, skillInput.trim()]);
+    if (!normalizedSkill) return;
+
+    setResumeData((prev) => {
+      const alreadyExists = prev.skills.some(
+        (skill) => skill.toLowerCase() === normalizedSkill.toLowerCase()
+      );
+
+      if (alreadyExists) return prev;
+
+      return {
+        ...prev,
+        skills: [...prev.skills, normalizedSkill],
+      };
+    });
+
     setSkillInput("");
   };
 

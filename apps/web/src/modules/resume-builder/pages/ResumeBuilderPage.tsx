@@ -14,10 +14,6 @@ import {
 } from "../services/ai.service";
 import "./ResumeBuilderPage.css";
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export default function ResumeBuilderPage() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -194,9 +190,6 @@ export default function ResumeBuilderPage() {
       const result = await getAiRecommendations(resumeData, jobDescription);
 
       setAiRecommendations(result);
-
-      // Temporal: permite ver la pantalla de carga durante 10 segundos.
-      await delay(5000);
 
       goToStep("summary");
     } catch {
