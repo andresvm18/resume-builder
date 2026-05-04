@@ -2,6 +2,7 @@ const {
   optimizeSummary,
   generateAiRecommendations,
   optimizeFullResume,
+  analyzeFinalAts,
 } = require("../services/ai.service");
 
 async function optimizeResumeSummary(req, res) {
@@ -79,8 +80,34 @@ async function optimizeResume(req, res) {
   }
 }
 
+async function analyzeFinalResumeAts(req, res) {
+  try {
+    const { resumeData, jobDescription } = req.body;
+
+    if (!resumeData || !jobDescription) {
+      return res.status(400).json({
+        message: "resumeData y jobDescription son requeridos",
+      });
+    }
+
+    const result = await analyzeFinalAts({
+      resumeData,
+      jobDescription,
+    });
+
+    return res.json(result);
+  } catch (error) {
+    console.error("Error analyzing final ATS:", error);
+
+    return res.status(500).json({
+      message: "Error al analizar el CV final con ATS",
+    });
+  }
+}
+
 module.exports = {
   optimizeResumeSummary,
   getAiRecommendations,
   optimizeResume,
+  analyzeFinalResumeAts,
 };
