@@ -8,6 +8,7 @@ import ResumeBuilderPage from "../../modules/resume-builder/pages/ResumeBuilderP
 import ResumeGeneratePage from "../../modules/resume-builder/pages/ResumeGeneratePage";
 import ResumeOptimizePage from "../../modules/resume-builder/pages/ResumeOptimizePage";
 import ProtectedRoute from "../../shared/components/auth/ProtectedRoute";
+import PublicOnlyRoute from "../../shared/components/auth/PublicOnlyRoute";
 
 export const router = createBrowserRouter([
   {
@@ -16,12 +17,17 @@ export const router = createBrowserRouter([
   },
 
   {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
+    element: <PublicOnlyRoute />,
+    children: [
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/register",
+        element: <RegisterPage />,
+      },
+    ],
   },
 
   {
