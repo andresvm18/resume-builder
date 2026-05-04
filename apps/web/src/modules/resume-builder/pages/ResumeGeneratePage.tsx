@@ -4,6 +4,7 @@ import Header from "../../../shared/components/layout/Header";
 import type { ResumeData } from "../types/resume.types";
 import type { FinalAtsAnalysisResponse } from "../services/ai.service";
 import { generateResumePdf } from "../services/resume.service";
+import { normalizeResumeData } from "../utils/resumeNormalizer";
 import "./ResumeGeneratePage.css";
 
 type ResumeGenerateState = ResumeData & {
@@ -18,71 +19,6 @@ function formatFileName(name: string) {
     .replace(/[^a-z0-9]/g, "");
 
   return cleanedName || "cv";
-}
-
-function sanitizeText(value: string = "") {
-  return value
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/?[^>]+(>|$)/g, "")
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .trim();
-}
-
-function sanitizeResumeData(data: ResumeData): ResumeData {
-  return {
-    ...data,
-
-    fullName: sanitizeText(data.fullName),
-    email: sanitizeText(data.email),
-    phone: sanitizeText(data.phone),
-    location: sanitizeText(data.location),
-    summary: sanitizeText(data.summary),
-    jobDescription: sanitizeText(data.jobDescription),
-
-    skills: data.skills.map(sanitizeText),
-
-    technicalSkills: data.technicalSkills?.map((group) => ({
-      ...group,
-      category: sanitizeText(group.category),
-      items: group.items.map(sanitizeText),
-    })),
-
-    softSkills: data.softSkills?.map((skill) => ({
-      ...skill,
-      name: sanitizeText(skill.name),
-      description: sanitizeText(skill.description),
-    })),
-
-    languages: data.languages.map((language) => ({
-      ...language,
-      name: sanitizeText(language.name),
-    })),
-
-    experiences: data.experiences.map((experience) => ({
-      ...experience,
-      title: sanitizeText(experience.title),
-      location: sanitizeText(experience.location),
-      startDate: sanitizeText(experience.startDate),
-      endDate: sanitizeText(experience.endDate),
-      description: sanitizeText(experience.description),
-    })),
-
-    education: data.education.map((education) => ({
-      ...education,
-      institution: sanitizeText(education.institution),
-      degree: sanitizeText(education.degree),
-      date: sanitizeText(education.date),
-    })),
-
-    projects: data.projects.map((project) => ({
-      ...project,
-      name: sanitizeText(project.name),
-      technologies: sanitizeText(project.technologies),
-      description: sanitizeText(project.description),
-      link: sanitizeText(project.link),
-    })),
-  };
 }
 
 export default function ResumeGeneratePage() {
@@ -119,7 +55,7 @@ export default function ResumeGeneratePage() {
           Object.entries(resumeData).filter(([key]) => key !== "finalAtsAnalysis")
         ) as ResumeData;
 
-        const resumePayload = sanitizeResumeData(rawPayload);
+        const resumePayload = normalizeResumeData(rawPayload);
 
         setStatus("Generando PDF con LaTeX...");
 

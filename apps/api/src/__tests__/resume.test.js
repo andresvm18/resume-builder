@@ -123,7 +123,7 @@ describe("Resume API", () => {
       `;
       }
 
-      return Buffer.from("fake-pdf");
+      return Buffer.from("%PDF-1.4\n" + "a".repeat(1500));
     });
 
     jest.spyOn(fs, "writeFile").mockResolvedValue();
@@ -288,7 +288,7 @@ describe("Resume API", () => {
       `;
       }
 
-      return Buffer.from("fake-pdf");
+      return Buffer.from("%PDF-1.4\n" + "a".repeat(1500));
     });
 
     jest.spyOn(fs, "writeFile").mockResolvedValue();

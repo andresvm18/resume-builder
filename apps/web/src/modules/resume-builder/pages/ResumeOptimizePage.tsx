@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
 import type { ResumeData } from "../types/resume.types";
+import { normalizeResumeData } from "../utils/resumeNormalizer";
 import {
   analyzeFinalAts,
   optimizeFullResume,
@@ -13,7 +14,8 @@ export default function ResumeOptimizePage() {
   const navigate = useNavigate();
   const hasOptimized = useRef(false);
 
-  const resumeData = location.state as ResumeData | null;
+  const rawResumeData = location.state as ResumeData | null;
+  const resumeData = rawResumeData ? normalizeResumeData(rawResumeData) : null;
 
   const [status, setStatus] = useState("Preparando optimización con IA...");
 
