@@ -31,8 +31,15 @@ async function generateResume(req, res) {
     return res.end(pdfBuffer);
   } catch (error) {
     console.error("Error generating resume:", error);
+    const knownErrors = {
+      PDF_GENERATION_FAILED:
+        "No se pudo compilar el PDF. Revisa que los datos del CV no contengan contenido inválido.",
+      PDF_EMPTY_OR_INVALID:
+        "El PDF generado está vacío o es inválido.",
+    };
+
     return res.status(500).json({
-      message: "Error al generar el CV",
+      message: knownErrors[error.message] || "Error al generar el CV",
     });
   }
 }
@@ -70,9 +77,16 @@ async function downloadResume(req, res) {
 
     console.error("Error downloading resume:", error);
 
+    const knownErrors = {
+      PDF_GENERATION_FAILED:
+        "No se pudo compilar el PDF para este CV.",
+      PDF_EMPTY_OR_INVALID:
+        "El PDF generado está vacío o es inválido.",
+    };
+
     return res.status(500).json({
-      message: "Error al descargar el CV",
-    });
+      message: knownErrors[error.message] || "Error al descargar el CV",
+    });;
   }
 }
 

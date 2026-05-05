@@ -75,8 +75,13 @@ export default function ResumeGeneratePage() {
         setPdfUrl(generatedUrl);
         setFileName(generatedFileName);
         setStatus("CV generado correctamente.");
-      } catch {
-        setError("Ocurrió un error al generar el CV. Revisa que el backend esté corriendo.");
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "No se pudo generar el CV.";
+
+        setError(message);
         setStatus("Error al generar el CV.");
       } finally {
         setIsGenerating(false);
@@ -107,7 +112,35 @@ export default function ResumeGeneratePage() {
 
           {isGenerating && <div className="resume-generate-page__loader" />}
 
-          {error && <p className="resume-generate-page__error">{error}</p>}
+          {error && (
+            <div className="resume-generate-page__error-box">
+              <p className="resume-generate-page__error-title">
+                No pudimos generar tu CV
+              </p>
+
+              <p className="resume-generate-page__error-message">
+                {error}
+              </p>
+
+              <div className="resume-generate-page__error-actions">
+                <button
+                  type="button"
+                  onClick={() => navigate("/resume-builder")}
+                  className="resume-generate-page__secondary"
+                >
+                  Volver a editar
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="resume-generate-page__download"
+                >
+                  Intentar de nuevo
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       )}
 
