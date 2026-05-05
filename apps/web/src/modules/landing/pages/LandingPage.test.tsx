@@ -1,18 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "../../../shared/context/AuthProvider";
 import LandingPage from "./LandingPage";
 
 function renderLanding(initialRoute = "/") {
   return render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<h1>Login Page</h1>} />
-        <Route path="/register" element={<h1>Register Page</h1>} />
-        <Route path="/resume-builder" element={<h1>Resume Builder</h1>} />
-      </Routes>
-    </MemoryRouter>
+    <AuthProvider>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<h1>Login Page</h1>} />
+          <Route path="/register" element={<h1>Register Page</h1>} />
+          <Route path="/resume-builder" element={<h1>Resume Builder</h1>} />
+        </Routes>
+      </MemoryRouter>
+    </AuthProvider>
   );
 }
 

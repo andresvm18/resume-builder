@@ -1,17 +1,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { vi } from "vitest";
 import ProtectedRoute from "./ProtectedRoute";
 import * as authService from "../../../modules/auth/services/auth.service";
-import { vi } from "vitest";
+import { AuthProvider } from "../../context/AuthProvider";
 
-describe("ProtectedRoute", () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
-  it("redirects to login when no token", async () => {
-    render(
-      <MemoryRouter initialEntries={["/dashboard"]}>
+function renderWithAuthProvider(initialRoute = "/dashboard") {
+  return render(
+    <AuthProvider>
+      <MemoryRouter initialEntries={[initialRoute]}>
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<h1>Dashboard</h1>} />
@@ -19,7 +16,18 @@ describe("ProtectedRoute", () => {
           <Route path="/login" element={<h1>Login</h1>} />
         </Routes>
       </MemoryRouter>
-    );
+    </AuthProvider>
+  );
+}
+
+describe("ProtectedRoute", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("redirects to login when no token", async () => {
+    renderWithAuthProvider();
 
     await waitFor(() => {
       expect(screen.getByText("Login")).toBeInTheDocument();
@@ -37,16 +45,7 @@ describe("ProtectedRoute", () => {
       },
     });
 
-    render(
-      <MemoryRouter initialEntries={["/dashboard"]}>
-        <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<h1>Dashboard</h1>} />
-          </Route>
-          <Route path="/login" element={<h1>Login</h1>} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithAuthProvider();
 
     await waitFor(() => {
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
@@ -60,16 +59,7 @@ describe("ProtectedRoute", () => {
       new Error("Invalid")
     );
 
-    render(
-      <MemoryRouter initialEntries={["/dashboard"]}>
-        <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<h1>Dashboard</h1>} />
-          </Route>
-          <Route path="/login" element={<h1>Login</h1>} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithAuthProvider();
 
     await waitFor(() => {
       expect(screen.getByText("Login")).toBeInTheDocument();
