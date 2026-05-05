@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DEFAULT_RESUME_DATA } from "../types/resume.types";
 import { fetchResumeById } from "../services/resume.service";
+import { normalizeResumeData } from "../utils/resumeNormalizer";
 import type {
   ResumeData,
   Experience,
@@ -30,7 +31,7 @@ export function useResumeBuilder(resumeId?: string) {
         const latestVersion = resume.versions?.[0];
 
         if (latestVersion?.data) {
-          setResumeData(latestVersion.data as ResumeData);
+          setResumeData(normalizeResumeData(latestVersion.data));
         }
       } catch (error) {
         console.error("Error loading resume:", error);

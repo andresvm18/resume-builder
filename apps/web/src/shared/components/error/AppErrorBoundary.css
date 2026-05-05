@@ -1,0 +1,68 @@
+.app-error {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.app-error__card {
+  width: min(520px, calc(100% - 2rem));
+  margin: 6rem auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--color-surface-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.app-error__badge {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--error);
+  background-color: var(--error-bg);
+}
+
+.app-error__title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+
+.app-error__message {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.app-error__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.app-error__primary,
+.app-error__secondary {
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-error__primary {
+  color: var(--btn-text);
+  background-color: var(--btn-bg);
+}
+
+.app-error__secondary {
+  color: var(--text-primary);
+  border: 1px solid var(--color-border);
+}

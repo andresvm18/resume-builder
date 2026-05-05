@@ -52,6 +52,23 @@ const SOFT_SKILLS = [
   "gestion del tiempo",
 ];
 
+function sanitizeText(value = "") {
+  return String(value)
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?[^>]+(>|$)/g, "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .trim();
+}
+
+function latexValue(value = "") {
+  const clean = sanitizeText(value);
+
+  if (!clean) return "\\mbox{}";
+
+  return escapeLatex(clean);
+}
+
 function escapeLatex(value = "") {
   return String(value)
     .replace(/\\/g, "\\textbackslash{}")
@@ -379,8 +396,7 @@ function buildExperience(experiences = []) {
   return experiences
     .filter((exp) => exp.title || exp.location || exp.description)
     .map((exp) => {
-      const bullets = String(exp.description || "")
-        .replace(/<br\s*\/?>/gi, "\n")
+      const bullets = sanitizeText(exp.description)
         .split(/\n|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ])/g)
         .map(cleanBulletLine)
         .filter(Boolean)
@@ -409,7 +425,7 @@ function buildProjects(projects = []) {
 \\textbf{${escapeLatex(project.name)}} \\\\
 ${escapeLatex(project.technologies)}
 \\begin{itemize}
-\\item ${escapeLatex(project.description)}
+\\item ${escapeLatex(sanitizeText(project.description))}
 \\end{itemize}
 `;
     })
@@ -425,11 +441,11 @@ async function renderResumePdf(data) {
   const template = await fs.readFile(templatePath, "utf-8");
 
   const texContent = template
-    .replaceAll("{{FULL_NAME}}", escapeLatex(data.fullName))
-    .replaceAll("{{EMAIL}}", escapeLatex(data.email))
-    .replaceAll("{{PHONE}}", escapeLatex(data.phone))
-    .replaceAll("{{LOCATION}}", escapeLatex(data.location))
-    .replaceAll("{{SUMMARY}}", escapeLatex(data.summary))
+    .replaceAll("{{FULL_NAME}}", latexValue(data.fullName))
+    .replaceAll("{{EMAIL}}", latexValue(data.email))
+    .replaceAll("{{PHONE}}", latexValue(data.phone))
+    .replaceAll("{{LOCATION}}", latexValue(data.location))
+    .replaceAll("{{SUMMARY}}", latexValue(data.summary))
     .replaceAll("{{EDUCATION}}", buildEducation(data.education))
     .replaceAll("{{EXPERIENCE}}", buildExperience(data.experiences))
     .replaceAll("{{SKILLS}}", buildSkills(data))
@@ -443,15 +459,26 @@ async function renderResumePdf(data) {
 
   await fs.writeFile(texPath, texContent, "utf-8");
 
-  await execFileAsync("pdflatex", [
-    "-interaction=nonstopmode",
-    "-halt-on-error",
-    "-output-directory",
-    outputDir,
-    texPath,
-  ]);
+  try {
+    await execFileAsync("pdflatex", [
+      "-interaction=nonstopmode",
+      "-halt-on-error",
+      "-output-directory",
+      outputDir,
+      texPath,
+    ]);
+  } catch (error) {
+    console.error("Error compilando LaTeX:");
+    console.error(error.stdout);
+    console.error(error.stderr);
+    throw new Error("PDF_GENERATION_FAILED");
+  }
 
   const pdfBuffer = await fs.readFile(pdfPath);
+
+  if (!pdfBuffer || pdfBuffer.length < 1000) {
+    throw new Error("PDF_EMPTY_OR_INVALID");
+  }
 
   await fs.unlink(texPath).catch(() => { });
   await fs.unlink(path.join(outputDir, `cv-${fileId}.aux`)).catch(() => { });

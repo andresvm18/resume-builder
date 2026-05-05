@@ -4,6 +4,7 @@ import Header from "../../../shared/components/layout/Header";
 import type { ResumeData } from "../types/resume.types";
 import type { FinalAtsAnalysisResponse } from "../services/ai.service";
 import { generateResumePdf } from "../services/resume.service";
+import { normalizeResumeData } from "../utils/resumeNormalizer";
 import "./ResumeGeneratePage.css";
 
 type ResumeGenerateState = ResumeData & {
@@ -50,9 +51,11 @@ export default function ResumeGeneratePage() {
 
         setStatus("Enviando información al servidor...");
 
-        const resumePayload = Object.fromEntries(
+        const rawPayload = Object.fromEntries(
           Object.entries(resumeData).filter(([key]) => key !== "finalAtsAnalysis")
         ) as ResumeData;
+
+        const resumePayload = normalizeResumeData(rawPayload);
 
         setStatus("Generando PDF con LaTeX...");
 

@@ -9,6 +9,7 @@ import ResumeGeneratePage from "../../modules/resume-builder/pages/ResumeGenerat
 import ResumeOptimizePage from "../../modules/resume-builder/pages/ResumeOptimizePage";
 import ProtectedRoute from "../../shared/components/auth/ProtectedRoute";
 import PublicOnlyRoute from "../../shared/components/auth/PublicOnlyRoute";
+import AppErrorBoundary from "../../shared/components/error/AppErrorBoundary";
 
 export const router = createBrowserRouter([
   {
@@ -60,9 +61,9 @@ export const router = createBrowserRouter([
       },
     ],
   },
-
   {
     path: "*",
     element: <div>404 Not Found</div>,
+    errorElement: <AppErrorBoundary />,
   },
 ]);

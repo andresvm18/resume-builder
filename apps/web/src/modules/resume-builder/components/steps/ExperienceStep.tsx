@@ -111,7 +111,7 @@ export default function ExperienceStep({
 
   return (
     <div className="resume-builder-page__section">
-      {experiences.map((exp) => {
+      {(experiences ?? []).map((exp) => {
         const startKey = getDateKey(exp.id, "startDate");
         const endKey = getDateKey(exp.id, "endDate");
 
