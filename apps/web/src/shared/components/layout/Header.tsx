@@ -1,27 +1,13 @@
-import { useEffect, useState } from "react";
-import { getAuthUser, logoutUser } from "../../../modules/auth/services/auth.service";
+import { useAuth } from "../../../shared/context/useAuth";
 import { useNavigate, Link } from "react-router-dom";
 import "./Header.css";
 
 export default function Header() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(getAuthUser());
-
-  useEffect(() => {
-    const handleAuthChange = () => {
-      setUser(getAuthUser());
-    };
-
-    window.addEventListener("auth-change", handleAuthChange);
-
-    return () => {
-      window.removeEventListener("auth-change", handleAuthChange);
-    };
-  }, []);
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    logoutUser();
-    setUser(null);
+    logout();
     navigate("/");
   };
 
