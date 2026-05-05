@@ -6,6 +6,8 @@ const { promisify } = require("util");
 const execFileAsync = promisify(execFile);
 const { prisma } = require("../lib/prisma");
 
+const { normalizeResumeData } = require("../utils/resumeNormalizer");
+
 const MONTHS_ES = [
   "Enero",
   "Febrero",
@@ -507,8 +509,10 @@ async function saveResumeVersion(userId, data) {
 }
 
 async function generateResumePdf(data, userId) {
-  await saveResumeVersion(userId, data);
-  return renderResumePdf(data);
+  const cleanData = normalizeResumeData(data);
+
+  await saveResumeVersion(userId, cleanData);
+  return renderResumePdf(cleanData);
 }
 
 async function getUserResumes(userId) {
@@ -544,7 +548,7 @@ async function generateResumePdfById(resumeId, userId) {
 
   const latestVersion = resume.versions[0];
 
-  return renderResumePdf(latestVersion.data);
+  return renderResumePdf(normalizeResumeData(latestVersion.data));
 }
 
 async function getUserResumeById(resumeId, userId) {
