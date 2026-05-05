@@ -6,6 +6,8 @@ const {
   deleteUserResume,
 } = require("../services/resume.service");
 
+const { normalizeResumeData } = require("../utils/resumeNormalizer");
+
 async function generateResume(req, res) {
   try {
     const { fullName, email, summary } = req.body;
@@ -16,8 +18,10 @@ async function generateResume(req, res) {
       });
     }
 
+    const cleanData = normalizeResumeData(req.body);
+
     const pdfBuffer = await generateResumePdf(
-      req.body,
+      cleanData,
       req.user.userId
     );
 
