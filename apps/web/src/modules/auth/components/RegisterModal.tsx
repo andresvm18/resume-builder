@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { registerUser, saveAuthSession } from "../services/auth.service";
+import { registerUser } from "../services/auth.service";
+import { useAuth } from "../../../shared/context/useAuth";
 import "./RegisterModal.css";
 
 export default function RegisterModal() {
@@ -19,6 +20,8 @@ export default function RegisterModal() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { login } = useAuth();
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,7 +43,7 @@ export default function RegisterModal() {
       const fullName = `${name} ${middleName} ${lastName}`.trim();
 
       const data = await registerUser(fullName, email, password);
-      saveAuthSession(data);
+      login(data);
 
       navigate("/dashboard");
     } catch {
