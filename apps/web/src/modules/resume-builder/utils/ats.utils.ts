@@ -191,10 +191,22 @@ export function getTopKeywords(jobDescription: string, limit = 10): string[] {
 /* -------------------------------------------------------------------------- */
 
 export function buildResumeText(resumeData: ResumeData): string {
+  const technicalSkillsText =
+    resumeData.technicalSkills
+      ?.map((group) => `${group.category} ${group.items.join(" ")}`)
+      .join(" ") ?? "";
+
+  const softSkillsText =
+    resumeData.softSkills
+      ?.map((skill) => `${skill.name} ${skill.description}`)
+      .join(" ") ?? "";
+
   return [
     resumeData.fullName,
     resumeData.summary,
     resumeData.skills.join(" "),
+    technicalSkillsText,
+    softSkillsText,
     resumeData.languages
       .map((language) => `${language.name} ${language.level}`)
       .join(" "),
@@ -299,9 +311,9 @@ function calculateFinalAtsScore(
 ): number {
   return Math.round(
     keywordMatch * 0.4 +
-      sectionCompleteness * 0.2 +
-      formatQuality * 0.2 +
-      roleAlignment * 0.2
+    sectionCompleteness * 0.2 +
+    formatQuality * 0.2 +
+    roleAlignment * 0.2
   );
 }
 

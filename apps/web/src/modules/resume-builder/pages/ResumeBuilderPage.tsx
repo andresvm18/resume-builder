@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
@@ -13,6 +13,7 @@ import { optimizeSummary } from "../services/ai.service";
 import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
+  const routerLocation = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -29,7 +30,7 @@ export default function ResumeBuilderPage() {
     setEmail,
     phone,
     setPhone,
-    location,
+    location: resumeLocation,
     setLocation,
 
     summary,
@@ -63,7 +64,13 @@ export default function ResumeBuilderPage() {
 
     jobDescription,
     setJobDescription,
-  } = useResumeBuilder(id);
+  } = useResumeBuilder(id, {
+    initialData: routerLocation.state,
+    onResumeNotFound: () => {
+      alert("No encontramos ese CV. Puede haber sido eliminado o no tienes acceso.");
+      navigate("/dashboard");
+    },
+  });
 
   const { validateResumeData } = useResumeValidation();
 
@@ -252,7 +259,7 @@ export default function ResumeBuilderPage() {
             setEmail={setEmail}
             phone={phone}
             setPhone={setPhone}
-            location={location}
+            location={resumeLocation}
             setLocation={setLocation}
             summary={summary}
             setSummary={setSummary}
