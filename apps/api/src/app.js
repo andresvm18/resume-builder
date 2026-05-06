@@ -8,6 +8,7 @@ const resumeRoutes = require("./routes/resume.routes");
 const aiRoutes = require("./routes/ai.routes");
 
 const app = express();
+app.set("trust proxy", 1);
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
