@@ -1,9 +1,22 @@
-require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
-const app = require("./app");
+const app = express();
 
-const PORT = process.env.PORT || 8080;
+app.use(helmet());
+app.use(cors());
+app.use(express.json({ limit: "1mb" }));
 
-app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Demasiadas solicitudes. Intenta de nuevo más tarde.",
+  },
 });
+
+app.use("/api", apiLimiter);

@@ -1,16 +1,24 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
 import ResumeFormPanel from "../components/ResumeFormPanel";
-import AtsAnalysisPanel from "../components/AtsAnalysisPanel";
+import AtsRecommendationsPanel from "../components/AtsRecommendationsPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
+import { useResumeValidation } from "../hooks/useResumeValidation";
+import { useAiRecommendations } from "../hooks/useAiRecommendations";
+import { optimizeSummary } from "../services/ai.service";
 import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
+  const routerLocation = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const [isOptimizingSummary, setIsOptimizingSummary] = useState(false);
+
   const {
     resumeData,
     currentStep,
@@ -22,7 +30,7 @@ export default function ResumeBuilderPage() {
     setEmail,
     phone,
     setPhone,
-    location,
+    location: resumeLocation,
     setLocation,
 
     summary,
@@ -56,8 +64,22 @@ export default function ResumeBuilderPage() {
 
     jobDescription,
     setJobDescription,
+  } = useResumeBuilder(id, {
+    initialData: routerLocation.state,
+    onResumeNotFound: () => {
+      alert("No encontramos ese CV. Puede haber sido eliminado o no tienes acceso.");
+      navigate("/dashboard");
+    },
+  });
 
-  } = useResumeBuilder(id);
+  const { validateResumeData } = useResumeValidation();
+
+  const {
+    aiRecommendations,
+    isGeneratingRecommendations,
+    recommendationsFailed,
+    generateRecommendations,
+  } = useAiRecommendations();
 
   const steps: StepItem[] = [
     {
@@ -110,36 +132,6 @@ export default function ResumeBuilderPage() {
     },
   ];
 
-  const validateResumeData = () => {
-    if (!resumeData.fullName.trim()) {
-      alert("Debes ingresar tu nombre completo.");
-      setCurrentStep("personal");
-      return false;
-    }
-
-    if (!resumeData.email.trim()) {
-      alert("Debes ingresar tu correo electrónico.");
-      setCurrentStep("personal");
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(resumeData.email)) {
-      alert("Debes ingresar un correo electrónico válido.");
-      setCurrentStep("personal");
-      return false;
-    }
-
-    if (!resumeData.summary.trim()) {
-      alert("Debes agregar un resumen profesional.");
-      setCurrentStep("summary");
-      return false;
-    }
-
-    return true;
-  };
-
   const goToStep = (stepId: StepItem["id"]) => {
     setCurrentStep(stepId);
 
@@ -148,6 +140,91 @@ export default function ResumeBuilderPage() {
       behavior: "smooth",
     });
   };
+
+  const handleOptimizeSummary = async () => {
+    try {
+      setIsOptimizingSummary(true);
+
+      const result = await optimizeSummary(resumeData, jobDescription ?? "");
+
+      setSummary(result.optimizedSummary);
+    } catch {
+      alert("No se pudo optimizar el resumen.");
+    } finally {
+      setIsOptimizingSummary(false);
+    }
+  };
+
+  const generateRecommendationsBeforeSummary = async () => {
+    if (!jobDescription.trim()) {
+      goToStep("summary");
+      return;
+    }
+
+    const result = await generateRecommendations(resumeData, jobDescription);
+
+    if (!result) {
+      alert("No se pudieron generar recomendaciones con IA. Puedes continuar manualmente.");
+    }
+
+    goToStep("summary");
+  };
+
+  const handleNext = async () => {
+    const index = steps.findIndex((s) => s.id === currentStep);
+
+    if (currentStep === "jobDescription") {
+      await generateRecommendationsBeforeSummary();
+      return;
+    }
+
+    if (index < steps.length - 1) {
+      goToStep(steps[index + 1].id);
+    }
+  };
+
+  const handleFinish = () => {
+    const result = validateResumeData(resumeData);
+
+    if (!result.isValid) {
+      if (result.message) {
+        alert(result.message);
+      }
+
+      if (result.step) {
+        setCurrentStep(result.step);
+      }
+
+      return;
+    }
+
+    navigate("/resume/optimize", {
+      state: {
+        ...resumeData,
+        aiRecommendations,
+      },
+    });
+  };
+
+  if (isGeneratingRecommendations) {
+    return (
+      <main className="resume-builder-page">
+        <Header />
+
+        <section className="resume-builder-page__loading-card">
+          <div className="resume-builder-page__loading-spinner" />
+
+          <h1 className="resume-builder-page__loading-title">
+            Generando recomendaciones
+          </h1>
+
+          <p className="resume-builder-page__loading-text">
+            La IA está revisando la oferta laboral para sugerirte mejoras antes de continuar.
+          </p>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="resume-builder-page">
@@ -170,9 +247,7 @@ export default function ResumeBuilderPage() {
             steps={steps}
             currentStep={currentStep}
             isStepCompleted={() => false}
-            getStepIndex={(step) =>
-              steps.findIndex((s) => s.id === step)
-            }
+            getStepIndex={(step) => steps.findIndex((s) => s.id === step)}
             onStepClick={goToStep}
           />
 
@@ -184,7 +259,7 @@ export default function ResumeBuilderPage() {
             setEmail={setEmail}
             phone={phone}
             setPhone={setPhone}
-            location={location}
+            location={resumeLocation}
             setLocation={setLocation}
             summary={summary}
             setSummary={setSummary}
@@ -211,12 +286,17 @@ export default function ResumeBuilderPage() {
             removeProject={removeProject}
             jobDescription={jobDescription}
             setJobDescription={setJobDescription}
+            isOptimizingSummary={isOptimizingSummary}
+            onOptimizeSummary={handleOptimizeSummary}
           />
 
-          <AtsAnalysisPanel
-            jobDescription={jobDescription ?? ""}
-            resumeData={resumeData}
-          />
+          {currentStep === "summary" &&
+            (aiRecommendations || recommendationsFailed) && (
+              <AtsRecommendationsPanel
+                recommendations={aiRecommendations}
+                hasError={recommendationsFailed}
+              />
+            )}
 
           <StepNavigation
             currentIndex={steps.findIndex((s) => s.id === currentStep)}
@@ -225,20 +305,9 @@ export default function ResumeBuilderPage() {
               const index = steps.findIndex((s) => s.id === currentStep);
               if (index > 0) goToStep(steps[index - 1].id);
             }}
-            onNext={() => {
-              const index = steps.findIndex((s) => s.id === currentStep);
-              if (index < steps.length - 1) {
-                goToStep(steps[index + 1].id);
-              }
-            }}
-            onFinish={() => {
-              if (!validateResumeData()) return;
-              localStorage.removeItem("resume-data");
-
-              navigate("/resume/generate", {
-                state: resumeData,
-              });
-            }}
+            onNext={handleNext}
+            onFinish={handleFinish}
+            disableNext={isGeneratingRecommendations}
           />
         </div>
       </section>

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { loginUser, saveAuthSession } from "../services/auth.service";
+import { loginUser } from "../services/auth.service";
+import { useAuth } from "../../../shared/context/useAuth";
 import "./LoginModal.css";
 
 export default function LoginModal() {
@@ -13,6 +14,8 @@ export default function LoginModal() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { login } = useAuth();
+
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -21,7 +24,7 @@ export default function LoginModal() {
       setError("");
 
       const data = await loginUser(email, password);
-      saveAuthSession(data);
+      login(data);
 
       navigate("/dashboard");
     } catch {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DEFAULT_RESUME_DATA } from "../types/resume.types";
 import { fetchResumeById } from "../services/resume.service";
+import { normalizeResumeData } from "../utils/resumeNormalizer";
 import type {
   ResumeData,
   Experience,
@@ -13,14 +14,27 @@ import type {
 
 const STORAGE_KEY = "resume-data";
 
-export function useResumeBuilder(resumeId?: string) {
+type UseResumeBuilderOptions = {
+  initialData?: unknown;
+  onResumeNotFound?: () => void;
+};
+
+export function useResumeBuilder(
+  resumeId?: string,
+  options: UseResumeBuilderOptions = {}
+) {
   const resumeRef = useRef<HTMLDivElement>(null);
 
-  const [resumeData, setResumeData] = useState<ResumeData>(DEFAULT_RESUME_DATA);
+  const [resumeData, setResumeData] = useState<ResumeData>(() =>
+    options.initialData
+      ? normalizeResumeData(options.initialData)
+      : DEFAULT_RESUME_DATA
+  );
 
   const [currentStep, setCurrentStep] = useState<Step>("personal");
   const [skillInput, setSkillInput] = useState("");
 
+  const { onResumeNotFound } = options;
   useEffect(() => {
     if (!resumeId) return;
 
@@ -30,15 +44,16 @@ export function useResumeBuilder(resumeId?: string) {
         const latestVersion = resume.versions?.[0];
 
         if (latestVersion?.data) {
-          setResumeData(latestVersion.data);
+          setResumeData(normalizeResumeData(latestVersion.data));
         }
       } catch (error) {
         console.error("Error loading resume:", error);
+        onResumeNotFound?.();
       }
     };
 
     loadResume();
-  }, [resumeId]);
+  }, [resumeId, onResumeNotFound]);
 
 
   const updateField = <K extends keyof ResumeData>(
@@ -53,9 +68,23 @@ export function useResumeBuilder(resumeId?: string) {
 
   // Skills
   const addSkill = () => {
-    if (!skillInput.trim()) return;
+    const normalizedSkill = skillInput.trim();
 
-    updateField("skills", [...resumeData.skills, skillInput.trim()]);
+    if (!normalizedSkill) return;
+
+    setResumeData((prev) => {
+      const alreadyExists = prev.skills.some(
+        (skill) => skill.toLowerCase() === normalizedSkill.toLowerCase()
+      );
+
+      if (alreadyExists) return prev;
+
+      return {
+        ...prev,
+        skills: [...prev.skills, normalizedSkill],
+      };
+    });
+
     setSkillInput("");
   };
 

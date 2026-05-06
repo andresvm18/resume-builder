@@ -1,6 +1,9 @@
 type SummaryStepProps = {
   summary: string;
   setSummary: (value: string) => void;
+
+  isOptimizingSummary: boolean;
+  onOptimizeSummary: () => void;
 };
 
 export default function SummaryStep({

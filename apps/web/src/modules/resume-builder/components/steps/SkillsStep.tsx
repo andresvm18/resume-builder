@@ -19,6 +19,12 @@ export default function SkillsStep({
         <input
           value={skillInput}
           onChange={(e) => setSkillInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addSkill();
+            }
+          }}
           placeholder="Escribe una habilidad"
           className="resume-builder-page__input"
         />

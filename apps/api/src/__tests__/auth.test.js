@@ -23,12 +23,13 @@ describe("Auth API", () => {
   });
 
   it("registers a new user", async () => {
+
     const response = await request(app)
       .post("/api/auth/register")
       .send({
         name: "Test User",
         email: testEmail,
-        password: "123456",
+        password: "12345678",
       });
 
     expect(response.statusCode).toBe(201);
@@ -42,14 +43,14 @@ describe("Auth API", () => {
       .send({
         name: "Login User",
         email: `login-${testEmail}`,
-        password: "123456",
+        password: "12345678",
       });
 
     const response = await request(app)
       .post("/api/auth/login")
       .send({
         email: `login-${testEmail}`,
-        password: "123456",
+        password: "12345678",
       });
 
     expect(response.statusCode).toBe(200);
@@ -63,6 +64,78 @@ describe("Auth API", () => {
         email: "invalid@test.com",
         password: "wrong-password",
       });
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it("rejects registration with missing fields", async () => {
+    const response = await request(app)
+      .post("/api/auth/register")
+      .send({
+        email: "missing@test.com",
+        password: "12345678",
+      });
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("rejects duplicated email registration", async () => {
+    const email = `duplicate-${Date.now()}@test.com`;
+
+    await request(app)
+      .post("/api/auth/register")
+      .send({
+        name: "Duplicate User",
+        email,
+        password: "12345678",
+      });
+
+    const response = await request(app)
+      .post("/api/auth/register")
+      .send({
+        name: "Duplicate User",
+        email,
+        password: "12345678",
+      });
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body.message).toBe("Email already exists");
+  });
+
+  it("rejects login with missing fields", async () => {
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "test@test.com",
+      });
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("returns current authenticated user", async () => {
+    const email = `me-${Date.now()}@test.com`;
+
+    const registerResponse = await request(app)
+      .post("/api/auth/register")
+      .send({
+        name: "Me User",
+        email,
+        password: "12345678",
+      });
+
+    const response = await request(app)
+      .get("/api/auth/me")
+      .set("Authorization", `Bearer ${registerResponse.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.user.email).toBe(email);
+    expect(response.body.user.password).toBeUndefined();
+  });
+
+  it("rejects /me with invalid token", async () => {
+    const response = await request(app)
+      .get("/api/auth/me")
+      .set("Authorization", "Bearer invalid-token");
 
     expect(response.statusCode).toBe(401);
   });

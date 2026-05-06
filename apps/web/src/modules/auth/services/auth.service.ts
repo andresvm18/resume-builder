@@ -1,6 +1,6 @@
-const API_URL = "http://localhost:8080/api/auth";
+import { apiRequest } from "../../../shared/services/apiClient";
 
-type AuthResponse = {
+export type AuthResponse = {
   token: string;
   user: {
     id: string;
@@ -14,35 +14,23 @@ export async function registerUser(
   email: string,
   password: string
 ) {
-  const response = await fetch(`${API_URL}/register`, {
+  return apiRequest<AuthResponse>("/auth/register", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    auth: false,
     body: JSON.stringify({ name, email, password }),
   });
-
-  if (!response.ok) {
-    throw new Error("Error registering user");
-  }
-
-  return response.json() as Promise<AuthResponse>;
 }
 
 export async function loginUser(email: string, password: string) {
-  const response = await fetch(`${API_URL}/login`, {
+  return apiRequest<AuthResponse>("/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    auth: false,
     body: JSON.stringify({ email, password }),
   });
+}
 
-  if (!response.ok) {
-    throw new Error("Invalid email or password");
-  }
-
-  return response.json() as Promise<AuthResponse>;
+export async function getCurrentUser() {
+  return apiRequest<{ user: AuthResponse["user"] }>("/auth/me");
 }
 
 export function saveAuthSession(data: AuthResponse) {
@@ -55,9 +43,17 @@ export function getAuthToken() {
   return localStorage.getItem("auth_token");
 }
 
-export function getAuthUser() {
+export function getAuthUser(): AuthResponse["user"] | null {
   const user = localStorage.getItem("auth_user");
-  return user ? JSON.parse(user) : null;
+
+  if (!user) return null;
+
+  try {
+    return JSON.parse(user);
+  } catch {
+    localStorage.removeItem("auth_user");
+    return null;
+  }
 }
 
 export function logoutUser() {

@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/auth.middleware");
+const validateIdParam = require("../middleware/validateIdParam");
+
 const {
   generateResume,
   getResumes,
@@ -10,19 +12,39 @@ const {
   deleteResume,
 } = require("../controllers/resume.controller");
 
-// Generate PDF
-router.post("/generate", authMiddleware, generateResume);
+const {
+  validateBody,
+  generateResumeSchema,
+} = require("../validators/schemas");
 
-// Get user resumes
+router.post(
+  "/generate",
+  authMiddleware,
+  validateBody(generateResumeSchema, "Nombre, correo y resumen son requeridos"),
+  generateResume
+);
+
 router.get("/", authMiddleware, getResumes);
 
-// Get specific PDF (download)
-router.get("/:id/download", authMiddleware, downloadResume);
+router.get(
+  "/:id/download",
+  authMiddleware,
+  validateIdParam,
+  downloadResume
+);
 
-// Get specific PDF (edit)
-router.get("/:id", authMiddleware, getResumeById);
+router.get(
+  "/:id",
+  authMiddleware,
+  validateIdParam,
+  getResumeById
+);
 
-// Delete
-router.delete("/:id", authMiddleware, deleteResume);
+router.delete(
+  "/:id",
+  authMiddleware,
+  validateIdParam,
+  deleteResume
+);
 
 module.exports = router;

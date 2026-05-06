@@ -6,6 +6,8 @@ const {
   deleteUserResume,
 } = require("../services/resume.service");
 
+const { normalizeResumeData } = require("../utils/resumeNormalizer");
+
 async function generateResume(req, res) {
   try {
     const { fullName, email, summary } = req.body;
@@ -16,8 +18,10 @@ async function generateResume(req, res) {
       });
     }
 
+    const cleanData = normalizeResumeData(req.body);
+
     const pdfBuffer = await generateResumePdf(
-      req.body,
+      cleanData,
       req.user.userId
     );
 
@@ -27,8 +31,15 @@ async function generateResume(req, res) {
     return res.end(pdfBuffer);
   } catch (error) {
     console.error("Error generating resume:", error);
+    const knownErrors = {
+      PDF_GENERATION_FAILED:
+        "No se pudo compilar el PDF. Revisa que los datos del CV no contengan contenido inválido.",
+      PDF_EMPTY_OR_INVALID:
+        "El PDF generado está vacío o es inválido.",
+    };
+
     return res.status(500).json({
-      message: "Error al generar el CV",
+      message: knownErrors[error.message] || "Error al generar el CV",
     });
   }
 }
@@ -58,11 +69,24 @@ async function downloadResume(req, res) {
 
     return res.end(pdfBuffer);
   } catch (error) {
+    if (error.message === "RESUME_NOT_FOUND") {
+      return res.status(404).json({
+        message: "CV no encontrado",
+      });
+    }
+
     console.error("Error downloading resume:", error);
 
+    const knownErrors = {
+      PDF_GENERATION_FAILED:
+        "No se pudo compilar el PDF para este CV.",
+      PDF_EMPTY_OR_INVALID:
+        "El PDF generado está vacío o es inválido.",
+    };
+
     return res.status(500).json({
-      message: "Error al descargar el CV",
-    });
+      message: knownErrors[error.message] || "Error al descargar el CV",
+    });;
   }
 }
 
@@ -90,10 +114,16 @@ async function deleteResume(req, res) {
       message: "CV eliminado correctamente",
     });
   } catch (error) {
+    if (error.message === "RESUME_NOT_FOUND") {
+      return res.status(404).json({
+        message: "CV no encontrado",
+      });
+    }
+
     console.error("Error deleting resume:", error);
 
-    return res.status(404).json({
-      message: "CV no encontrado",
+    return res.status(500).json({
+      message: "Error al eliminar el CV",
     });
   }
 }

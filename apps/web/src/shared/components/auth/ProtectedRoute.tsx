@@ -1,10 +1,18 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getAuthToken } from "../../../modules/auth/services/auth.service";
+import { useAuth } from "../../../shared/context/useAuth";
 
 export default function ProtectedRoute() {
-  const token = getAuthToken();
+  const { isLoading, isAuthenticated } = useAuth();
 
-  if (!token) {
+  if (isLoading) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        Verificando sesión...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
