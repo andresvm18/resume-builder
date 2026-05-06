@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "cross-env NODE_ENV=test jest --runInBand",
     "test:watch": "cross-env NODE_ENV=test jest --watch"
