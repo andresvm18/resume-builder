@@ -1,22 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-
-const app = express();
-
-app.use(helmet());
-app.use(cors());
-app.use(express.json({ limit: "1mb" }));
-
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 300,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    message: "Demasiadas solicitudes. Intenta de nuevo más tarde.",
-  },
+require("dotenv").config({
+  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+  override: false,
 });
 
-app.use("/api", apiLimiter);
+if (
+  process.env.NODE_ENV === "test" &&
+  !process.env.DATABASE_URL?.includes("_test")
+) {
+  throw new Error("Tests are trying to use a non-test database.");
+}
+
+const app = require("./app");
+
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`API running on http://localhost:${PORT}`);
+});
