@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "../../../shared/context/AuthProvider";
+import * as authService from "../../../modules/auth/services/auth.service";
+import { vi } from "vitest";
 import LandingPage from "./LandingPage";
 
 function renderLanding(initialRoute = "/") {
@@ -48,13 +50,20 @@ describe("LandingPage", () => {
   });
 
   it("navigates to resume builder when creating resume with token", async () => {
-    localStorage.setItem("auth_token", "fake-token");
+    localStorage.setItem("auth_token", "valid-token");
 
-    const user = userEvent.setup();
+    vi.spyOn(authService, "getCurrentUser").mockResolvedValue({
+      user: {
+        id: "1",
+        name: "Test User",
+        email: "test@test.com",
+      },
+    });
+
     renderLanding();
 
-    await user.click(
-      screen.getByRole("button", { name: /Crear tu Currículum/i })
+    await userEvent.click(
+      screen.getByRole("link", { name: /crear tu currículum/i })
     );
 
     expect(screen.getByText("Resume Builder")).toBeInTheDocument();
