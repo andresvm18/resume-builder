@@ -1,10 +1,17 @@
+const sanitizeHtml = require("sanitize-html");
+
 function sanitizeText(value = "") {
-  return String(value)
+  const normalizedLineBreaks = String(value)
     .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/?[^>]+(>|$)/g, "")
     .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .trim();
+    .replace(/\r/g, "\n");
+
+  const withoutHtml = sanitizeHtml(normalizedLineBreaks, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+
+  return withoutHtml.trim();
 }
 
 function normalizeArray(arr, fallback = []) {

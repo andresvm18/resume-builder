@@ -1,6 +1,17 @@
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const { register, login, me } = require("../controllers/auth.controller");
 const authMiddleware = require("../middleware/auth.middleware");
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Demasiados intentos de autenticación. Intenta de nuevo más tarde.",
+  },
+});
 
 const {
   validateBody,
@@ -12,13 +23,15 @@ const router = express.Router();
 
 router.post(
   "/register",
-  validateBody(registerSchema, "Name, email and password are required"),
+  authLimiter,
+  validateBody(registerSchema),
   register
 );
 
 router.post(
   "/login",
-  validateBody(loginSchema, "Email and password are required"),
+  authLimiter,
+  validateBody(loginSchema),
   login
 );
 
