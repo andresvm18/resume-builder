@@ -30,7 +30,11 @@ describe("LandingPage", () => {
     renderLanding();
 
     expect(
-      screen.getByText(/Crea currículums que pasan filtros/i)
+      screen.getByText(/Construye un currículum profesional en minutos\./i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/Plataforma de Currículums Optimizados para ATS/i)
     ).toBeInTheDocument();
 
     expect(
