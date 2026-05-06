@@ -201,7 +201,7 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => handleDownloadResume(resume.id, resume.title)}
-                      className="resume-card__delete-btn"
+                      className="resume-card__download-btn"
                     >
                       Descargar
                     </button>

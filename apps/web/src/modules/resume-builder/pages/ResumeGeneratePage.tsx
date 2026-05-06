@@ -34,6 +34,14 @@ export default function ResumeGeneratePage() {
   const [fileName, setFileName] = useState("cv.pdf");
   const [isGenerating, setIsGenerating] = useState(true);
   const [error, setError] = useState("");
+  const [generatedResumeData, setGeneratedResumeData] =
+    useState<ResumeData | null>(null);
+
+  const handleBackToEdit = () => {
+    navigate("/resume-builder", {
+      state: generatedResumeData ?? resumeData,
+    });
+  };
 
   useEffect(() => {
     if (hasGenerated.current) return;
@@ -48,7 +56,6 @@ export default function ResumeGeneratePage() {
 
     const generateResume = async () => {
       try {
-
         setStatus("Enviando información al servidor...");
 
         const rawPayload = Object.fromEntries(
@@ -57,13 +64,15 @@ export default function ResumeGeneratePage() {
 
         const resumePayload = normalizeResumeData(rawPayload);
 
+        setGeneratedResumeData(resumePayload);
+
         setStatus("Generando PDF con LaTeX...");
 
         const blob = await generateResumePdf(resumePayload);
 
         generatedUrl = URL.createObjectURL(blob);
 
-        const generatedFileName = `${formatFileName(resumeData.fullName || "cv")}.pdf`;
+        const generatedFileName = `${formatFileName(resumePayload.fullName || "cv")}.pdf`;
 
         const link = document.createElement("a");
         link.href = generatedUrl;
@@ -101,7 +110,6 @@ export default function ResumeGeneratePage() {
     <main className="resume-generate-page">
       <Header />
 
-      {/* ── Loading / error state: centred card ── */}
       {!pdfUrl && (
         <section className="resume-generate-page__card">
           <h1 className="resume-generate-page__title">
@@ -125,7 +133,7 @@ export default function ResumeGeneratePage() {
               <div className="resume-generate-page__error-actions">
                 <button
                   type="button"
-                  onClick={() => navigate("/resume-builder")}
+                  onClick={handleBackToEdit}
                   className="resume-generate-page__secondary"
                 >
                   Volver a editar
@@ -144,10 +152,8 @@ export default function ResumeGeneratePage() {
         </section>
       )}
 
-      {/* ── Success state: full-width layout ── */}
       {pdfUrl && (
         <div className="resume-generate-page__success">
-          {/* Top bar: title + status + actions */}
           <div className="resume-generate-page__top-bar">
             <h1 className="resume-generate-page__title">
               Tu currículum
@@ -166,7 +172,7 @@ export default function ResumeGeneratePage() {
 
               <button
                 type="button"
-                onClick={() => navigate("/resume-builder")}
+                onClick={handleBackToEdit}
                 className="resume-generate-page__secondary"
               >
                 Volver a editar
@@ -182,7 +188,6 @@ export default function ResumeGeneratePage() {
             </div>
           </div>
 
-          {/* PDF preview + ATS panel */}
           <div className="resume-generate-page__result-layout">
             <div className="resume-generate-page__preview">
               <iframe

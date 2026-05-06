@@ -14,14 +14,27 @@ import type {
 
 const STORAGE_KEY = "resume-data";
 
-export function useResumeBuilder(resumeId?: string) {
+type UseResumeBuilderOptions = {
+  initialData?: unknown;
+  onResumeNotFound?: () => void;
+};
+
+export function useResumeBuilder(
+  resumeId?: string,
+  options: UseResumeBuilderOptions = {}
+) {
   const resumeRef = useRef<HTMLDivElement>(null);
 
-  const [resumeData, setResumeData] = useState<ResumeData>(DEFAULT_RESUME_DATA);
+  const [resumeData, setResumeData] = useState<ResumeData>(() =>
+    options.initialData
+      ? normalizeResumeData(options.initialData)
+      : DEFAULT_RESUME_DATA
+  );
 
   const [currentStep, setCurrentStep] = useState<Step>("personal");
   const [skillInput, setSkillInput] = useState("");
 
+  const { onResumeNotFound } = options;
   useEffect(() => {
     if (!resumeId) return;
 
@@ -35,11 +48,12 @@ export function useResumeBuilder(resumeId?: string) {
         }
       } catch (error) {
         console.error("Error loading resume:", error);
+        onResumeNotFound?.();
       }
     };
 
     loadResume();
-  }, [resumeId]);
+  }, [resumeId, onResumeNotFound]);
 
 
   const updateField = <K extends keyof ResumeData>(
