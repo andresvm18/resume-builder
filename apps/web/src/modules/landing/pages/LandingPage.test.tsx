@@ -62,11 +62,13 @@ describe("LandingPage", () => {
 
     renderLanding();
 
-    await userEvent.click(
-      screen.getByRole("link", { name: /crear tu currículum/i })
+    const user = userEvent.setup();
+
+    await user.click(
+      screen.getByRole("button", { name: /crear tu currículum/i })
     );
 
-    expect(screen.getByText("Resume Builder")).toBeInTheDocument();
+    expect(await screen.findByText("Resume Builder")).toBeInTheDocument();
   });
 
   it("navigates to register from CTA without token", async () => {
