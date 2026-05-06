@@ -7,11 +7,9 @@ import ResumeFormPanel from "../components/ResumeFormPanel";
 import AtsRecommendationsPanel from "../components/AtsRecommendationsPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
 import type { StepItem } from "../types/resume.types";
-import {
-  getAiRecommendations,
-  optimizeSummary,
-  type AiRecommendationsResponse,
-} from "../services/ai.service";
+import { useResumeValidation } from "../hooks/useResumeValidation";
+import { useAiRecommendations } from "../hooks/useAiRecommendations";
+import { optimizeSummary } from "../services/ai.service";
 import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
@@ -19,11 +17,6 @@ export default function ResumeBuilderPage() {
   const { id } = useParams();
 
   const [isOptimizingSummary, setIsOptimizingSummary] = useState(false);
-  const [isGeneratingRecommendations, setIsGeneratingRecommendations] =
-    useState(false);
-  const [recommendationsFailed, setRecommendationsFailed] = useState(false);
-  const [aiRecommendations, setAiRecommendations] =
-    useState<AiRecommendationsResponse | null>(null);
 
   const {
     resumeData,
@@ -71,6 +64,15 @@ export default function ResumeBuilderPage() {
     jobDescription,
     setJobDescription,
   } = useResumeBuilder(id);
+
+  const { validateResumeData } = useResumeValidation();
+
+  const {
+    aiRecommendations,
+    isGeneratingRecommendations,
+    recommendationsFailed,
+    generateRecommendations,
+  } = useAiRecommendations();
 
   const steps: StepItem[] = [
     {
@@ -123,36 +125,6 @@ export default function ResumeBuilderPage() {
     },
   ];
 
-  const validateResumeData = () => {
-    if (!resumeData.fullName.trim()) {
-      alert("Debes ingresar tu nombre completo.");
-      setCurrentStep("personal");
-      return false;
-    }
-
-    if (!resumeData.email.trim()) {
-      alert("Debes ingresar tu correo electrónico.");
-      setCurrentStep("personal");
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(resumeData.email)) {
-      alert("Debes ingresar un correo electrónico válido.");
-      setCurrentStep("personal");
-      return false;
-    }
-
-    if (!resumeData.summary.trim()) {
-      alert("Debes agregar un resumen profesional.");
-      setCurrentStep("summary");
-      return false;
-    }
-
-    return true;
-  };
-
   const goToStep = (stepId: StepItem["id"]) => {
     setCurrentStep(stepId);
 
@@ -182,23 +154,13 @@ export default function ResumeBuilderPage() {
       return;
     }
 
-    try {
-      setIsGeneratingRecommendations(true);
-      setRecommendationsFailed(false);
-      setAiRecommendations(null);
+    const result = await generateRecommendations(resumeData, jobDescription);
 
-      const result = await getAiRecommendations(resumeData, jobDescription);
-
-      setAiRecommendations(result);
-
-      goToStep("summary");
-    } catch {
-      setRecommendationsFailed(true);
+    if (!result) {
       alert("No se pudieron generar recomendaciones con IA. Puedes continuar manualmente.");
-      goToStep("summary");
-    } finally {
-      setIsGeneratingRecommendations(false);
     }
+
+    goToStep("summary");
   };
 
   const handleNext = async () => {
@@ -215,7 +177,19 @@ export default function ResumeBuilderPage() {
   };
 
   const handleFinish = () => {
-    if (!validateResumeData()) return;
+    const result = validateResumeData(resumeData);
+
+    if (!result.isValid) {
+      if (result.message) {
+        alert(result.message);
+      }
+
+      if (result.step) {
+        setCurrentStep(result.step);
+      }
+
+      return;
+    }
 
     navigate("/resume/optimize", {
       state: {
