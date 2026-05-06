@@ -34,8 +34,8 @@ export default function LandingPage() {
       <section className="hero">
         <div>
           <span className="hero__badge">Plataforma de Currículums Optimizados para ATS</span>
-          <h2 className="hero__title">Crea currículums que pasan filtros y consiguen entrevistas.</h2>
-          <p className="hero__description">Crea currículums limpios y compatibles con ATS con vista previa en tiempo real...</p>
+          <h2 className="hero__title">Construye un currículum profesional en minutos.</h2>
+          <p className="hero__description">Optimizado para ATS, exportable a PDF y diseñado para ayudarte a presentarte mejor.</p>
           <div className="hero__actions">
             <button
               onClick={handleCreateResume}
