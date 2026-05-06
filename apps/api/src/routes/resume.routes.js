@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/auth.middleware");
+const validateIdParam = require("../middleware/validateIdParam");
 
 const {
   generateResume,
@@ -25,10 +26,25 @@ router.post(
 
 router.get("/", authMiddleware, getResumes);
 
-router.get("/:id/download", authMiddleware, downloadResume);
+router.get(
+  "/:id/download",
+  authMiddleware,
+  validateIdParam,
+  downloadResume
+);
 
-router.get("/:id", authMiddleware, getResumeById);
+router.get(
+  "/:id",
+  authMiddleware,
+  validateIdParam,
+  getResumeById
+);
 
-router.delete("/:id", authMiddleware, deleteResume);
+router.delete(
+  "/:id",
+  authMiddleware,
+  validateIdParam,
+  deleteResume
+);
 
 module.exports = router;
