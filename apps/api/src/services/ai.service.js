@@ -192,6 +192,7 @@ ${jobDescription || "No se proporcionó oferta laboral."}
 }
 
 async function optimizeSummary({ resumeData, jobDescription }) {
+  console.log("optimizeSummary");
   const result = await generateWithFallback(
     buildSummaryPrompt({
       resumeData,
@@ -280,6 +281,7 @@ ${jobDescription || ""}
 }
 
 async function generateAiRecommendations({ resumeData, jobDescription }) {
+  console.log("generateAiRecommendations");
   const result = await generateWithFallback(
     buildRecommendationsPrompt({
       resumeData,
@@ -434,6 +436,7 @@ function fallbackOptimizedResume(resumeData, jobDescription) {
 }
 
 async function optimizeFullResume({ resumeData, jobDescription }) {
+  console.log("optimizeFullResume")
   try {
     const result = await generateWithFallback(
       buildFullResumeOptimizationPrompt({
@@ -521,6 +524,7 @@ ${jobDescription || "No se proporcionó oferta laboral."}
 }
 
 async function analyzeFinalAts({ resumeData, jobDescription }) {
+  console.log("analyzeFinalAts")
   const result = await generateWithFallback(
     buildFinalAtsAnalysisPrompt({
       resumeData,
