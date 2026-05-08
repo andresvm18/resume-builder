@@ -260,6 +260,89 @@ function cleanBulletLine(line = "") {
     .trim();
 }
 
+function hasContent(value) {
+  return String(value || "").trim().length > 0;
+}
+
+function hasItems(items) {
+  return Array.isArray(items) && items.length > 0;
+}
+
+function hasExperienceContent(experiences = []) {
+  return (
+    hasItems(experiences) &&
+    experiences.some(
+      (exp) =>
+        hasContent(exp.title) ||
+        hasContent(exp.location) ||
+        hasContent(exp.startDate) ||
+        hasContent(exp.endDate) ||
+        hasContent(exp.description)
+    )
+  );
+}
+
+function hasEducationContent(education = []) {
+  return (
+    hasItems(education) &&
+    education.some(
+      (edu) =>
+        hasContent(edu.institution) ||
+        hasContent(edu.degree) ||
+        hasContent(edu.date)
+    )
+  );
+}
+
+function hasLanguageContent(languages = []) {
+  return (
+    hasItems(languages) &&
+    languages.some((lang) => hasContent(lang.name) || hasContent(lang.level))
+  );
+}
+
+function hasProjectContent(projects = []) {
+  return (
+    hasItems(projects) &&
+    projects.some(
+      (project) =>
+        hasContent(project.name) ||
+        hasContent(project.technologies) ||
+        hasContent(project.description) ||
+        hasContent(project.link)
+    )
+  );
+}
+
+function hasSkillsContent(data = {}) {
+  const hasSimpleSkills = hasItems(data.skills);
+
+  const hasTechnicalSkills =
+    hasItems(data.technicalSkills) &&
+    data.technicalSkills.some(
+      (group) => hasContent(group.category) || hasItems(group.items)
+    );
+
+  const hasSoftSkills =
+    hasItems(data.softSkills) &&
+    data.softSkills.some(
+      (skill) => hasContent(skill.name) || hasContent(skill.description)
+    );
+
+  return hasSimpleSkills || hasTechnicalSkills || hasSoftSkills;
+}
+
+function buildSection(title, content) {
+  if (!hasContent(content)) return "";
+
+  return `
+\\resumesection{${title}}
+
+${content}
+`;
+}
+
+
 function buildSkills(data = {}) {
   const skills = Array.isArray(data.skills) ? data.skills : [];
 
@@ -448,11 +531,38 @@ async function renderResumePdf(data) {
     .replaceAll("{{PHONE}}", latexValue(data.phone))
     .replaceAll("{{LOCATION}}", latexValue(data.location))
     .replaceAll("{{SUMMARY}}", latexValue(data.summary))
-    .replaceAll("{{EDUCATION}}", buildEducation(data.education))
-    .replaceAll("{{EXPERIENCE}}", buildExperience(data.experiences))
-    .replaceAll("{{SKILLS}}", buildSkills(data))
-    .replaceAll("{{LANGUAGES}}", buildLanguages(data.languages))
-    .replaceAll("{{PROJECTS}}", buildProjects(data.projects));
+
+
+    .replaceAll(
+      "{{EXPERIENCE_SECTION}}",
+      hasExperienceContent(data.experiences)
+        ? buildSection("EXPERIENCIA LABORAL", buildExperience(data.experiences))
+        : ""
+    )
+    .replaceAll(
+      "{{EDUCATION_SECTION}}",
+      hasEducationContent(data.education)
+        ? buildSection("EDUCACIÓN", buildEducation(data.education))
+        : ""
+    )
+    .replaceAll(
+      "{{SKILLS_SECTION}}",
+      hasSkillsContent(data)
+        ? buildSection("HABILIDADES", buildSkills(data))
+        : ""
+    )
+    .replaceAll(
+      "{{LANGUAGES_SECTION}}",
+      hasLanguageContent(data.languages)
+        ? buildSection("IDIOMAS", buildLanguages(data.languages))
+        : ""
+    )
+    .replaceAll(
+      "{{PROJECTS_SECTION}}",
+      hasProjectContent(data.projects)
+        ? buildSection("PROYECTOS", buildProjects(data.projects))
+        : ""
+    );
 
   const fileId = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
