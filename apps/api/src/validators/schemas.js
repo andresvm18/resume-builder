@@ -104,6 +104,31 @@ function validateBody(schema, message = "Datos inválidos") {
   };
 }
 
+const profileDataSchema = z.object({
+  fullName: z.string().optional().default(""),
+  email: z.string().optional().default(""),
+  phone: z.string().optional().default(""),
+  location: z.string().optional().default(""),
+  summary: z.string().optional().default(""),
+
+  skills: z.array(z.string()).optional().default([]),
+  technicalSkills: z.array(technicalSkillGroupSchema).optional().default([]),
+  softSkills: z.array(softSkillSchema).optional().default([]),
+
+  languages: z.array(languageSchema).optional().default([]),
+  experiences: z.array(experienceSchema).optional().default([]),
+  education: z.array(educationSchema).optional().default([]),
+  projects: z.array(projectSchema).optional().default([]),
+
+  certifications: z.array(z.string()).optional().default([]),
+  links: z.array(z.string()).optional().default([]),
+  targetRoles: z.array(z.string()).optional().default([]),
+}).passthrough();
+
+const profileSchema = z.object({
+  profileData: profileDataSchema,
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -111,4 +136,5 @@ module.exports = {
   resumeDataSchema,
   aiWithJobDescriptionSchema,
   validateBody,
+  profileSchema,
 };
