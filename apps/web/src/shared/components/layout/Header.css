@@ -6,7 +6,6 @@
 /* ── Header Shell ── */
 .header {
   width: 100%;
-  background-color: var(--color-surface-white);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
@@ -43,7 +42,6 @@
   transition: opacity var(--transition-base);
 }
 
-/* Golden accent dot after the logo */
 .header__logo::after {
   content: '';
   display: inline-block;
@@ -72,31 +70,35 @@
   gap: 0.25rem;
 }
 
-/* ── Login Link ── */
+/* ── Divisor vertical entre grupos ── */
+.header__divider {
+  width: 1px;
+  height: 18px;
+  background-color: var(--color-border);
+  margin: 0 0.35rem;
+  flex-shrink: 0;
+}
+
+/* ── Nav Links (Dashboard, Login, etc.) ── */
 .header__link {
   font-family: var(--font-sans);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   color: var(--text-muted);
   text-decoration: none;
   letter-spacing: 0.01em;
-  padding: 0.5rem 0.875rem;
+  padding: 0.4rem 0.7rem;
   border-radius: var(--border-radius-sm);
-  position: relative;
+  border: 0.5px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   transition: color var(--transition-base), background-color var(--transition-base);
 }
 
-.header__link::before {
-  content: '';
-  position: absolute;
-  bottom: 6px;
-  left: 0.875rem;
-  right: 0.875rem;
-  height: 1px;
-  background-color: var(--text-primary);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--transition-slow);
+.header__link i {
+  font-size: 14px;
+  opacity: 0.7;
 }
 
 .header__link:hover {
@@ -104,11 +106,7 @@
   background-color: rgba(26, 24, 20, 0.05);
 }
 
-.header__link:hover::before {
-  transform: scaleX(1);
-}
-
-/* ── CTA Button ── */
+/* ── CTA Button (registro) ── */
 .header__cta {
   font-family: var(--font-sans);
   font-size: 0.875rem;
@@ -116,14 +114,19 @@
   color: var(--btn-text);
   background-color: var(--btn-bg);
   text-decoration: none;
-  padding: 0.55rem 1.25rem;
+  padding: 0.5rem 1.1rem;
   border-radius: var(--border-radius-sm);
   letter-spacing: 0.02em;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   white-space: nowrap;
-  transition: background-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+  transition: background-color var(--transition-base), transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.header__cta i {
+  font-size: 14px;
 }
 
 .header__cta:hover {
@@ -132,14 +135,92 @@
   box-shadow: 0 4px 16px rgba(26, 24, 20, 0.18);
 }
 
-.header__cta:hover::after {
-  opacity: 1;
-  transform: translateX(0);
-}
-
 .header__cta:active {
   transform: translateY(0);
   box-shadow: 0 1px 4px rgba(26, 24, 20, 0.12);
+}
+
+/* ── User Avatar / Profile Link ── */
+.header__avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  padding: 0.3rem 0.65rem 0.3rem 0.3rem;
+  border-radius: 999px;
+  border: 0.5px solid var(--color-border);
+  background-color: transparent;
+  margin: 0 0.15rem;
+  transition: background-color var(--transition-base), border-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+.header__avatar:hover {
+  background-color: rgba(26, 24, 20, 0.05);
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+.header__avatar-initials {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header__avatar-name {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.header__avatar-chevron {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 1px;
+}
+
+/* ── Logout Button ── */
+.header__logout {
+  background: none;
+  border: 0.5px solid var(--color-border);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--border-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color var(--transition-base), background-color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.header__logout i {
+  font-size: 14px;
+}
+
+.header__logout:hover {
+  background-color: rgba(220, 38, 38, 0.07);
+  color: var(--error);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.header__logout:focus-visible {
+  outline: 2px solid var(--error);
+  outline-offset: 2px;
 }
 
 /* ── Responsive: Tablet ── */
@@ -159,42 +240,21 @@
 
   .header__link {
     font-size: 0.8125rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.4rem 0.65rem;
   }
 
   .header__cta {
     font-size: 0.8125rem;
-    padding: 0.5rem 1rem;
+    padding: 0.45rem 0.9rem;
   }
-}
 
-.header__user-name {
-  font-weight: 500;
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  color: var(--text-primary);
-}
+  .header__avatar {
+    padding: 0.28rem 0.6rem 0.28rem 0.28rem;
+  }
 
-.header__logout {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--error);
-  padding: 0.5rem 0.875rem;
-  border-radius: var(--border-radius-sm);
-  transition: color var(--transition-base), background-color var(--transition-base);
-}
-
-.header__logout:hover {
-  background-color: rgba(220, 38, 38, 0.08);
-}
-
-.header__logout:focus-visible {
-  outline: 2px solid var(--error);
-  outline-offset: 2px;
+  .header__avatar-name {
+    font-size: 0.8125rem;
+  }
 }
 
 /* ── Responsive: Mobile ── */
@@ -208,12 +268,33 @@
     font-size: 1.1rem;
   }
 
-  .header__link {
+  .header__link span {
     display: none;
-    /* Hide login on very small screens, keep CTA */
+  }
+
+  .header__link i {
+    opacity: 1;
   }
 
   .header__cta {
-    padding: 0.5rem 0.9rem;
+    padding: 0.45rem 0.85rem;
+  }
+
+  .header__avatar-name,
+  .header__avatar-chevron {
+    display: none;
+  }
+
+  .header__avatar {
+    padding: 0.28rem;
+    border-radius: 50%;
+  }
+
+  .header__logout span {
+    display: none;
+  }
+
+  .header__divider {
+    display: none;
   }
 }

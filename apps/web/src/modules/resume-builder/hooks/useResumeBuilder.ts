@@ -250,6 +250,7 @@ export function useResumeBuilder(
     resumeRef,
 
     resumeData,
+    setResumeData,
     currentStep,
     setCurrentStep,
     skillInput,
