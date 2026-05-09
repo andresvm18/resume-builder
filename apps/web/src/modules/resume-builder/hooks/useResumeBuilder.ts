@@ -68,20 +68,25 @@ export function useResumeBuilder(
 
   // Skills
   const addSkill = () => {
-    const normalizedSkill = skillInput.trim();
+    const parsedSkills = skillInput
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter(Boolean);
 
-    if (!normalizedSkill) return;
+    if (parsedSkills.length === 0) return;
 
     setResumeData((prev) => {
-      const alreadyExists = prev.skills.some(
-        (skill) => skill.toLowerCase() === normalizedSkill.toLowerCase()
+      const existingSkills = prev.skills.map((skill) => skill.toLowerCase());
+
+      const uniqueSkills = parsedSkills.filter(
+        (skill) => !existingSkills.includes(skill.toLowerCase())
       );
 
-      if (alreadyExists) return prev;
+      if (uniqueSkills.length === 0) return prev;
 
       return {
         ...prev,
-        skills: [...prev.skills, normalizedSkill],
+        skills: [...prev.skills, ...uniqueSkills],
       };
     });
 
