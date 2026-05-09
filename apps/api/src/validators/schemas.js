@@ -68,6 +68,8 @@ const resumeDataObjectSchema = z.object({
   projects: z.array(projectSchema).optional().default([]),
 
   jobDescription: z.string().optional().default(""),
+
+  template: z.enum(["classic", "modern", "compact"]).optional().default("classic"),
 }).passthrough();
 
 const generateResumeSchema = resumeDataObjectSchema.extend({
