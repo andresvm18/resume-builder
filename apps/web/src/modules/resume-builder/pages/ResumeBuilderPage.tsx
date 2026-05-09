@@ -10,6 +10,7 @@ import type { StepItem } from "../types/resume.types";
 import { useResumeValidation } from "../hooks/useResumeValidation";
 import { useAiRecommendations } from "../hooks/useAiRecommendations";
 import { optimizeSummary } from "../services/ai.service";
+import TemplateSelector from "../components/TemplateSelector";
 import "./ResumeBuilderPage.css";
 
 export default function ResumeBuilderPage() {
@@ -64,6 +65,9 @@ export default function ResumeBuilderPage() {
 
     jobDescription,
     setJobDescription,
+
+    template,
+    setTemplate,
   } = useResumeBuilder(id, {
     initialData: routerLocation.state,
     onResumeNotFound: () => {
@@ -251,6 +255,8 @@ export default function ResumeBuilderPage() {
             onStepClick={goToStep}
           />
 
+          <TemplateSelector template={template} setTemplate={setTemplate} />
+          
           <ResumeFormPanel
             currentStep={currentStep}
             fullName={fullName}

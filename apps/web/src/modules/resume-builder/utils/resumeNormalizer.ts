@@ -118,5 +118,10 @@ export function normalizeResumeData(value: unknown): ResumeData {
     projects: normalizeProjects(data.projects),
 
     jobDescription: sanitizeText(data.jobDescription),
+
+    template:
+      data.template === "modern" || data.template === "compact"
+        ? data.template
+        : "classic",
   };
 }

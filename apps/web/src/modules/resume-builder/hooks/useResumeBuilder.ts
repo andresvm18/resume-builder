@@ -274,6 +274,9 @@ export function useResumeBuilder(
     education: resumeData.education,
     projects: resumeData.projects,
 
+    template: resumeData.template,
+    setTemplate: (value: ResumeData["template"]) => updateField("template", value),
+
     addSkill,
     removeSkill,
 

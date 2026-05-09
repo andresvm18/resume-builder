@@ -548,8 +548,6 @@ async function renderResumePdf(data) {
     .replaceAll("{{PHONE}}", latexValue(data.phone))
     .replaceAll("{{LOCATION}}", latexValue(data.location))
     .replaceAll("{{SUMMARY}}", latexValue(data.summary))
-
-
     .replaceAll(
       "{{EXPERIENCE_SECTION}}",
       hasExperienceContent(data.experiences)
