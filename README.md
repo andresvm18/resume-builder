@@ -236,16 +236,30 @@ ResumeBuilder includes multiple security layers:
 - Advanced UX improvements
 - Security hardening
 
+## ✅ Phase 4 — Advanced PDF & UX Enhancements
+- Multiple LaTeX resume templates
+- Dynamic PDF section rendering
+- Template selection system
+- Improved skills UX
+- Cleaner ATS-friendly PDF generation
+- Advanced customization support
+
 ---
 
 # 🚧 Future Roadmap
 
-## Phase 4 — SaaS & Advanced AI Features
+## Phase 5 — Career Intelligence Platform
+
 Planned features include:
 
+- Persistent user career profiles
+- AI-powered profile-to-resume generation
 - AI-generated cover letters
 - Resume version comparison
-- User profile
+- Advanced personalization workflows
+- Career analytics dashboard
+- Public resume sharing
+- Intelligent resume recommendations
 
 ---
 
