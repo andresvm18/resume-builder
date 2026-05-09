@@ -1,0 +1,57 @@
+\documentclass[letterpaper,10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{
+    top=0.5in,
+    bottom=0.5in,
+    left=0.6in,
+    right=0.6in,
+}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=black,
+    linkcolor=black,
+}
+
+\setlist{nosep, left=10pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.18em}
+
+\newcommand{\resumesection}[1]{
+    \vspace{0.35em}
+    \textbf{\normalsize #1}
+    \vspace{0.1em}
+    \hrule
+    \vspace{0.3em}
+}
+
+\begin{document}
+
+{\Large \textbf{{{FULL_NAME}}}} \\
+\href{mailto:{{EMAIL}}}{{{EMAIL}}} \hfill {{PHONE}} \\
+{{LOCATION}}
+
+\vspace{0.3em}
+
+\resumesection{PERFIL PROFESIONAL}
+
+{{SUMMARY}}
+
+{{EDUCATION_SECTION}}
+
+{{EXPERIENCE_SECTION}}
+
+{{SKILLS_SECTION}}
+
+{{LANGUAGES_SECTION}}
+
+{{PROJECTS_SECTION}}
+
+\end{document}

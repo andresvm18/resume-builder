@@ -517,8 +517,29 @@ ${escapeLatex(project.technologies)}
     .join("\n");
 }
 
+const ALLOWED_TEMPLATES = new Set([
+  "classic",
+  "modern",
+  "compact",
+]);
+
+function resolveTemplateName(templateName) {
+  if (!templateName || !ALLOWED_TEMPLATES.has(templateName)) {
+    return "classic";
+  }
+
+  return templateName;
+}
+
 async function renderResumePdf(data) {
-  const templatePath = path.join(__dirname, "../templates/resume-template.tex");
+  const templateName = resolveTemplateName(data.template);
+
+  const templatePath = path.join(
+    __dirname,
+    "../templates/resume",
+    `${templateName}.tex`
+  );
+
   const outputDir = path.join(__dirname, "../../generated");
 
   await fs.mkdir(outputDir, { recursive: true });
@@ -531,8 +552,6 @@ async function renderResumePdf(data) {
     .replaceAll("{{PHONE}}", latexValue(data.phone))
     .replaceAll("{{LOCATION}}", latexValue(data.location))
     .replaceAll("{{SUMMARY}}", latexValue(data.summary))
-
-
     .replaceAll(
       "{{EXPERIENCE_SECTION}}",
       hasExperienceContent(data.experiences)
