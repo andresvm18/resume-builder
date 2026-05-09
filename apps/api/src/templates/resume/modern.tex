@@ -1,0 +1,69 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\geometry{
+    top=0.65in,
+    bottom=0.65in,
+    left=0.75in,
+    right=0.75in,
+}
+
+\definecolor{primary}{HTML}{1A1814}
+\definecolor{accent}{HTML}{B8893A}
+\definecolor{muted}{HTML}{6B6760}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=accent,
+    linkcolor=primary,
+}
+
+\setlist{nosep, left=14pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.28em}
+
+\newcommand{\resumesection}[1]{
+    \vspace{0.7em}
+    {\color{accent}\textbf{\large #1}}
+    \vspace{0.2em}
+    {\color{accent}\hrule}
+    \vspace{0.55em}
+}
+
+\begin{document}
+
+\begin{center}
+    {\Huge \textbf{\textcolor{primary}{{{FULL_NAME}}}}} \\[0.4em]
+    {\small
+    \href{mailto:{{EMAIL}}}{{{EMAIL}}}
+    \quad | \quad
+    {{PHONE}}
+    \quad | \quad
+    {{LOCATION}}
+    }
+\end{center}
+
+\vspace{0.4em}
+
+\resumesection{PERFIL PROFESIONAL}
+
+{{SUMMARY}}
+
+{{EDUCATION_SECTION}}
+
+{{EXPERIENCE_SECTION}}
+
+{{SKILLS_SECTION}}
+
+{{LANGUAGES_SECTION}}
+
+{{PROJECTS_SECTION}}
+
+\end{document}
