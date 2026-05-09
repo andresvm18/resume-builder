@@ -6,6 +6,7 @@ const rateLimit = require("express-rate-limit");
 const authRoutes = require("./routes/auth.routes");
 const resumeRoutes = require("./routes/resume.routes");
 const aiRoutes = require("./routes/ai.routes");
+const profileRoutes = require("./routes/profile.routes");
 
 const app = express();
 app.set("trust proxy", 1);
@@ -28,5 +29,7 @@ app.use("/api", apiLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/ai", aiRoutes);
+
+app.use("/api/profile", profileRoutes);
 
 module.exports = app;
