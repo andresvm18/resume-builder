@@ -76,6 +76,7 @@ export type ResumeData = {
   education: Education[];
   projects: Project[];
   jobDescription: string;
+  template: ResumeTemplate;
 };
 
 export type ResumeVersion = {
@@ -92,6 +93,7 @@ export type Resume = {
   versions: ResumeVersion[];
 };
 
+export type ResumeTemplate = "classic" | "modern" | "compact";
 
 export const DEFAULT_RESUME_DATA: ResumeData = {
   fullName: "",
@@ -135,6 +137,7 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
     },
   ],
   jobDescription: "",
+  template: "classic",
 };
 
 export const RESUME_STEPS: StepItem[] = [
