@@ -33,7 +33,7 @@ describe("SkillsStep", () => {
       />
     );
 
-    await user.type(screen.getByPlaceholderText(/Escribe una habilidad/i), "React");
+    await user.type(screen.getByPlaceholderText(/Escribe tus habilidades Ej: 'React, TypeScript, Node.js'/i), "React");
 
     expect(setSkillInput).toHaveBeenCalled();
   });
@@ -71,7 +71,7 @@ describe("SkillsStep", () => {
       />
     );
 
-    const input = screen.getByPlaceholderText(/Escribe una habilidad/i);
+    const input = screen.getByPlaceholderText(/Escribe tus habilidades Ej: 'React, TypeScript, Node.js'/i);
 
     await user.click(input);
     await user.keyboard("{Enter}");

@@ -25,7 +25,7 @@ export default function SkillsStep({
               addSkill();
             }
           }}
-          placeholder="Escribe una habilidad"
+          placeholder="Escribe tus habilidades Ej: 'React, TypeScript, Node.js'"
           className="resume-builder-page__input"
         />
 
