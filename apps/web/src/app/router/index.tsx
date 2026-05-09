@@ -10,6 +10,7 @@ import ResumeOptimizePage from "../../modules/resume-builder/pages/ResumeOptimiz
 import ProtectedRoute from "../../shared/components/auth/ProtectedRoute";
 import PublicOnlyRoute from "../../shared/components/auth/PublicOnlyRoute";
 import AppErrorBoundary from "../../shared/components/error/AppErrorBoundary";
+import ProfilePage from "../../modules/profile/pages/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
       {
         path: "/resume/optimize",
         element: <ResumeOptimizePage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />
       },
     ],
   },
