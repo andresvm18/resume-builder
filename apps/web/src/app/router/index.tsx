@@ -11,6 +11,7 @@ import ProtectedRoute from "../../shared/components/auth/ProtectedRoute";
 import PublicOnlyRoute from "../../shared/components/auth/PublicOnlyRoute";
 import AppErrorBoundary from "../../shared/components/error/AppErrorBoundary";
 import ProfilePage from "../../modules/profile/pages/ProfilePage";
+import GenerateResumeFromProfilePage from "../../modules/profile/pages/GenerateResumeFromProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />
+      },
+      {
+        path: "/generate-from-profile",
+        element: <GenerateResumeFromProfilePage />
       },
     ],
   },

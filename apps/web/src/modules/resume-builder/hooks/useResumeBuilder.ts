@@ -25,11 +25,22 @@ export function useResumeBuilder(
 ) {
   const resumeRef = useRef<HTMLDivElement>(null);
 
-  const [resumeData, setResumeData] = useState<ResumeData>(() =>
-    options.initialData
+  const generatedProfileResume =
+    localStorage.getItem("resume-profile-generated");
+
+  const [resumeData, setResumeData] = useState<ResumeData>(() => {
+    if (generatedProfileResume) {
+      localStorage.removeItem("resume-profile-generated");
+
+      return normalizeResumeData(
+        JSON.parse(generatedProfileResume)
+      );
+    }
+
+    return options.initialData
       ? normalizeResumeData(options.initialData)
-      : DEFAULT_RESUME_DATA
-  );
+      : DEFAULT_RESUME_DATA;
+  });
 
   const [currentStep, setCurrentStep] = useState<Step>("personal");
   const [skillInput, setSkillInput] = useState("");
