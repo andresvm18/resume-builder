@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth.routes");
 const resumeRoutes = require("./routes/resume.routes");
 const aiRoutes = require("./routes/ai.routes");
 const profileRoutes = require("./routes/profile.routes");
+const profileAiRoutes = require("./routes/profile-ai.routes");
 
 const app = express();
 app.set("trust proxy", 1);
@@ -31,5 +32,7 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/ai", aiRoutes);
 
 app.use("/api/profile", profileRoutes);
+
+app.use("/api/profile", profileAiRoutes);
 
 module.exports = app;
