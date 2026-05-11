@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "../../../shared/components/layout/Header";
 import ResumeFormPanel from "../../resume-builder/components/ResumeFormPanel";
+import ProfileCompletenessCard from "../components/ProfileCompletenessCard";
 import { useResumeBuilder } from "../../resume-builder/hooks/useResumeBuilder";
 import {
   getProfile,
@@ -102,6 +103,8 @@ export default function ProfilePage() {
               {successMessage}
             </p>
           )}
+
+          <ProfileCompletenessCard profile={builder.resumeData} />
 
           <div className="profile-page__tabs">
             {profileSteps.map((step) => (
