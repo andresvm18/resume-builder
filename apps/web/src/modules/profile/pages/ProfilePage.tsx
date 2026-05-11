@@ -25,6 +25,7 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   const builder = useResumeBuilder();
   const setProfileData = builder.setResumeData;
@@ -46,20 +47,38 @@ export default function ProfilePage() {
     void loadProfile();
   }, [setProfileData]);
 
-  async function handleSaveProfile() {
+  async function saveProfile() {
     setIsSaving(true);
     setSuccessMessage("");
 
     try {
       await updateProfile(builder.resumeData);
-      setHasUnsavedChanges(false);
+
       setSuccessMessage("Perfil actualizado correctamente.");
+      setHasUnsavedChanges(false);
+      setLastSavedAt(new Date());
     } catch (error) {
       console.error("Error saving profile:", error);
     } finally {
       setIsSaving(false);
     }
   }
+
+  async function handleSaveProfile() {
+    await saveProfile();
+  }
+
+  useEffect(() => {
+    if (!hasUnsavedChanges || isLoading || isSaving) return;
+
+    const timeoutId = window.setTimeout(() => {
+      void saveProfile();
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [builder.resumeData, hasUnsavedChanges, isLoading, isSaving]);
 
   if (isLoading) {
     return (
@@ -88,6 +107,16 @@ export default function ProfilePage() {
               </p>
             </div>
 
+            {lastSavedAt && (
+              <p className="profile-page__save-status">
+                Guardado automáticamente a las{" "}
+                {lastSavedAt.toLocaleTimeString("es-CR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            )}
+            
             <button
               type="button"
               onClick={handleSaveProfile}
