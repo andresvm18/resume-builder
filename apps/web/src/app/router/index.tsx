@@ -4,6 +4,7 @@ import LandingPage from "../../modules/landing/pages/LandingPage";
 import LoginPage from "../../modules/auth/pages/LoginPage";
 import RegisterPage from "../../modules/auth/pages/RegisterPage";
 import DashboardPage from "../../modules/dashboard/pages/DashboardPage";
+import ResumeCreationPage from "../../modules/profile/pages/ResumeCreationPage";
 import ResumeBuilderPage from "../../modules/resume-builder/pages/ResumeBuilderPage";
 import ResumeGeneratePage from "../../modules/resume-builder/pages/ResumeGeneratePage";
 import ResumeOptimizePage from "../../modules/resume-builder/pages/ResumeOptimizePage";
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
             element: <ResumeBuilderPage />,
           },
         ],
+      },
+      {
+        path: "/resume/new",
+        element: <ResumeCreationPage />
       },
       {
         path: "/resume/generate",

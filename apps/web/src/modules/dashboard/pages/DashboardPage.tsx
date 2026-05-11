@@ -110,7 +110,7 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <Link to="/resume-builder" className="dashboard-page__create-btn">
+          <Link to="/resume/new" className="dashboard-page__create-btn">
             Crear Currículum
           </Link>
         </div>
