@@ -697,6 +697,91 @@ async function getUserResumeById(resumeId, userId) {
   return resume;
 }
 
+async function updateUserResume(resumeId, userId, data) {
+  const cleanData = normalizeResumeData(data);
+
+  const resume = await prisma.resume.findFirst({
+    where: {
+      id: resumeId,
+      userId,
+    },
+  });
+
+  if (!resume) {
+    throw new Error("RESUME_NOT_FOUND");
+  }
+
+  const updatedResume = await prisma.resume.update({
+    where: {
+      id: resumeId,
+    },
+    data: {
+      title: cleanData.fullName || resume.title,
+      versions: {
+        create: {
+          data: cleanData,
+        },
+      },
+    },
+    include: {
+      versions: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
+    },
+  });
+
+  return updatedResume;
+}
+
+async function duplicateUserResume(resumeId, userId) {
+  const resume = await prisma.resume.findFirst({
+    where: {
+      id: resumeId,
+      userId,
+    },
+    include: {
+      versions: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
+    },
+  });
+
+  if (!resume || resume.versions.length === 0) {
+    throw new Error("RESUME_NOT_FOUND");
+  }
+
+  const latestVersion = resume.versions[0];
+  const duplicatedData = normalizeResumeData(latestVersion.data);
+
+  const duplicatedResume = await prisma.resume.create({
+    data: {
+      title: `${resume.title} (Copia)`,
+      userId,
+      versions: {
+        create: {
+          data: duplicatedData,
+        },
+      },
+    },
+    include: {
+      versions: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
+    },
+  });
+
+  return duplicatedResume;
+}
+
 async function deleteUserResume(resumeId, userId) {
   const resume = await prisma.resume.findFirst({
     where: {
@@ -724,5 +809,7 @@ module.exports = {
   getUserResumes,
   generateResumePdfById,
   getUserResumeById,
+  updateUserResume,
+  duplicateUserResume,
   deleteUserResume,
 };

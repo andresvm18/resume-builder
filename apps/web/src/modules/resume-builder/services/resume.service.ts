@@ -28,3 +28,19 @@ export async function deleteResumeById(resumeId: string) {
     method: "DELETE",
   });
 }
+
+export async function updateResumeById(
+  resumeId: string,
+  resumeData: ResumeData
+) {
+  return apiRequest<Resume>(`/resume/${resumeId}`, {
+    method: "PUT",
+    body: JSON.stringify(resumeData),
+  });
+}
+
+export async function duplicateResumeById(resumeId: string) {
+  return apiRequest<Resume>(`/resume/${resumeId}/duplicate`, {
+    method: "POST",
+  });
+}

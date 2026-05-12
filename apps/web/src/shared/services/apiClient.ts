@@ -6,6 +6,16 @@ type RequestOptions = Omit<RequestInit, "headers"> & {
   headers?: Record<string, string>;
 };
 
+export type ApiError = Error & {
+  status?: number;
+};
+
+function createApiError(message: string, status: number): ApiError {
+  const error = new Error(message) as ApiError;
+  error.status = status;
+  return error;
+}
+
 function getAuthHeaders(): Record<string, string> {
   const token = localStorage.getItem("auth_token");
 
@@ -40,7 +50,10 @@ export async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+    throw createApiError(
+      `API request failed: ${response.status}`,
+      response.status
+    );
   }
 
   return response.json() as Promise<T>;
@@ -58,8 +71,23 @@ export async function apiBlobRequest(
   });
 
   if (!response.ok) {
-    throw new Error(`API blob request failed: ${response.status}`);
+    throw createApiError(
+      `API blob request failed: ${response.status}`,
+      response.status
+    );
   }
 
   return response.blob();
+}
+
+export function getApiErrorStatus(error: unknown): number | undefined {
+  if (
+    error instanceof Error &&
+    "status" in error &&
+    typeof (error as ApiError).status === "number"
+  ) {
+    return (error as ApiError).status;
+  }
+
+  return undefined;
 }

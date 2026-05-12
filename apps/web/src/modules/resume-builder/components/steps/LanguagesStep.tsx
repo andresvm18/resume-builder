@@ -1,4 +1,5 @@
 import type { Language } from "../../types/resume.types";
+import { IconX } from "@tabler/icons-react";
 
 type LanguagesStepProps = {
   languages: Language[];
@@ -31,7 +32,7 @@ export default function LanguagesStep({
               onClick={() => removeLanguage(lang.id)}
               className="resume-builder-page__item-remove"
             >
-              ×
+              <IconX size={14} stroke={2} />
             </button>
           </div>
 

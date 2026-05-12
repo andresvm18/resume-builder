@@ -4,20 +4,23 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "../../../shared/context/AuthProvider";
 import * as authService from "../../../modules/auth/services/auth.service";
 import { vi } from "vitest";
+import { ThemeProvider } from "../../../shared/context/ThemeProvider";
 import LandingPage from "./LandingPage";
 
 function renderLanding(initialRoute = "/") {
   return render(
-    <AuthProvider>
-      <MemoryRouter initialEntries={[initialRoute]}>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<h1>Login Page</h1>} />
-          <Route path="/register" element={<h1>Register Page</h1>} />
-          <Route path="/resume-builder" element={<h1>Resume Builder</h1>} />
-        </Routes>
-      </MemoryRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <MemoryRouter initialEntries={[initialRoute]}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<h1>Login Page</h1>} />
+            <Route path="/register" element={<h1>Register Page</h1>} />
+            <Route path="/resume-builder" element={<h1>Resume Builder</h1>} />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

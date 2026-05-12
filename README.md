@@ -1,43 +1,106 @@
 # ResumeBuilder 🚀
 
-**AI-powered resume optimization platform with ATS analysis, intelligent recommendations, and professional PDF generation.**
+**AI-powered ATS resume platform with intelligent resume generation, career profiles, ATS optimization, and professional PDF export workflows.**
 
-ResumeBuilder helps users create modern, ATS-friendly resumes while leveraging Generative AI to optimize content, improve keyword alignment, and enhance professional presentation.
+ResumeBuilder helps users create, optimize, organize, and manage professional resumes using AI-assisted workflows, ATS-focused optimization strategies, and modern SaaS-style editing experiences.
+
+The platform evolved from a traditional resume generator into a production-oriented AI-powered career platform.
 
 ---
 
-## ✨ Features
+# ✨ Features
 
-### 📄 Resume Builder
+## 📄 Resume Builder
 - Multi-step resume creation workflow
 - Structured professional data input
 - Real-time editing experience
 - Resume persistence and versioning
+- Autosave workflows
+- Resume duplication support
+- Resume metadata management
+- Responsive editing experience
 
-### 🤖 AI-Powered Optimization
-- Professional summary generation
-- Experience rewriting into achievement-oriented bullet points
-- Semantic ATS optimization
-- Context-aware resume enhancement
-- Intelligent recommendations based on job descriptions
+---
 
-### 🔍 ATS Analysis Engine
+## 👤 Career Profile System
+- Persistent professional profiles
+- Reusable professional identity
+- Skills, projects, education, and experience persistence
+- Centralized profile-based workflows
+- AI-ready career data structure
+
+---
+
+## 🤖 AI-Powered Resume Generation
+- Generate resumes directly from Career Profiles
+- ATS-oriented AI resume generation
+- Intelligent experience selection
+- Context-aware summary generation
+- Resume tailoring based on job descriptions
+- Semantic optimization for ATS systems
+- Achievement-oriented resume rewriting
+- Structured resume hydration into ResumeBuilder
+
+---
+
+## 🔍 ATS Optimization Engine
 - Keyword extraction
 - Resume-job matching
 - ATS compatibility scoring
 - Missing keyword detection
-- Actionable optimization recommendations
+- ATS-focused recommendations
+- Keyword-aware optimization workflows
+- Intelligent targeting support
 
-### 📑 PDF Generation
+---
+
+## 📋 Resume Management System
+Users can:
+- duplicate resumes
+- organize resumes by target role/company
+- manage multiple resume variants
+- edit existing resumes
+- download ATS-friendly PDFs
+
+Resume metadata includes:
+- target role
+- target company
+
+Examples:
+- Frontend Developer
+- QA Engineer
+- Roche
+- Align Technology
+
+---
+
+## 🌙 Modern UX Features
+- Dark mode support
+- Responsive layouts
+- Skeleton loading states
+- Modern dashboard workflows
+- Search & sorting
+- Save-state indicators
+- Accessible UI patterns
+- Unified design system using Tabler Icons
+
+---
+
+## 📑 PDF Generation
 - Professional ATS-friendly templates
 - High-quality PDF export using LaTeX
 - Resume preview before download
-- Optimized formatting for recruiters and ATS systems
+- Dynamic section rendering
+- ATS-optimized formatting
+- Template selection system
 
-### 🔐 Authentication & Dashboard
+---
+
+## 🔐 Authentication & Dashboard
 - JWT authentication
 - Protected routes
 - User dashboard
+- Resume organization workflows
 - Resume management system
 
 ---
@@ -57,6 +120,8 @@ The platform also includes:
 - sanitization pipelines
 - structured AI parsing
 - safe fallback behavior
+- malformed response handling
+- normalization pipelines
 
 ---
 
@@ -67,6 +132,8 @@ The platform also includes:
 - TypeScript
 - Vite
 - React Router
+- Context API
+- Tabler Icons
 - Vitest
 - React Testing Library
 
@@ -102,9 +169,11 @@ Suggested sections:
 - Landing Page
 - Resume Builder
 - ATS Analysis
-- AI Optimization
-- PDF Preview
+- AI Resume Generation
 - Dashboard
+- Career Profiles
+- Dark Mode
+- PDF Preview
 
 ---
 
@@ -243,23 +312,32 @@ ResumeBuilder includes multiple security layers:
 - Improved skills UX
 - Cleaner ATS-friendly PDF generation
 - Advanced customization support
+- Deployment workflows
+- CI/CD improvements
+
+## ✅ Phase 5 — Career Platform & Resume Management
+- Career Profiles
+- AI-generated resumes from profile data
+- Resume metadata management
+- Resume duplication
+- Autosave workflows
+- Dashboard search & sorting
+- Dark mode support
+- Responsive UX polish
+- Unified design system
+- Improved editing workflows
+- Save-state indicators
+- Dashboard organization improvements
 
 ---
 
 # 🚧 Future Roadmap
 
-## Phase 5 — Career Intelligence Platform
+## Planned Features
 
-Planned features include:
-
-- Persistent user career profiles
-- AI-powered profile-to-resume generation
 - AI-generated cover letters
-- Resume version comparison
-- Advanced personalization workflows
-- Career analytics dashboard
-- Public resume sharing
-- Intelligent resume recommendations
+- Production monitoring
+- Deployment hardening
 
 ---
 
@@ -272,16 +350,21 @@ Software Engineer focused on:
 - AI-powered applications
 - Backend architecture
 
-GitHub: https://github.com/andresvm18
+GitHub:
+https://github.com/andresvm18
 
 ---
 
 # ⭐ Final Notes
 
-ResumeBuilder evolved from a simple resume generator into a production-oriented AI-powered career optimization platform capable of:
+ResumeBuilder evolved from a simple resume generator into a production-oriented AI-powered career platform capable of:
 
 - generating professional resumes
 - optimizing ATS compatibility
+- organizing multiple resume variants
 - improving resume quality with AI
-- delivering recruiter-friendly PDF exports
-- helping users improve competitiveness in modern hiring systems
+- generating recruiter-friendly PDF exports
+- supporting reusable career workflows
+- delivering SaaS-style editing experiences
+
+The platform now behaves much more like a real-world AI SaaS product instead of a static resume generator.

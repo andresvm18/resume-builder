@@ -68,6 +68,8 @@ export type ResumeData = {
   phone: string;
   location: string;
   summary: string;
+  targetRole: string;
+  targetCompany: string;
   skills: string[];
   technicalSkills?: TechnicalSkillGroup[];
   softSkills?: SoftSkill[];
@@ -101,6 +103,8 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
   phone: "",
   location: "",
   summary: "",
+  targetRole: "",
+  targetCompany: "",
   skills: [],
   languages: [
     {

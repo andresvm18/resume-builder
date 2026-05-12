@@ -11,6 +11,10 @@ const baseResume: ResumeData = {
   phone: "8888-8888",
   location: "Costa Rica",
   summary: "Profesional con experiencia en soporte técnico y atención al cliente.",
+
+  targetRole: "Desarrollador FrontEnd",
+  targetCompany: "Empresa XYZ",
+
   skills: ["Soporte técnico", "Jira", "Redes"],
   languages: [],
   experiences: [
@@ -142,5 +146,5 @@ describe("ATS utils", () => {
     expect(result.recommendations.length).toBeGreaterThan(0);
   });
 
-  
+
 });

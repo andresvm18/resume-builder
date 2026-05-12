@@ -9,6 +9,8 @@ const {
   getResumes,
   downloadResume,
   getResumeById,
+  updateResume,
+  duplicateResume,
   deleteResume,
 } = require("../controllers/resume.controller");
 
@@ -33,6 +35,13 @@ router.get(
   downloadResume
 );
 
+router.post(
+  "/:id/duplicate",
+  authMiddleware,
+  validateIdParam,
+  duplicateResume
+);
+
 router.get(
   "/:id",
   authMiddleware,
@@ -40,11 +49,18 @@ router.get(
   getResumeById
 );
 
+router.put(
+  "/:id",
+  authMiddleware,
+  validateIdParam,
+  updateResume
+);
+
 router.delete(
   "/:id",
   authMiddleware,
   validateIdParam,
-  deleteResume
+  deleteResume,
 );
 
 module.exports = router;

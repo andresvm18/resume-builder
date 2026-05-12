@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "../../../shared/components/layout/Header";
 import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
@@ -10,15 +10,26 @@ import type { StepItem } from "../types/resume.types";
 import { useResumeValidation } from "../hooks/useResumeValidation";
 import { useAiRecommendations } from "../hooks/useAiRecommendations";
 import { optimizeSummary } from "../services/ai.service";
+import { updateResumeById } from "../services/resume.service";
 import TemplateSelector from "../components/TemplateSelector";
+import { useToast } from "../../../shared/context/useToast";
 import "./ResumeBuilderPage.css";
+
+type SaveStatus = "idle" | "unsaved" | "saving" | "saved" | "error";
 
 export default function ResumeBuilderPage() {
   const routerLocation = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
+  const { showToast } = useToast();
 
   const [isOptimizingSummary, setIsOptimizingSummary] = useState(false);
+  const [isSavingResume, setIsSavingResume] = useState(false);
+
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+
+  const hasLoadedEditorRef = useRef(false);
+  const isAutoSavingRef = useRef(false);
 
   const {
     resumeData,
@@ -66,15 +77,62 @@ export default function ResumeBuilderPage() {
     jobDescription,
     setJobDescription,
 
+    targetRole,
+    setTargetRole,
+
+    targetCompany,
+    setTargetCompany,
+
     template,
     setTemplate,
   } = useResumeBuilder(id, {
     initialData: routerLocation.state,
     onResumeNotFound: () => {
-      alert("No encontramos ese CV. Puede haber sido eliminado o no tienes acceso.");
+      showToast(
+        "No encontramos ese CV. Puede haber sido eliminado o no tienes acceso",
+        "error"
+      );
       navigate("/dashboard");
     },
   });
+
+  const latestResumeDataRef = useRef(resumeData);
+
+  useEffect(() => {
+    latestResumeDataRef.current = resumeData;
+
+    if (!id) return;
+
+    if (!hasLoadedEditorRef.current) {
+      hasLoadedEditorRef.current = true;
+      return;
+    }
+
+    if (isAutoSavingRef.current) return;
+
+    setSaveStatus("unsaved");
+  }, [resumeData, id]);
+
+  useEffect(() => {
+    if (!id || saveStatus !== "unsaved") return;
+
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        isAutoSavingRef.current = true;
+        setSaveStatus("saving");
+
+        await updateResumeById(id, latestResumeDataRef.current);
+
+        setSaveStatus("saved");
+      } catch {
+        setSaveStatus("error");
+      } finally {
+        isAutoSavingRef.current = false;
+      }
+    }, 1800);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [id, saveStatus]);
 
   const { validateResumeData } = useResumeValidation();
 
@@ -153,7 +211,7 @@ export default function ResumeBuilderPage() {
 
       setSummary(result.optimizedSummary);
     } catch {
-      alert("No se pudo optimizar el resumen.");
+      showToast("No se pudo optimizar el resumen", "error");
     } finally {
       setIsOptimizingSummary(false);
     }
@@ -168,7 +226,10 @@ export default function ResumeBuilderPage() {
     const result = await generateRecommendations(resumeData, jobDescription);
 
     if (!result) {
-      alert("No se pudieron generar recomendaciones con IA. Puedes continuar manualmente.");
+      showToast(
+        "No se pudieron generar recomendaciones con IA. Puedes continuar manualmente",
+        "error"
+      );
     }
 
     goToStep("summary");
@@ -187,12 +248,31 @@ export default function ResumeBuilderPage() {
     }
   };
 
+  const handleSaveExistingResume = async () => {
+    if (!id) return;
+
+    try {
+      setIsSavingResume(true);
+      setSaveStatus("saving");
+
+      await updateResumeById(id, resumeData);
+
+      setSaveStatus("saved");
+      showToast("CV actualizado correctamente", "success");
+    } catch {
+      setSaveStatus("error");
+      showToast("No se pudo guardar el CV", "error");
+    } finally {
+      setIsSavingResume(false);
+    }
+  };
+
   const handleFinish = () => {
     const result = validateResumeData(resumeData);
 
     if (!result.isValid) {
       if (result.message) {
-        alert(result.message);
+        showToast(result.message, "error");
       }
 
       if (result.step) {
@@ -223,7 +303,8 @@ export default function ResumeBuilderPage() {
           </h1>
 
           <p className="resume-builder-page__loading-text">
-            La IA está revisando la oferta laboral para sugerirte mejoras antes de continuar.
+            La IA está revisando la oferta laboral para sugerirte mejoras antes
+            de continuar.
           </p>
         </section>
       </main>
@@ -246,7 +327,7 @@ export default function ResumeBuilderPage() {
       </section>
 
       <section className="resume-builder-page__content">
-        <div className="resume-builder-page__container">
+        <div className="resume-builder-page__container rb-fade-up">
           <StepWizard
             steps={steps}
             currentStep={currentStep}
@@ -256,7 +337,7 @@ export default function ResumeBuilderPage() {
           />
 
           <TemplateSelector template={template} setTemplate={setTemplate} />
-          
+
           <ResumeFormPanel
             currentStep={currentStep}
             fullName={fullName}
@@ -291,6 +372,10 @@ export default function ResumeBuilderPage() {
             updateProject={updateProject}
             removeProject={removeProject}
             jobDescription={jobDescription}
+            targetRole={targetRole}
+            setTargetRole={setTargetRole}
+            targetCompany={targetCompany}
+            setTargetCompany={setTargetCompany}
             setJobDescription={setJobDescription}
             isOptimizingSummary={isOptimizingSummary}
             onOptimizeSummary={handleOptimizeSummary}
@@ -303,6 +388,31 @@ export default function ResumeBuilderPage() {
                 hasError={recommendationsFailed}
               />
             )}
+
+          {id && (
+            <div className="resume-builder-page__save-row">
+              <span
+                className={`resume-builder-page__save-status resume-builder-page__save-status--${saveStatus}`}
+              >
+                {saveStatus === "idle" && "Editor listo"}
+                {saveStatus === "unsaved" && "Cambios sin guardar"}
+                {saveStatus === "saving" && "Guardando..."}
+                {saveStatus === "saved" && "Guardado automáticamente"}
+                {saveStatus === "error" && "No se pudo guardar"}
+              </span>
+
+              <button
+                type="button"
+                onClick={handleSaveExistingResume}
+                disabled={isSavingResume || saveStatus === "saving"}
+                className="resume-builder-page__save-existing-btn"
+              >
+                {isSavingResume || saveStatus === "saving"
+                  ? "Guardando..."
+                  : "Guardar cambios"}
+              </button>
+            </div>
+          )}
 
           <StepNavigation
             currentIndex={steps.findIndex((s) => s.id === currentStep)}

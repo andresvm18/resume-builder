@@ -76,6 +76,12 @@ type ResumeFormPanelProps = {
   jobDescription: string;
   setJobDescription: (value: string) => void;
 
+  targetRole: string;
+  setTargetRole: (value: string) => void;
+
+  targetCompany: string;
+  setTargetCompany: (value: string) => void;
+
   isOptimizingSummary: boolean;
   onOptimizeSummary: () => void;
 };
