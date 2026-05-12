@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Education } from "../../types/resume.types";
+import { IconX } from "@tabler/icons-react";
 
 type EducationStepProps = {
   education: Education[];
@@ -40,8 +41,9 @@ export default function EducationStep({
               type="button"
               onClick={() => removeEducation(edu.id)}
               className="resume-builder-page__item-remove"
+              aria-label={`Eliminar educación ${edu.degree || "sin título"}`}
             >
-              ×
+              <IconX size={14} stroke={2} />
             </button>
           </div>
 

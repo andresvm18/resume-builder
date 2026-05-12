@@ -11,14 +11,28 @@ type ResumeGenerateState = ResumeData & {
   finalAtsAnalysis?: FinalAtsAnalysisResponse | null;
 };
 
+const loadingMessages = [
+  "Preparando la información del currículum...",
+  "Normalizando secciones y formato...",
+  "Generando PDF con LaTeX...",
+  "Preparando vista previa y descarga...",
+];
+
 function formatFileName(name: string) {
   const cleanedName = name
-    .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]/g, "");
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(
+      (word) =>
+        word.charAt(0).toUpperCase() +
+        word.slice(1).toLowerCase()
+    )
+    .join("");
 
-  return cleanedName || "cv";
+  return cleanedName || "CV";
 }
 
 export default function ResumeGeneratePage() {
@@ -30,6 +44,7 @@ export default function ResumeGeneratePage() {
   const finalAtsAnalysis = resumeData?.finalAtsAnalysis ?? null;
 
   const [status, setStatus] = useState("Preparando generación del CV...");
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState("cv.pdf");
   const [isGenerating, setIsGenerating] = useState(true);
@@ -42,6 +57,18 @@ export default function ResumeGeneratePage() {
       state: generatedResumeData ?? resumeData,
     });
   };
+
+  useEffect(() => {
+    if (!isGenerating) return;
+
+    const intervalId = window.setInterval(() => {
+      setLoadingMessageIndex((currentIndex) =>
+        currentIndex === loadingMessages.length - 1 ? currentIndex : currentIndex + 1
+      );
+    }, 1200);
+
+    return () => window.clearInterval(intervalId);
+  }, [isGenerating]);
 
   useEffect(() => {
     if (hasGenerated.current) return;
@@ -116,7 +143,12 @@ export default function ResumeGeneratePage() {
             Generando tu currículum
           </h1>
 
-          <p className="resume-generate-page__status">{status}</p>
+          <p
+            key={loadingMessageIndex}
+            className="resume-generate-page__status resume-generate-page__status--animated"
+          >
+            {isGenerating ? loadingMessages[loadingMessageIndex] : status}
+          </p>
 
           {isGenerating && <div className="resume-generate-page__loader" />}
 

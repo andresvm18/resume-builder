@@ -261,6 +261,48 @@
   font-size: 0.85rem;
 }
 
+.profile-page__save-status {
+  min-height: 1.25rem;
+  margin-top: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.profile-page__save-status--saving {
+  color: var(--text-muted);
+}
+
+.profile-page__save-status--saved {
+  color: var(--success);
+}
+
+.profile-page__save-status--error {
+  color: var(--danger, #b42318);
+}
+
+.profile-page__spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-top-color: currentColor;
+  border-radius: 999px;
+  animation: profile-save-spin 0.7s linear infinite;
+}
+
+.profile-page__tab-icon {
+  flex-shrink: 0;
+}
+
+@keyframes profile-save-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 768px) {
   .profile-completeness__header {
     flex-direction: column;

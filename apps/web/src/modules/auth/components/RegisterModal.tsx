@@ -4,6 +4,33 @@ import { registerUser } from "../services/auth.service";
 import { useAuth } from "../../../shared/context/useAuth";
 import "./RegisterModal.css";
 
+function EyeIcon({ hidden }: { hidden: boolean }) {
+  return hidden ? (
+    <svg
+      className="register-modal__toggle-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+      <line x1="3" y1="3" x2="21" y2="21" />
+    </svg>
+  ) : (
+    <svg
+      className="register-modal__toggle-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 export default function RegisterModal() {
   const navigate = useNavigate();
 
@@ -63,11 +90,13 @@ export default function RegisterModal() {
       </div>
 
       <form className="register-modal__form" onSubmit={handleRegister}>
-        {/* Name row */}
         <div className="register-modal__row">
           <div className="register-modal__field">
-            <label className="register-modal__label">Nombre</label>
+            <label htmlFor="register-name" className="register-modal__label">
+              Nombre
+            </label>
             <input
+              id="register-name"
               type="text"
               placeholder="Juan"
               className="register-modal__input"
@@ -78,8 +107,14 @@ export default function RegisterModal() {
           </div>
 
           <div className="register-modal__field">
-            <label className="register-modal__label">Segundo nombre</label>
+            <label
+              htmlFor="register-middle-name"
+              className="register-modal__label"
+            >
+              Segundo nombre
+            </label>
             <input
+              id="register-middle-name"
               type="text"
               placeholder="Carlos"
               className="register-modal__input"
@@ -90,8 +125,11 @@ export default function RegisterModal() {
         </div>
 
         <div className="register-modal__field">
-          <label className="register-modal__label">Apellido</label>
+          <label htmlFor="register-last-name" className="register-modal__label">
+            Apellido
+          </label>
           <input
+            id="register-last-name"
             type="text"
             placeholder="Pérez"
             className="register-modal__input"
@@ -102,14 +140,35 @@ export default function RegisterModal() {
         </div>
 
         <div className="register-modal__field">
-          <label className="register-modal__label">Correo electrónico</label>
+          <label htmlFor="register-email" className="register-modal__label">
+            Correo electrónico
+          </label>
+
           <div className="register-modal__input-wrapper">
-            <svg className="register-modal__input-icon" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2" />
-              <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+            <svg
+              className="register-modal__input-icon"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <rect
+                x="2"
+                y="3"
+                width="12"
+                height="10"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="1.2"
+              />
+              <path
+                d="M2 5.5l6 4 6-4"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
             </svg>
 
             <input
+              id="register-email"
               type="email"
               placeholder="tu@ejemplo.com"
               className="register-modal__input"
@@ -120,12 +179,15 @@ export default function RegisterModal() {
           </div>
         </div>
 
-        {/* Password row */}
         <div className="register-modal__row">
           <div className="register-modal__field">
-            <label className="register-modal__label">Contraseña</label>
+            <label htmlFor="register-password" className="register-modal__label">
+              Contraseña
+            </label>
+
             <div className="register-modal__password-wrapper">
               <input
+                id="register-password"
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="register-modal__input"
@@ -138,16 +200,26 @@ export default function RegisterModal() {
                 type="button"
                 className="register-modal__toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={
+                  showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                }
               >
-                👁
+                <EyeIcon hidden={showPassword} />
               </button>
             </div>
           </div>
 
           <div className="register-modal__field">
-            <label className="register-modal__label">Confirmar</label>
+            <label
+              htmlFor="register-confirm-password"
+              className="register-modal__label"
+            >
+              Confirmar
+            </label>
+
             <div className="register-modal__password-wrapper">
               <input
+                id="register-confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="register-modal__input"
@@ -159,9 +231,16 @@ export default function RegisterModal() {
               <button
                 type="button"
                 className="register-modal__toggle-btn"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+                aria-label={
+                  showConfirmPassword
+                    ? "Ocultar confirmación de contraseña"
+                    : "Mostrar confirmación de contraseña"
+                }
               >
-                👁
+                <EyeIcon hidden={showConfirmPassword} />
               </button>
             </div>
           </div>

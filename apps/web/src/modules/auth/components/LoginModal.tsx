@@ -45,7 +45,9 @@ export default function LoginModal() {
 
       <form className="login-modal__form" onSubmit={handleLogin}>
         <div className="login-modal__field">
-          <label className="login-modal__label">Correo electrónico</label>
+          <label htmlFor="login-email" className="login-modal__label">
+            Correo electrónico
+          </label>
           <div className="login-modal__input-wrapper">
             <svg className="login-modal__input-icon" viewBox="0 0 16 16" fill="none">
               <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2" />
@@ -53,6 +55,7 @@ export default function LoginModal() {
             </svg>
 
             <input
+              id="login-email"
               type="email"
               placeholder="tu@ejemplo.com"
               className="login-modal__input"
@@ -64,9 +67,12 @@ export default function LoginModal() {
         </div>
 
         <div className="login-modal__field">
-          <label className="login-modal__label">Contraseña</label>
+          <label htmlFor="login-password" className="login-modal__label">
+            Contraseña
+          </label>
           <div className="login-modal__password-wrapper">
             <input
+              id="login-password"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               className="login-modal__input"

@@ -107,6 +107,7 @@
   border-radius: 999px;
 }
 
+
 @media (max-width: 760px) {
   .resume-creation-page__grid {
     grid-template-columns: 1fr;

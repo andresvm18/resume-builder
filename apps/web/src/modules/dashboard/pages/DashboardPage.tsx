@@ -1,9 +1,25 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchUserResumes, downloadResumeById, deleteResumeById } from "../../resume-builder/services/resume.service";
+import {
+  fetchUserResumes,
+  downloadResumeById,
+  deleteResumeById,
+} from "../../resume-builder/services/resume.service";
 import type { Resume } from "../../resume-builder/types/resume.types";
 import Header from "../../../shared/components/layout/Header";
 import "./DashboardPage.css";
+import { useToast } from "../../../shared/context/useToast";
+import SkeletonCard from "../../../shared/components/ui/SkeletonCard";
+
+import {
+  IconFileText,
+  IconEdit,
+  IconTrash,
+  IconDownload,
+  IconPlus,
+  IconFilePlus,
+  IconChevronDown,
+} from "@tabler/icons-react";
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("es-CR", {
@@ -16,6 +32,12 @@ function formatDate(date: string) {
 export default function DashboardPage() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"recent" | "oldest" | "name">("recent");
+  const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const { showToast } = useToast()
 
   useEffect(() => {
     const loadResumes = async () => {
@@ -37,16 +59,26 @@ export default function DashboardPage() {
     0
   );
 
-  const latestResumeDate =
-    resumes.length > 0
-      ? new Date(resumes[0].updatedAt || resumes[0].createdAt).toLocaleDateString()
-      : "Sin actividad";
-
   const stats = {
     totalResumes: resumes.length,
     totalVersions,
-    latestResumeDate,
   };
+
+  const filteredResumes = resumes
+    .filter((resume) =>
+      resume.title.toLowerCase().includes(searchTerm.toLowerCase().trim())
+    )
+    .sort((a, b) => {
+      if (sortBy === "name") {
+        return a.title.localeCompare(b.title);
+      }
+
+      const dateA = new Date(a.updatedAt || a.createdAt).getTime();
+      const dateB = new Date(b.updatedAt || b.createdAt).getTime();
+
+      return sortBy === "recent" ? dateB - dateA : dateA - dateB;
+    });
+
 
   const handleDownloadResume = async (resumeId: string, title: string) => {
     try {
@@ -57,7 +89,8 @@ export default function DashboardPage() {
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]/g, "") || "cv"}.pdf`;
+        .replace(/[^a-z0-9]/g, "") || "cv"
+        }.pdf`;
 
       const link = document.createElement("a");
       link.href = url;
@@ -68,50 +101,136 @@ export default function DashboardPage() {
 
       URL.revokeObjectURL(url);
     } catch {
-      alert("No se pudo descargar el CV.");
+      showToast("No se pudo descargar el CV", "error");
     }
   };
 
-  const handleDeleteResume = async (resumeId: string) => {
-    const confirmed = window.confirm(
-      "¿Estás seguro de que quieres eliminar este CV? Esta acción no se puede deshacer."
-    );
+  const openDeleteModal = (resume: Resume) => {
+    setDeleteError("");
+    setResumeToDelete(resume);
+  };
 
-    if (!confirmed) return;
+  const closeDeleteModal = () => {
+    if (isDeleting) return;
+
+    setResumeToDelete(null);
+    setDeleteError("");
+  };
+
+  const confirmDeleteResume = async () => {
+    if (!resumeToDelete) return;
 
     try {
-      await deleteResumeById(resumeId);
+      setIsDeleting(true);
+      setDeleteError("");
+
+      await deleteResumeById(resumeToDelete.id);
 
       setResumes((prev) =>
-        prev.filter((resume) => resume.id !== resumeId)
+        prev.filter((resume) => resume.id !== resumeToDelete.id)
       );
+
+      setResumeToDelete(null);
     } catch {
-      alert("No se pudo eliminar el CV.");
+      setDeleteError("No se pudo eliminar el CV. Intentalo nuevamente.");
+    } finally {
+      setIsDeleting(false);
     }
   };
+
+  // 🟢 Estado vacío cuando no hay currículums
+  if (!loading && resumes.length === 0) {
+    return (
+      <main className="dashboard-page">
+        <Header />
+
+        <div className="dashboard-page__orb-top"></div>
+        <div className="dashboard-page__orb-bottom"></div>
+
+        <div className="dashboard-page__content rb-fade-up">
+          <div className="dashboard-page__welcome">
+            <div className="dashboard-page__welcome-text">
+              <h1 className="dashboard-page__greeting">Bienvenido de nuevo</h1>
+              <p className="dashboard-page__subtext">
+                Gestiona tus currículums y crea nuevas oportunidades.
+              </p>
+            </div>
+
+            <Link to="/resume/new" className="dashboard-page__create-btn">
+              <span>Crear Currículum</span>
+              <IconPlus size={16} stroke={1.8} />
+            </Link>
+          </div>
+
+          <div className="dashboard-page__stats">
+            <div className="stat-card">
+              <div className="stat-card__label">Total de Currículums</div>
+              <div className="stat-card__value">
+                0
+                <span className="stat-card__unit">documentos</span>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card__label">Versiones Guardadas</div>
+              <div className="stat-card__value">
+                0
+                <span className="stat-card__unit">versiones</span>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card__label">Última Actualización</div>
+              <div className="stat-card__value stat-card__value--date">
+                Sin actividad
+              </div>
+            </div>
+          </div>
+
+          {/* Empty State Mejorado */}
+          <div className="empty-state">
+            <div className="empty-state__icon">
+              <IconFilePlus size={48} stroke={1.2} />
+            </div>
+
+            <h3 className="empty-state__title">
+              Aún no tienes currículums
+            </h3>
+
+            <p className="empty-state__description">
+              Comienza creando tu primer CV profesional en minutos.
+              Podrás editarlo, descargarlo y administrar todas sus versiones.
+            </p>
+
+            <Link to="/resume/new" className="empty-state__btn">
+              Nuevo Currículum
+              <IconPlus size={18} stroke={1.8} />
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="dashboard-page">
       <Header />
 
-      {/* Decorative orbs */}
       <div className="dashboard-page__orb-top"></div>
       <div className="dashboard-page__orb-bottom"></div>
 
-      <div className="dashboard-page__content">
-        {/* Welcome */}
+      <div className="dashboard-page__content rb-fade-up">
         <div className="dashboard-page__welcome">
           <div className="dashboard-page__welcome-text">
-            <h1 className="dashboard-page__greeting">
-              Bienvenido de nuevo
-            </h1>
+            <h1 className="dashboard-page__greeting">Bienvenido de nuevo</h1>
             <p className="dashboard-page__subtext">
               Gestiona tus currículums y crea nuevas oportunidades.
             </p>
           </div>
 
           <Link to="/resume/new" className="dashboard-page__create-btn">
-            Crear Currículum
+            <span>Crear Currículum</span>
+            <IconPlus size={16} stroke={1.8} />
           </Link>
         </div>
 
@@ -142,20 +261,51 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Section title */}
         <div className="dashboard-page__section-header">
-          <h2 className="dashboard-page__section-title">
-            Tus Currículums
-          </h2>
+          <h2 className="dashboard-page__section-title">Tus Currículums</h2>
+
+          <div className="dashboard-page__filters">
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Buscar por título..."
+              className="dashboard-page__search"
+            />
+
+            <div className="dashboard-page__sort-wrapper">
+              <select
+                value={sortBy}
+                onChange={(event) =>
+                  setSortBy(event.target.value as "recent" | "oldest" | "name")
+                }
+                className="dashboard-page__sort"
+              >
+                <option value="recent">Más recientes</option>
+                <option value="oldest">Más antiguos</option>
+                <option value="name">Nombre A-Z</option>
+              </select>
+
+              <IconChevronDown
+                size={16}
+                stroke={1.8}
+                className="dashboard-page__sort-icon"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Loading */}
-        {loading && <p>Cargando currículums...</p>}
-
-        {/* Resumes */}
-        {!loading && resumes.length > 0 && (
+        {loading && (
           <div className="dashboard-page__grid">
-            {resumes.map((resume, index) => (
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        )}
+
+        {!loading && filteredResumes.length > 0 && (
+          <div className="dashboard-page__grid">
+            {filteredResumes.map((resume, index) => (
               <div
                 key={resume.id}
                 className="resume-card"
@@ -164,20 +314,17 @@ export default function DashboardPage() {
                 <div className="resume-card__content">
                   <div className="resume-card__header">
                     <span className="resume-card__badge">
-                      📄 CV guardado
+                      <IconFileText size={14} stroke={1.8} />
+                      CV guardado
                     </span>
 
-                    {/* ToDo: Try to change this dyamically according to the country */}
                     <span className="resume-card__date">
                       {formatDate(resume.createdAt)}
                     </span>
                   </div>
 
-                  <h3 className="resume-card__title">
-                    {resume.title}
-                  </h3>
+                  <h3 className="resume-card__title">{resume.title}</h3>
 
-                  {/* ToDo: Add job-based description */}
                   <p className="resume-card__description">
                     CV generado automáticamente
                   </p>
@@ -187,22 +334,27 @@ export default function DashboardPage() {
                       to={`/resume-builder/${resume.id}`}
                       className="resume-card__edit-btn"
                     >
+                      <IconEdit size={15} stroke={1.8} />
                       Editar
                     </Link>
 
                     <button
                       type="button"
-                      onClick={() => handleDeleteResume(resume.id)}
+                      onClick={() => openDeleteModal(resume)}
                       className="resume-card__delete-btn"
                     >
+                      <IconTrash size={15} stroke={1.8} />
                       Eliminar
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => handleDownloadResume(resume.id, resume.title)}
+                      onClick={() =>
+                        handleDownloadResume(resume.id, resume.title)
+                      }
                       className="resume-card__download-btn"
                     >
+                      <IconDownload size={15} stroke={1.8} />
                       Descargar
                     </button>
                   </div>
@@ -212,38 +364,82 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Empty state */}
-        {!loading && resumes.length === 0 && (
+        {!loading && resumes.length > 0 && filteredResumes.length === 0 && (
           <div className="empty-state">
-            <div className="empty-state__icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <path d="M12 4v16m8-8H4" />
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-              </svg>
-            </div>
-
-            <h3 className="empty-state__title">
-              Crea tu próximo currículum
-            </h3>
+            <h3 className="empty-state__title">No encontramos resultados</h3>
 
             <p className="empty-state__description">
-              Comienza a construir un CV listo para reclutadores en minutos.
+              No hay currículums que coincidan con tu búsqueda actual.
             </p>
 
-            <Link
-              to="/resume-builder"
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm("");
+                setSortBy("recent");
+              }}
               className="empty-state__btn"
             >
-              Nuevo Currículum
-            </Link>
+              Limpiar filtros
+            </button>
           </div>
         )}
       </div>
+
+      {resumeToDelete && (
+        <div
+          className="dashboard-page__modal-backdrop"
+          role="presentation"
+          onClick={closeDeleteModal}
+        >
+          <div
+            className="dashboard-page__modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-resume-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="dashboard-page__modal-icon">!</div>
+
+            <h3
+              id="delete-resume-title"
+              className="dashboard-page__modal-title"
+            >
+              Eliminar currículum
+            </h3>
+
+            <p className="dashboard-page__modal-description">
+              ¿Estás seguro de que querés eliminar{" "}
+              <strong>{resumeToDelete.title}</strong>? Esta acción no se puede
+              deshacer.
+            </p>
+
+            {deleteError && (
+              <p className="dashboard-page__modal-error">{deleteError}</p>
+            )}
+
+            <div className="dashboard-page__modal-actions">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                disabled={isDeleting}
+                className="dashboard-page__modal-cancel"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={confirmDeleteResume}
+                disabled={isDeleting}
+                className="dashboard-page__modal-confirm"
+              >
+                {isDeleting ? "Eliminando..." : "Eliminar CV"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

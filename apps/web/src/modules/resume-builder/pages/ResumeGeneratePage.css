@@ -303,3 +303,40 @@
   padding: 0.6rem 0.75rem;
   margin: 0 0 1rem;
 }
+
+.resume-generate-page__status--animated {
+  min-height: 1.5rem;
+  animation: resumeGenerateStatusFade 0.35s ease both;
+}
+
+.resume-generate-page__card {
+  animation: resumeGenerateCardIn 0.35s ease both;
+}
+
+.resume-generate-page__loader {
+  box-shadow: 0 0 0 6px rgba(201, 169, 110, 0.06);
+}
+
+@keyframes resumeGenerateStatusFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes resumeGenerateCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

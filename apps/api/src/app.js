@@ -10,11 +10,12 @@ const profileRoutes = require("./routes/profile.routes");
 const profileAiRoutes = require("./routes/profile-ai.routes");
 
 const app = express();
+
 app.set("trust proxy", 1);
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300,
+  max: process.env.NODE_ENV === "production" ? 300 : 5000,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -25,14 +26,15 @@ const apiLimiter = rateLimit({
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
-app.use("/api", apiLimiter);
+
+if (process.env.NODE_ENV === "production") {
+  app.use("/api", apiLimiter);
+}
 
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/ai", aiRoutes);
-
 app.use("/api/profile", profileRoutes);
-
 app.use("/api/profile", profileAiRoutes);
 
 module.exports = app;

@@ -697,6 +697,45 @@ async function getUserResumeById(resumeId, userId) {
   return resume;
 }
 
+async function updateUserResume(resumeId, userId, data) {
+  const cleanData = normalizeResumeData(data);
+
+  const resume = await prisma.resume.findFirst({
+    where: {
+      id: resumeId,
+      userId,
+    },
+  });
+
+  if (!resume) {
+    throw new Error("RESUME_NOT_FOUND");
+  }
+
+  const updatedResume = await prisma.resume.update({
+    where: {
+      id: resumeId,
+    },
+    data: {
+      title: cleanData.fullName || resume.title,
+      versions: {
+        create: {
+          data: cleanData,
+        },
+      },
+    },
+    include: {
+      versions: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
+    },
+  });
+
+  return updatedResume;
+}
+
 async function deleteUserResume(resumeId, userId) {
   const resume = await prisma.resume.findFirst({
     where: {
@@ -724,5 +763,6 @@ module.exports = {
   getUserResumes,
   generateResumePdfById,
   getUserResumeById,
+  updateUserResume,
   deleteUserResume,
 };

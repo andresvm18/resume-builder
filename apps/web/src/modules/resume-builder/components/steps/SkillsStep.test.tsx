@@ -93,7 +93,11 @@ describe("SkillsStep", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "×" }));
+    await user.click(
+      screen.getByRole("button", {
+        name: "Eliminar habilidad React",
+      })
+    );
 
     expect(removeSkill).toHaveBeenCalledWith(0);
   });

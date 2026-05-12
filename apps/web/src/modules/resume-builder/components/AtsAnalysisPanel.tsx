@@ -5,7 +5,8 @@ import {
 } from "../services/ai.service";
 import type { ResumeData } from "../types/resume.types";
 import { analyzeResumeMatch } from "../utils/ats.utils";
-import "./AtsAnalysisPanel.css";
+import KeywordGroup from "./KeywordGroup";
+import "./AtsAnalysisPanel.css";;
 
 type Props = {
   jobDescription?: string;
@@ -246,28 +247,5 @@ export default function AtsAnalysisPanel({
         pueden ser generadas por IA cuando el servicio está disponible.
       </p>
     </section>
-  );
-}
-
-type KeywordGroupProps = {
-  title: string;
-  keywords: string[];
-};
-
-function KeywordGroup({ title, keywords }: KeywordGroupProps) {
-  if (keywords.length === 0) return null;
-
-  return (
-    <div className="ats-panel__keyword-group">
-      <span className="ats-panel__keyword-group-title">{title}</span>
-
-      <div className="ats-panel__keywords">
-        {keywords.map((keyword) => (
-          <span key={keyword} className="ats-panel__tag">
-            {keyword}
-          </span>
-        ))}
-      </div>
-    </div>
   );
 }

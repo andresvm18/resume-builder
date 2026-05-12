@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Experience } from "../../types/resume.types";
+import { IconX } from "@tabler/icons-react";
 
 const months = [
   { value: "01", label: "Enero" },
@@ -131,8 +132,9 @@ export default function ExperienceStep({
                 type="button"
                 onClick={() => removeExperience(exp.id)}
                 className="resume-builder-page__item-remove"
+                aria-label={`Eliminar experiencia ${exp.title || "sin título"}`}
               >
-                ×
+                <IconX size={14} stroke={2} />
               </button>
             </div>
 

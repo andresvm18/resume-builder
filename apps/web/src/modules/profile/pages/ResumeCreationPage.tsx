@@ -36,6 +36,7 @@ export default function ResumeCreationPage() {
             <span className="resume-creation-page__card-title">
               Generar desde mi perfil
             </span>
+            
 
             <span className="resume-creation-page__card-description">
               Usa tu perfil profesional y una oferta laboral para crear un CV
