@@ -28,6 +28,9 @@ function normalizeResumeData(data = {}) {
     location: sanitizeText(data.location),
     summary: sanitizeText(data.summary),
 
+    targetRole: sanitizeText(data.targetRole),
+    targetCompany: sanitizeText(data.targetCompany),
+
     skills: normalizeArray(data.skills).map(sanitizeText),
 
     languages: normalizeArray(data.languages).map((lang) => ({

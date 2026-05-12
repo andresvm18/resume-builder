@@ -300,6 +300,12 @@ export function useResumeBuilder(
     summary: resumeData.summary,
     setSummary: (value: string) => updateField("summary", value),
 
+    targetRole: resumeData.targetRole,
+    setTargetRole: (value: string) => updateField("targetRole", value),
+
+    targetCompany: resumeData.targetCompany,
+    setTargetCompany: (value: string) => updateField("targetCompany", value),
+
     jobDescription: resumeData.jobDescription,
     setJobDescription: (value: string) => updateField("jobDescription", value),
 

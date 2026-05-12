@@ -38,3 +38,9 @@ export async function updateResumeById(
     body: JSON.stringify(resumeData),
   });
 }
+
+export async function duplicateResumeById(resumeId: string) {
+  return apiRequest<Resume>(`/resume/${resumeId}/duplicate`, {
+    method: "POST",
+  });
+}

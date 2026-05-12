@@ -77,6 +77,12 @@ export default function ResumeBuilderPage() {
     jobDescription,
     setJobDescription,
 
+    targetRole,
+    setTargetRole,
+
+    targetCompany,
+    setTargetCompany,
+
     template,
     setTemplate,
   } = useResumeBuilder(id, {
@@ -366,6 +372,10 @@ export default function ResumeBuilderPage() {
             updateProject={updateProject}
             removeProject={removeProject}
             jobDescription={jobDescription}
+            targetRole={targetRole}
+            setTargetRole={setTargetRole}
+            targetCompany={targetCompany}
+            setTargetCompany={setTargetCompany}
             setJobDescription={setJobDescription}
             isOptimizingSummary={isOptimizingSummary}
             onOptimizeSummary={handleOptimizeSummary}
