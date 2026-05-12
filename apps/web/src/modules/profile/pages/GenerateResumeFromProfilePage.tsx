@@ -9,6 +9,8 @@ import { getProfile } from "../services/profile.service";
 export default function GenerateResumeFromProfilePage() {
   const navigate = useNavigate();
 
+  const [targetRole, setTargetRole] = useState("");
+  const [targetCompany, setTargetCompany] = useState("");
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -55,9 +57,16 @@ export default function GenerateResumeFromProfilePage() {
         "modern-template"
       );
 
+      const resumeData = {
+        ...response.resumeData,
+        targetRole,
+        targetCompany,
+        jobDescription,
+      };
+
       localStorage.setItem(
         "resume-profile-generated",
-        JSON.stringify(response.resumeData)
+        JSON.stringify(resumeData)
       );
 
       navigate("/resume-builder");
@@ -129,6 +138,22 @@ export default function GenerateResumeFromProfilePage() {
             perfil profesional.
           </p>
 
+          <div className="resume-builder-page__target-fields">
+            <input
+              value={targetRole}
+              onChange={(e) => setTargetRole(e.target.value)}
+              className="resume-builder-page__input"
+              placeholder="Puesto objetivo. Ej: Frontend Developer"
+            />
+
+            <input
+              value={targetCompany}
+              onChange={(e) => setTargetCompany(e.target.value)}
+              className="resume-builder-page__input"
+              placeholder="Empresa objetivo. Ej: Roche"
+            />
+          </div>
+
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
@@ -140,7 +165,11 @@ export default function GenerateResumeFromProfilePage() {
           <button
             type="button"
             onClick={handleGenerate}
-            disabled={isGenerating || !jobDescription.trim()}
+            disabled={
+              isGenerating ||
+              !jobDescription.trim() ||
+              !targetRole.trim()
+            }
             className="profile-page__save-btn"
             style={{ marginTop: "1rem" }}
           >

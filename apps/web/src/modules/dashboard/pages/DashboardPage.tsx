@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   fetchUserResumes,
   downloadResumeById,
+  duplicateResumeById,
   deleteResumeById,
 } from "../../resume-builder/services/resume.service";
 import type { Resume } from "../../resume-builder/types/resume.types";
@@ -19,6 +20,9 @@ import {
   IconPlus,
   IconFilePlus,
   IconChevronDown,
+  IconCopy,
+  IconBriefcase,
+  IconBuilding,
 } from "@tabler/icons-react";
 
 function formatDate(date: string) {
@@ -27,6 +31,13 @@ function formatDate(date: string) {
     month: "2-digit",
     year: "numeric",
   });
+}
+
+function getLatestResumeData(resume: Resume) {
+  return resume.versions?.[0]?.data as Partial<{
+    targetRole: string;
+    targetCompany: string;
+  }> | undefined;
 }
 
 export default function DashboardPage() {
@@ -105,6 +116,18 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDuplicateResume = async (resumeId: string) => {
+    try {
+      const duplicatedResume = await duplicateResumeById(resumeId);
+
+      setResumes((prev) => [duplicatedResume, ...prev]);
+
+      showToast("CV duplicado correctamente", "success");
+    } catch {
+      showToast("No se pudo duplicar el CV", "error");
+    }
+  };
+
   const openDeleteModal = (resume: Resume) => {
     setDeleteError("");
     setResumeToDelete(resume);
@@ -138,7 +161,6 @@ export default function DashboardPage() {
     }
   };
 
-  // 🟢 Estado vacío cuando no hay currículums
   if (!loading && resumes.length === 0) {
     return (
       <main className="dashboard-page">
@@ -305,62 +327,93 @@ export default function DashboardPage() {
 
         {!loading && filteredResumes.length > 0 && (
           <div className="dashboard-page__grid">
-            {filteredResumes.map((resume, index) => (
-              <div
-                key={resume.id}
-                className="resume-card"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="resume-card__content">
-                  <div className="resume-card__header">
-                    <span className="resume-card__badge">
-                      <IconFileText size={14} stroke={1.8} />
-                      CV guardado
-                    </span>
+            {filteredResumes.map((resume, index) => {
+              const metadata = getLatestResumeData(resume);
 
-                    <span className="resume-card__date">
-                      {formatDate(resume.createdAt)}
-                    </span>
-                  </div>
+              return (
+                <div
+                  key={resume.id}
+                  className="resume-card"
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
+                  <div className="resume-card__content">
+                    <div className="resume-card__header">
+                      <span className="resume-card__badge">
+                        <IconFileText size={14} stroke={1.8} />
+                        CV guardado
+                      </span>
 
-                  <h3 className="resume-card__title">{resume.title}</h3>
+                      <span className="resume-card__date">
+                        {formatDate(resume.createdAt)}
+                      </span>
+                    </div>
 
-                  <p className="resume-card__description">
-                    CV generado automáticamente
-                  </p>
+                    <h3 className="resume-card__title">{resume.title}</h3>
 
-                  <div className="resume-card__actions">
-                    <Link
-                      to={`/resume-builder/${resume.id}`}
-                      className="resume-card__edit-btn"
-                    >
-                      <IconEdit size={15} stroke={1.8} />
-                      Editar
-                    </Link>
+                    {(metadata?.targetRole || metadata?.targetCompany) && (
+                      <div className="resume-card__metadata">
+                        {metadata?.targetRole && (
+                          <span className="resume-card__metadata-item">
+                            <IconBriefcase size={14} stroke={1.8} />
+                            {metadata.targetRole}
+                          </span>
+                        )}
 
-                    <button
-                      type="button"
-                      onClick={() => openDeleteModal(resume)}
-                      className="resume-card__delete-btn"
-                    >
-                      <IconTrash size={15} stroke={1.8} />
-                      Eliminar
-                    </button>
+                        {metadata?.targetCompany && (
+                          <span className="resume-card__metadata-item">
+                            <IconBuilding size={14} stroke={1.8} />
+                            {metadata.targetCompany}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDownloadResume(resume.id, resume.title)
-                      }
-                      className="resume-card__download-btn"
-                    >
-                      <IconDownload size={15} stroke={1.8} />
-                      Descargar
-                    </button>
+                    <p className="resume-card__description">
+                      CV generado automáticamente
+                    </p>
+
+                    <div className="resume-card__actions">
+                      <Link
+                        to={`/resume-builder/${resume.id}`}
+                        className="resume-card__edit-btn"
+                      >
+                        <IconEdit size={15} stroke={1.8} />
+                        Editar
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicateResume(resume.id)}
+                        className="resume-card__duplicate-btn"
+                      >
+                        <IconCopy size={15} stroke={1.8} />
+                        Duplicar
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => openDeleteModal(resume)}
+                        className="resume-card__delete-btn"
+                      >
+                        <IconTrash size={15} stroke={1.8} />
+                        Eliminar
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDownloadResume(resume.id, resume.title)
+                        }
+                        className="resume-card__download-btn"
+                      >
+                        <IconDownload size={15} stroke={1.8} />
+                        Descargar
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

@@ -233,6 +233,10 @@ export default function ProfilePage() {
               removeProject={builder.removeProject}
               jobDescription={builder.jobDescription}
               setJobDescription={builder.setJobDescription}
+              targetRole={builder.targetRole}
+              setTargetRole={builder.setTargetRole}
+              targetCompany={builder.targetCompany}
+              setTargetCompany={builder.setTargetCompany}
               isOptimizingSummary={false}
               onOptimizeSummary={() => { }}
             />

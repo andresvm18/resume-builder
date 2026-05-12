@@ -108,6 +108,9 @@ export function normalizeResumeData(value: unknown): ResumeData {
     location: sanitizeText(data.location),
     summary: sanitizeText(data.summary),
 
+    targetRole: sanitizeText(data.targetRole),
+    targetCompany: sanitizeText(data.targetCompany),
+
     skills: normalizeStringArray(data.skills),
     technicalSkills: normalizeTechnicalSkills(data.technicalSkills),
     softSkills: normalizeSoftSkills(data.softSkills),

@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
+
+import {
+  IconSparkles,
+  IconFilePencil
+} from "@tabler/icons-react";
+
 import "./ResumeCreationPage.css";
 
 export default function ResumeCreationPage() {
@@ -31,12 +37,14 @@ export default function ResumeCreationPage() {
             onClick={() => navigate("/generate-from-profile")}
             className="resume-creation-page__card resume-creation-page__card--featured"
           >
-            <span className="resume-creation-page__icon">✨</span>
+            <span className="resume-creation-page__icon">
+              <IconSparkles size={28} stroke={1.7} />
+            </span>
 
             <span className="resume-creation-page__card-title">
               Generar desde mi perfil
             </span>
-            
+
 
             <span className="resume-creation-page__card-description">
               Usa tu perfil profesional y una oferta laboral para crear un CV
@@ -53,7 +61,9 @@ export default function ResumeCreationPage() {
             onClick={() => navigate("/resume-builder")}
             className="resume-creation-page__card"
           >
-            <span className="resume-creation-page__icon">📝</span>
+            <span className="resume-creation-page__icon">
+              <IconFilePencil size={28} stroke={1.7} />
+            </span>
 
             <span className="resume-creation-page__card-title">
               Crear desde cero

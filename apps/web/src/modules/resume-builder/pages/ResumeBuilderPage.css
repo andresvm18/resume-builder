@@ -922,3 +922,9 @@
     transform: scale(1.35);
   }
 }
+
+.resume-builder-page__target-fields {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
