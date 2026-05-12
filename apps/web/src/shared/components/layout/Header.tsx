@@ -1,11 +1,20 @@
-// Header.tsx — mejorado
 import { useAuth } from "../../../shared/context/useAuth";
 import { useNavigate, Link } from "react-router-dom";
+import { useTheme } from "../../context/useTheme";
+
+import {
+  IconMoon,
+  IconSun,
+  IconLayoutDashboard,
+  IconLogout,
+} from "@tabler/icons-react";
+
 import "./Header.css";
 
 export default function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -25,10 +34,37 @@ export default function Header() {
         </Link>
 
         <div className="header__actions">
+
+
+
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className={`header__theme-toggle header__theme-toggle--${theme}`}
+            aria-label={`Cambiar a modo ${theme === "dark" ? "claro" : "oscuro"}`}
+            title={`Cambiar a modo ${theme === "dark" ? "claro" : "oscuro"}`}
+          >
+            <span className="header__theme-toggle-track">
+              <span className="header__theme-toggle-thumb">
+                {theme === "dark" ? (
+                  <IconSun size={18} stroke={1.8} />
+                ) : (
+                  <IconMoon size={18} stroke={1.8} />
+                )}
+              </span>
+            </span>
+          </button>
+
+
+
+
+
+
           {user ? (
             <>
               <Link to="/dashboard" className="header__link">
-                <i className="ti ti-layout-dashboard" aria-hidden="true" />
+                <IconLayoutDashboard size={18} stroke={1.8} />
                 <span>Dashboard</span>
               </Link>
 
@@ -37,11 +73,10 @@ export default function Header() {
               <Link to="/profile" className="header__avatar" title={`Perfil de ${firstName}`}>
                 <span className="header__avatar-initials">{initials}</span>
                 <span className="header__avatar-name">{firstName}</span>
-                <i className="ti ti-chevron-down header__avatar-chevron" aria-hidden="true" />
               </Link>
 
               <button type="button" onClick={handleLogout} className="header__logout">
-                <i className="ti ti-logout" aria-hidden="true" />
+                <IconLogout size={18} stroke={1.8} />
                 <span>Salir</span>
               </button>
             </>

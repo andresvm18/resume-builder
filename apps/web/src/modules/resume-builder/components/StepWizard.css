@@ -7,7 +7,8 @@
   background-color: var(--color-surface-white, #ffffff);
   border: 1px solid var(--color-border, #e8e4de);
   border-radius: var(--border-radius-lg, 16px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra más notoria */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Sombra más notoria */
 }
 
 .resume-builder-page__steps {
@@ -19,23 +20,9 @@
   position: relative;
 }
 
-/* Línea de conexión entre pasos (para desktop) */
 @media (min-width: 769px) {
   .resume-builder-page__steps {
     justify-content: space-between;
-  }
-  
-  .resume-builder-page__steps::before {
-    content: '';
-    position: absolute;
-    top: 19px;
-    left: 60px;
-    right: 60px;
-    height: 2px;
-    background: linear-gradient(90deg, 
-      var(--color-border, #e8e4de) 0%, 
-      var(--color-border, #e8e4de) 100%);
-    z-index: 0;
   }
 }
 
@@ -118,31 +105,57 @@
     padding: 1rem;
     overflow-x: auto;
   }
-  
+
   .resume-builder-page__steps {
     min-width: 600px;
     justify-content: space-around;
     flex-wrap: nowrap;
   }
-  
+
   .resume-builder-page__steps::before {
     display: none;
   }
-  
+
   .resume-builder-page__step {
     min-width: auto;
   }
-  
+
   .resume-builder-page__step-number {
     width: 34px;
     height: 34px;
     font-size: 0.85rem;
   }
-  
+
   .resume-builder-page__step-label {
     font-size: 0.7rem;
     white-space: nowrap;
   }
+}
+
+.resume-builder-page__wizard {
+  position: relative;
+}
+
+.resume-builder-page__progress {
+  position: absolute;
+  top: 43px;
+  left: calc(1.5rem + 54px);
+  right: calc(1.5rem + 54px);
+  height: 2px;
+  background: var(--color-border, #e8e4de);
+  z-index: 0;
+  overflow: hidden;
+}
+
+.resume-builder-page__progress-fill {
+  height: 100%;
+  background: var(--accent, #c9a96e);
+  transition: width 0.35s ease;
+}
+
+.resume-builder-page__steps {
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 480px) {
@@ -151,7 +164,7 @@
     height: 30px;
     font-size: 0.8rem;
   }
-  
+
   .resume-builder-page__step-label {
     font-size: 0.65rem;
   }

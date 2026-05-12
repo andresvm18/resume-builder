@@ -10,6 +10,7 @@ const {
   downloadResume,
   getResumeById,
   deleteResume,
+  updateResume,
 } = require("../controllers/resume.controller");
 
 const {
@@ -40,11 +41,18 @@ router.get(
   getResumeById
 );
 
+router.put(
+  "/:id",
+  authMiddleware,
+  validateIdParam,
+  updateResume
+);
+
 router.delete(
   "/:id",
   authMiddleware,
   validateIdParam,
-  deleteResume
+  deleteResume,
 );
 
 module.exports = router;

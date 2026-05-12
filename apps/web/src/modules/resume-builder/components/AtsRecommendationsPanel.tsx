@@ -1,4 +1,5 @@
 import type { AiRecommendationsResponse } from "../services/ai.service";
+import KeywordGroup from "./KeywordGroup";
 import "./AtsAnalysisPanel.css";
 
 type Props = {
@@ -78,28 +79,5 @@ export default function AtsRecommendationsPanel({
         )}
       </div>
     </section>
-  );
-}
-
-type KeywordGroupProps = {
-  title: string;
-  keywords: string[];
-};
-
-function KeywordGroup({ title, keywords }: KeywordGroupProps) {
-  if (keywords.length === 0) return null;
-
-  return (
-    <div className="ats-panel__keyword-group">
-      <span className="ats-panel__keyword-group-title">{title}</span>
-
-      <div className="ats-panel__keywords">
-        {keywords.map((keyword) => (
-          <span key={keyword} className="ats-panel__tag">
-            {keyword}
-          </span>
-        ))}
-      </div>
-    </div>
   );
 }

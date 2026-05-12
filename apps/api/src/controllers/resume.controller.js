@@ -4,6 +4,7 @@ const {
   generateResumePdfById,
   getUserResumeById,
   deleteUserResume,
+  updateUserResume,
 } = require("../services/resume.service");
 
 const { normalizeResumeData } = require("../utils/resumeNormalizer");
@@ -106,6 +107,32 @@ async function getResumeById(req, res) {
   }
 }
 
+async function updateResume(req, res) {
+  try {
+    const cleanData = normalizeResumeData(req.body);
+
+    const updatedResume = await updateUserResume(
+      req.params.id,
+      req.user.userId,
+      cleanData
+    );
+
+    return res.json(updatedResume);
+  } catch (error) {
+    if (error.message === "RESUME_NOT_FOUND") {
+      return res.status(404).json({
+        message: "CV no encontrado",
+      });
+    }
+
+    console.error("Error updating resume:", error);
+
+    return res.status(500).json({
+      message: "Error al actualizar el CV",
+    });
+  }
+}
+
 async function deleteResume(req, res) {
   try {
     await deleteUserResume(req.params.id, req.user.userId);
@@ -133,5 +160,6 @@ module.exports = {
   getResumes,
   downloadResume,
   getResumeById,
+  updateResume,
   deleteResume,
 };

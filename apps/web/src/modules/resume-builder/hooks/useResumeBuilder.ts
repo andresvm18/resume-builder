@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { DEFAULT_RESUME_DATA } from "../types/resume.types";
 import { fetchResumeById } from "../services/resume.service";
 import { normalizeResumeData } from "../utils/resumeNormalizer";
+import { getApiErrorStatus } from "../../../shared/services/apiClient";
 import type {
   ResumeData,
   Experience,
@@ -24,6 +25,9 @@ export function useResumeBuilder(
   options: UseResumeBuilderOptions = {}
 ) {
   const resumeRef = useRef<HTMLDivElement>(null);
+  const onResumeNotFoundRef = useRef(options.onResumeNotFound);
+  const hasLoadedResumeRef = useRef(false);
+  const loadedResumeIdRef = useRef<string | undefined>(undefined);
 
   const generatedProfileResume =
     localStorage.getItem("resume-profile-generated");
@@ -32,9 +36,7 @@ export function useResumeBuilder(
     if (generatedProfileResume) {
       localStorage.removeItem("resume-profile-generated");
 
-      return normalizeResumeData(
-        JSON.parse(generatedProfileResume)
-      );
+      return normalizeResumeData(JSON.parse(generatedProfileResume));
     }
 
     return options.initialData
@@ -45,9 +47,21 @@ export function useResumeBuilder(
   const [currentStep, setCurrentStep] = useState<Step>("personal");
   const [skillInput, setSkillInput] = useState("");
 
-  const { onResumeNotFound } = options;
+  useEffect(() => {
+    onResumeNotFoundRef.current = options.onResumeNotFound;
+  }, [options.onResumeNotFound]);
+
   useEffect(() => {
     if (!resumeId) return;
+
+    if (loadedResumeIdRef.current !== resumeId) {
+      hasLoadedResumeRef.current = false;
+      loadedResumeIdRef.current = resumeId;
+    }
+
+    if (hasLoadedResumeRef.current) return;
+
+    hasLoadedResumeRef.current = true;
 
     const loadResume = async () => {
       try {
@@ -59,13 +73,22 @@ export function useResumeBuilder(
         }
       } catch (error) {
         console.error("Error loading resume:", error);
-        onResumeNotFound?.();
+
+        const status = getApiErrorStatus(error);
+
+        if (status === 429) {
+          alert(
+            "Se hicieron demasiadas solicitudes en poco tiempo. Esperá unos segundos e intentá nuevamente."
+          );
+          return;
+        }
+
+        onResumeNotFoundRef.current?.();
       }
     };
 
-    loadResume();
-  }, [resumeId, onResumeNotFound]);
-
+    void loadResume();
+  }, [resumeId]);
 
   const updateField = <K extends keyof ResumeData>(
     field: K,
@@ -77,7 +100,6 @@ export function useResumeBuilder(
     }));
   };
 
-  // Skills
   const addSkill = () => {
     const parsedSkills = skillInput
       .split(",")
@@ -111,7 +133,6 @@ export function useResumeBuilder(
     );
   };
 
-  // Languages
   const addLanguage = () => {
     updateField("languages", [
       ...resumeData.languages,
@@ -148,7 +169,6 @@ export function useResumeBuilder(
     );
   };
 
-  // Experience
   const addExperience = () => {
     updateField("experiences", [
       ...resumeData.experiences,
@@ -183,7 +203,6 @@ export function useResumeBuilder(
     );
   };
 
-  // Education
   const addEducation = () => {
     updateField("education", [
       ...resumeData.education,
@@ -216,7 +235,6 @@ export function useResumeBuilder(
     );
   };
 
-  // Projects
   const addProject = () => {
     updateField("projects", [
       ...resumeData.projects,
@@ -292,7 +310,8 @@ export function useResumeBuilder(
     projects: resumeData.projects,
 
     template: resumeData.template,
-    setTemplate: (value: ResumeData["template"]) => updateField("template", value),
+    setTemplate: (value: ResumeData["template"]) =>
+      updateField("template", value),
 
     addSkill,
     removeSkill,

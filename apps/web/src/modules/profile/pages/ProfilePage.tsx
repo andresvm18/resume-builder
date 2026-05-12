@@ -1,34 +1,49 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Header from "../../../shared/components/layout/Header";
 import ResumeFormPanel from "../../resume-builder/components/ResumeFormPanel";
 import ProfileCompletenessCard from "../components/ProfileCompletenessCard";
 import { useResumeBuilder } from "../../resume-builder/hooks/useResumeBuilder";
+import { getProfile, updateProfile } from "../services/profile.service";
+
 import {
-  getProfile,
-  updateProfile,
-} from "../services/profile.service";
+  IconUser,
+  IconFileText,
+  IconTools,
+  IconBriefcase,
+  IconSchool,
+  IconLanguage,
+  IconRocket,
+} from "@tabler/icons-react";
 
 import "./ProfilePage.css";
 
 const profileSteps = [
-  { id: "personal", label: "Personal", icon: "👤" },
-  { id: "summary", label: "Resumen", icon: "📝" },
-  { id: "skills", label: "Habilidades", icon: "⚙️" },
-  { id: "experience", label: "Experiencia", icon: "💼" },
-  { id: "education", label: "Educación", icon: "🎓" },
-  { id: "languages", label: "Idiomas", icon: "🌐" },
-  { id: "projects", label: "Proyectos", icon: "🚀" },
+  { id: "personal", label: "Personal", icon: IconUser, },
+  { id: "summary", label: "Resumen", icon: IconFileText, },
+  { id: "skills", label: "Habilidades", icon: IconTools, },
+  { id: "experience", label: "Experiencia", icon: IconBriefcase, },
+  { id: "education", label: "Educación", icon: IconSchool, },
+  { id: "languages", label: "Idiomas", icon: IconLanguage, },
+  { id: "projects", label: "Proyectos", icon: IconRocket, },
 ] as const;
+
+type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   const builder = useResumeBuilder();
   const setProfileData = builder.setResumeData;
+
+  const latestResumeDataRef = useRef(builder.resumeData);
+  const isSaving = saveStatus === "saving";
+
+  useEffect(() => {
+    latestResumeDataRef.current = builder.resumeData;
+  }, [builder.resumeData]);
 
   useEffect(() => {
     async function loadProfile() {
@@ -36,9 +51,13 @@ export default function ProfilePage() {
         const response = await getProfile();
 
         setProfileData(response.profileData);
+        latestResumeDataRef.current = response.profileData;
+
         setHasUnsavedChanges(false);
+        setSaveStatus("saved");
       } catch (error) {
         console.error("Error loading profile:", error);
+        setSaveStatus("error");
       } finally {
         setIsLoading(false);
       }
@@ -47,26 +66,28 @@ export default function ProfilePage() {
     void loadProfile();
   }, [setProfileData]);
 
-  async function saveProfile() {
-    setIsSaving(true);
-    setSuccessMessage("");
+  const saveProfile = useCallback(async () => {
+    if (saveStatus === "saving") return;
+
+    setSaveStatus("saving");
 
     try {
-      await updateProfile(builder.resumeData);
+      await updateProfile(latestResumeDataRef.current);
 
-      setSuccessMessage("Perfil actualizado correctamente.");
+      setSaveStatus("saved");
       setHasUnsavedChanges(false);
       setLastSavedAt(new Date());
     } catch (error) {
       console.error("Error saving profile:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  }
 
-  async function handleSaveProfile() {
+      setSaveStatus("error");
+      setHasUnsavedChanges(false);
+    }
+  }, [saveStatus]);
+
+  const handleSaveProfile = async () => {
     await saveProfile();
-  }
+  };
 
   useEffect(() => {
     if (!hasUnsavedChanges || isLoading || isSaving) return;
@@ -78,7 +99,7 @@ export default function ProfilePage() {
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [builder.resumeData, hasUnsavedChanges, isLoading, isSaving]);
+  }, [hasUnsavedChanges, isLoading, isSaving, saveProfile]);
 
   if (isLoading) {
     return (
@@ -94,44 +115,55 @@ export default function ProfilePage() {
       <Header />
 
       <div className="profile-page__container">
-        <div className="profile-page__card">
+        <div className="profile-page__card rb-fade-up">
           <div className="profile-page__header">
             <div>
-              <h1 className="profile-page__title">
-                Perfil profesional
-              </h1>
+              <h1 className="profile-page__title">Perfil profesional</h1>
 
               <p className="profile-page__description">
                 Guarda toda tu información profesional para reutilizarla
                 automáticamente en futuros currículums.
               </p>
+
+              <div
+                className={`profile-page__save-status profile-page__save-status--${saveStatus}`}
+              >
+                {saveStatus === "saving" && (
+                  <>
+                    <span className="profile-page__spinner" />
+                    Guardando cambios...
+                  </>
+                )}
+
+                {saveStatus === "saved" && lastSavedAt && (
+                  <>
+                    Cambios guardados a las{" "}
+                    {lastSavedAt.toLocaleTimeString("es-CR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </>
+                )}
+
+                {saveStatus === "saved" && !lastSavedAt && "Perfil cargado"}
+
+                {saveStatus === "error" && "No se pudieron guardar los cambios"}
+              </div>
             </div>
 
-            {lastSavedAt && (
-              <p className="profile-page__save-status">
-                Guardado automáticamente a las{" "}
-                {lastSavedAt.toLocaleTimeString("es-CR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-            )}
-            
             <button
               type="button"
               onClick={handleSaveProfile}
               disabled={isSaving || !hasUnsavedChanges}
               className="profile-page__save-btn"
             >
-              {isSaving ? "Guardando..." : hasUnsavedChanges ? "Guardar cambios" : "Guardado"}
+              {isSaving
+                ? "Guardando..."
+                : hasUnsavedChanges
+                  ? "Guardar cambios"
+                  : "Guardado"}
             </button>
           </div>
-
-          {successMessage && (
-            <p className="profile-page__success">
-              {successMessage}
-            </p>
-          )}
 
           <ProfileCompletenessCard profile={builder.resumeData} />
 
@@ -148,16 +180,24 @@ export default function ProfilePage() {
                 }
               >
                 <span>{step.label}</span>
-                <span>{step.icon}</span>
+                <step.icon
+                  size={18}
+                  stroke={1.8}
+                  className="profile-page__tab-icon"
+                />
               </button>
             ))}
           </div>
 
           <div
-            onChange={() => setHasUnsavedChanges(true)}
+            onChange={() => {
+              if (saveStatus === "saving") return;
+
+              setHasUnsavedChanges(true);
+              setSaveStatus("idle");
+            }}
             className="profile-page__form-shell"
           >
-
             <ResumeFormPanel
               currentStep={builder.currentStep}
               fullName={builder.fullName}
@@ -199,6 +239,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </main >
+    </main>
   );
 }

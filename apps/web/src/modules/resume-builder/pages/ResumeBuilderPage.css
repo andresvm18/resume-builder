@@ -345,6 +345,18 @@
   color: var(--error);
 }
 
+.resume-builder-page__skill-remove,
+.resume-builder-page__item-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resume-builder-page__skill-remove svg,
+.resume-builder-page__item-remove svg {
+  flex-shrink: 0;
+}
+
 /* ── Item Cards ── */
 .resume-builder-page__item-card {
   background-color: var(--color-surface);
@@ -778,5 +790,135 @@
   .resume-builder-page__loading-card {
     margin: 4rem 1rem 0;
     padding: 2rem 1.5rem;
+  }
+}
+
+.resume-builder-page__save-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.resume-builder-page__save-existing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base),
+    opacity var(--transition-base);
+}
+
+.resume-builder-page__save-existing-btn:hover:not(:disabled) {
+  background: var(--btn-hover);
+  transform: translateY(-1px);
+}
+
+.resume-builder-page__save-existing-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.resume-builder-page__save-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.resume-builder-page__save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.resume-builder-page__save-status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: var(--text-hint);
+}
+
+.resume-builder-page__save-status--unsaved::before {
+  background-color: var(--accent);
+}
+
+.resume-builder-page__save-status--saving::before {
+  background-color: var(--accent);
+  animation: resumeSavePulse 0.8s ease-in-out infinite;
+}
+
+.resume-builder-page__save-status--saved {
+  color: var(--success);
+}
+
+.resume-builder-page__save-status--saved::before {
+  background-color: var(--success);
+}
+
+.resume-builder-page__save-status--error {
+  color: var(--error);
+}
+
+.resume-builder-page__save-status--error::before {
+  background-color: var(--error);
+}
+
+.resume-builder-page__save-existing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base),
+    opacity var(--transition-base);
+}
+
+.resume-builder-page__save-existing-btn:hover:not(:disabled) {
+  background: var(--btn-hover);
+  transform: translateY(-1px);
+}
+
+.resume-builder-page__save-existing-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@keyframes resumeSavePulse {
+
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.35);
   }
 }

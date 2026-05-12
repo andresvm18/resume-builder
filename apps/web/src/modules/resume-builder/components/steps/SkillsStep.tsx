@@ -1,3 +1,5 @@
+import { IconX } from "@tabler/icons-react";
+
 type SkillsStepProps = {
   skills: string[];
   skillInput: string;
@@ -50,8 +52,9 @@ export default function SkillsStep({
               type="button"
               onClick={() => removeSkill(index)}
               className="resume-builder-page__skill-remove"
+              aria-label={`Eliminar habilidad ${skill}`}
             >
-              ×
+              <IconX size={14} stroke={2} />
             </button>
           </div>
         ))}
