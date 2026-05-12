@@ -1,12 +1,22 @@
-# ResumeBuilder 🚀 — Phase 5: Career Profile & AI Resume Generation
+# ResumeBuilder 🚀 — Phase 5: Career Platform, UX Polish & Resume Management
 
 ## ✨ Overview
 
-Phase 5 transforms ResumeBuilder into a more intelligent and reusable career platform by introducing persistent Career Profiles and AI-powered resume generation workflows.
+Phase 5 transforms ResumeBuilder into a reusable AI-powered career platform focused on ATS optimization, intelligent resume generation, and modern SaaS-style user experience.
 
-Users can now maintain a professional master profile and generate tailored resumes automatically from job descriptions.
+This phase introduces:
 
-This phase moves the platform away from static form-based resume creation into a SaaS-style AI-assisted workflow.
+- persistent Career Profiles
+- AI-powered resume generation from profile data
+- advanced dashboard workflows
+- autosave systems
+- resume metadata management
+- resume duplication
+- dark mode support
+- responsive UX improvements
+- polished editing experiences
+
+ResumeBuilder now behaves much more like a production-oriented AI SaaS application rather than a traditional CRUD-based resume generator.
 
 ---
 
@@ -14,54 +24,54 @@ This phase moves the platform away from static form-based resume creation into a
 
 Phase 5 focused on:
 
-- creating reusable professional profiles
-- enabling AI-generated resumes from stored profile data
-- improving onboarding and user guidance
-- enhancing SaaS-style UX patterns
 - reducing repetitive resume editing
+- improving AI-assisted workflows
+- enabling reusable career profiles
+- improving resume organization
+- modernizing the user experience
+- introducing SaaS-style editing patterns
+- strengthening ATS-focused resume targeting
 
 ---
 
-# 🧠 New Features
+# 🧠 Core Features
 
 ## 👤 Career Profile System
 
-Users can now create and maintain a persistent professional profile containing:
+Users can now maintain a persistent professional profile containing:
 
 - personal information
-- professional summary
+- summary
 - education
 - work experience
 - skills
 - languages
 - projects
 
-The Career Profile acts as the primary data source for future resume generation workflows.
+The Career Profile acts as the primary data source for future AI-powered resume generation.
 
 ---
 
 ## 🤖 AI Resume Generation From Profile
 
-New flow:
+New workflow:
 
-```txt
 Career Profile
 → Job Description
 → AI Resume Generation
 → ResumeBuilder Hydration
 → PDF Export
-```
 
 Users can now:
-1. complete their professional profile
+1. complete a reusable professional profile
 2. paste a job description
 3. generate a tailored ATS-optimized resume automatically
 
-The generated resume is loaded directly into ResumeBuilder for review and editing before export.
+The generated resume is loaded directly into ResumeBuilder for final review and customization.
 
 ---
 
-# 🔍 Intelligent Resume Selection
+## 🧠 Intelligent Resume Targeting
 
 The AI generation pipeline now:
 
@@ -72,80 +82,181 @@ The AI generation pipeline now:
 - rewrites content professionally
 - preserves factual consistency
 
-Strict prompt engineering rules prevent:
+Strict prompt engineering prevents:
 - hallucinated experience
-- fake skills
-- invented certifications
-- fabricated achievements
+- fake certifications
+- invented achievements
+- fabricated technical skills
 
 ---
 
-# 🧱 Resume Creation Modes
+# 📂 Resume Management System
 
-ResumeBuilder now supports two creation workflows:
-
-## ✨ Generate From Profile
-AI-assisted resume generation using:
-- Career Profile
-- Job Description
-- ATS optimization
-
-## 📝 Create From Scratch
-Traditional manual resume creation using the Resume Builder wizard.
+Phase 5 introduced a complete resume organization workflow.
 
 ---
 
-# 📊 Profile Completeness System
+## 🏷 Resume Metadata
 
-Phase 5 introduced a profile readiness system.
+Each resume now supports:
 
-The platform now evaluates:
-- required profile sections
-- optional sections
-- AI generation readiness
-- overall completion percentage
+- target role
+- target company
 
-Required sections:
-- Personal Information
-- Education
-- Skills
+Examples:
+- Frontend Developer
+- QA Engineer
+- Roche
+- Align Technology
 
-Optional sections:
-- Summary
-- Experience
-- Languages
-- Projects
+This metadata is:
+- editable,
+- persisted,
+- visible in the dashboard,
+- compatible with AI-generated resumes.
 
-Users now receive onboarding-style feedback about profile quality and AI readiness.
+---
+
+## 📋 Dashboard Resume Organization
+
+Dashboard cards now display:
+
+- target role
+- target company
+- resume metadata badges
+- generation timestamps
+
+This improves resume management for users applying to multiple positions simultaneously.
+
+---
+
+## 📄 Resume Duplication
+
+Users can now duplicate existing resumes directly from the Dashboard.
+
+Example:
+
+Software Engineer CV
+→ Software Engineer CV (Copy)
+
+This enables:
+- role-specific resume variants
+- rapid customization
+- company-specific resume targeting
 
 ---
 
 # 💾 Autosave System
 
-The Career Profile editor now supports automatic saving.
+ResumeBuilder and Career Profiles now support autosave workflows.
 
-Features:
+Features include:
+
 - debounced autosave
 - unsaved changes tracking
 - save state management
-- last autosave timestamp
+- autosave feedback indicators
 - reduced risk of data loss
 
-This improves the overall SaaS editing experience.
+Save states:
+- Unsaved changes
+- Saving...
+- Saved automatically
+- Error
 
 ---
 
-# 🧠 AI Prompt Engineering Improvements
+# 🌙 Dark Mode Support
 
-Phase 5 significantly improved AI prompting reliability.
+Phase 5 introduced complete dark mode support.
 
-Enhancements include:
-- strict JSON formatting rules
-- hallucination prevention
-- ATS-oriented prompting
-- prompt injection protection
-- response normalization
-- safe parsing pipelines
+Features:
+- ThemeProvider architecture
+- persistent theme preference
+- responsive theme toggle
+- CSS variable theming system
+- improved accessibility contrast
+
+---
+
+# 🎨 UX & UI Improvements
+
+Major UX improvements were introduced across the platform.
+
+---
+
+## 🧩 Unified Design System
+
+Standardized UI using:
+- Tabler Icons
+- consistent spacing
+- reusable components
+- animation utilities
+- modern SaaS-style layouts
+
+Replaced:
+- emojis
+- mixed icon styles
+- inconsistent visual patterns
+
+---
+
+## ✨ Dashboard Improvements
+
+Added:
+- search functionality
+- sorting options
+- skeleton loaders
+- improved empty states
+- responsive card layouts
+- smoother transitions
+
+Sorting options:
+- Most Recent
+- Oldest
+- Name A-Z
+
+---
+
+## 🪄 Resume Creation Flows
+
+ResumeBuilder now supports multiple creation modes:
+
+### ✨ Generate From Profile
+AI-assisted workflow using:
+- Career Profile
+- Job Description
+- ATS optimization
+
+### 📝 Create From Scratch
+Traditional manual resume creation using the wizard-based builder.
+
+---
+
+# 🧠 ATS Optimization Enhancements
+
+Phase 5 improved ATS-oriented workflows with:
+
+- keyword-aware generation
+- ATS-focused prompting
+- structured resume hydration
+- improved PDF consistency
+- metadata persistence
+- better resume targeting
+
+---
+
+# 🧪 Reliability & Validation
+
+Added safeguards for:
+
+- malformed AI responses
+- invalid profile generation
+- normalization consistency
+- safe JSON parsing
+- prompt injection prevention
+- malformed ResumeData hydration
+- metadata persistence
 
 ---
 
@@ -153,82 +264,83 @@ Enhancements include:
 
 ## Backend
 
-New services and flows:
-- profile AI generation service
-- profile validation
+New systems:
 - profile persistence
-- resume hydration pipeline
+- profile AI generation
+- resume duplication
+- autosave-ready update flows
+- metadata persistence
+- resume normalization pipelines
 
 New endpoints:
-- `GET /api/profile`
-- `PUT /api/profile`
-- `POST /api/profile/generate-resume`
+- GET /api/profile
+- PUT /api/profile
+- POST /api/profile/generate-resume
+- PUT /api/resume/:id
+- POST /api/resume/:id/duplicate
 
 ---
 
 ## Frontend
 
-New pages:
-- `/profile`
-- `/generate-from-profile`
-- `/resume/new`
-
 New systems:
-- profile completeness engine
+- ThemeProvider
 - autosave workflow
-- AI resume hydration
-- resume creation mode selection
+- dashboard search/sort
+- metadata badges
+- resume duplication UX
+- save status indicators
+- profile completeness engine
+
+New pages:
+- /profile
+- /generate-from-profile
+- /resume/new
 
 ---
 
-# 🎨 UX Improvements
+# 🧪 Testing & Stability
 
-Phase 5 also introduced major UX upgrades:
+Phase 5 also improved project stability with:
 
-- SaaS-style profile editing
-- creation mode selection
-- onboarding guidance
-- empty state handling
-- autosave feedback
-- responsive profile UI
-- AI readiness indicators
-
----
-
-# 🔐 Reliability & Validation
-
-Additional safeguards were added to:
-- prevent invalid AI generation
-- validate minimum profile requirements
-- prevent malformed resume hydration
-- preserve original job descriptions
-- normalize generated ResumeData
+- updated Vitest coverage
+- ThemeProvider test compatibility
+- accessibility-oriented tests
+- autosave stability improvements
+- normalized editing workflows
 
 ---
 
 # 🚀 Result
 
-ResumeBuilder evolved from a traditional resume builder into a reusable AI-powered career platform.
+ResumeBuilder evolved into a much more complete AI-powered career platform.
 
 The application now supports:
-- persistent professional identities
-- AI-generated ATS resumes
-- reusable career data
-- intelligent resume targeting
-- modern SaaS editing workflows
 
-Phase 5 establishes the foundation for future features such as:
-- resume variants
-- cover letter generation
-- LinkedIn import
-- AI interview preparation
-- career analytics
-- portfolio integration
+- reusable professional identities
+- ATS-optimized AI resume generation
+- intelligent resume targeting
+- resume organization workflows
+- autosave editing experiences
+- dashboard resume management
+- dark mode support
+- SaaS-style UX patterns
+
+The platform now behaves much more like a production-ready AI SaaS product instead of a static resume generator.
 
 ---
 
 # 📌 Final Notes
 
-Phase 5 represents one of the largest architectural improvements in the project lifecycle.
+Phase 5 represents one of the largest UX, architecture, and workflow improvements in the entire project lifecycle.
 
-The platform now behaves more like a production-oriented AI SaaS product instead of a static CRUD-based resume generator.
+This phase established the foundation for future features such as:
+
+- resume variants
+- cover letter generation
+- AI interview preparation
+- portfolio integration
+- analytics
+- LinkedIn import
+- deployment hardening
+- production monitoring
