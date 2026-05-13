@@ -3,13 +3,18 @@ const {
   upsertUserProfile,
 } = require("../services/profile.service");
 
+const logger = require("../utils/logger");
+
 async function getProfile(req, res) {
   try {
     const profile = await getUserProfile(req.user.userId);
 
     return res.json(profile);
   } catch (error) {
-    console.error("Error fetching profile:", error);
+    logger.error("PROFILE", "Error fetching profile", {
+      message: error.message,
+      userId: req.user?.userId,
+    });
 
     return res.status(500).json({
       message: "Error al obtener el perfil",
@@ -26,7 +31,10 @@ async function updateProfile(req, res) {
 
     return res.json(profile);
   } catch (error) {
-    console.error("Error updating profile:", error);
+    logger.error("PROFILE", "Error updating profile", {
+      message: error.message,
+      userId: req.user?.userId,
+    });
 
     return res.status(500).json({
       message: "Error al actualizar el perfil",

@@ -10,10 +10,27 @@ export type ApiError = Error & {
   status?: number;
 };
 
+const DEFAULT_ERROR_MESSAGE =
+  "No pudimos completar esta acción. Intenta nuevamente.";
+
 function createApiError(message: string, status: number): ApiError {
-  const error = new Error(message) as ApiError;
+  const error = new Error(message || DEFAULT_ERROR_MESSAGE) as ApiError;
   error.status = status;
   return error;
+}
+
+async function getApiErrorMessage(response: Response): Promise<string> {
+  try {
+    const data = await response.json();
+
+    if (typeof data?.message === "string" && data.message.trim()) {
+      return data.message;
+    }
+
+    return DEFAULT_ERROR_MESSAGE;
+  } catch {
+    return DEFAULT_ERROR_MESSAGE;
+  }
 }
 
 function getAuthHeaders(): Record<string, string> {
@@ -50,10 +67,8 @@ export async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    throw createApiError(
-      `API request failed: ${response.status}`,
-      response.status
-    );
+    const message = await getApiErrorMessage(response);
+    throw createApiError(message, response.status);
   }
 
   return response.json() as Promise<T>;
@@ -71,10 +86,8 @@ export async function apiBlobRequest(
   });
 
   if (!response.ok) {
-    throw createApiError(
-      `API blob request failed: ${response.status}`,
-      response.status
-    );
+    const message = await getApiErrorMessage(response);
+    throw createApiError(message, response.status);
   }
 
   return response.blob();
@@ -90,4 +103,12 @@ export function getApiErrorStatus(error: unknown): number | undefined {
   }
 
   return undefined;
+}
+
+export function getFriendlyErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+
+  return DEFAULT_ERROR_MESSAGE;
 }

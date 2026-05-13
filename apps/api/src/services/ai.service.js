@@ -1,5 +1,7 @@
 const { GoogleGenAI } = require("@google/genai");
 const OpenAI = require("openai");
+const logger = require("../utils/logger");
+
 
 const gemini = process.env.GEMINI_API_KEY
   ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -100,7 +102,9 @@ async function generateWithFallback(prompt) {
 
   for (const provider of providers) {
     try {
-      console.log(`🧠 Intentando con: ${provider.name}`);
+      logger.info("AI", "Trying AI provider", {
+        provider: provider.name,
+      });
 
       const result = await provider.run();
 
@@ -108,7 +112,9 @@ async function generateWithFallback(prompt) {
         throw new Error(`${provider.name} returned empty response`);
       }
 
-      console.log(`✅ Respuesta exitosa de: ${provider.name}`);
+      logger.info("AI", "AI provider succeeded", {
+        provider: provider.name,
+      });
 
       return result;
     } catch (error) {
@@ -118,7 +124,10 @@ async function generateWithFallback(prompt) {
       });
 
       if (process.env.NODE_ENV !== "production") {
-        console.warn(`❌ ${provider.name} falló`);
+        logger.warn("AI", "AI provider failed", {
+          provider: provider.name,
+          message: error.message,
+        });
       }
     }
   }
@@ -467,7 +476,9 @@ async function optimizeFullResume({ resumeData, jobDescription }) {
       source: result.provider,
     };
   } catch (error) {
-    console.error("[AI fallback] optimizeFullResume failed:", error.message);
+    logger.error("AI", "optimizeFullResume fallback triggered", {
+      message: error.message,
+    });
 
     return {
       optimizedResumeData: fallbackOptimizedResume(resumeData, jobDescription),

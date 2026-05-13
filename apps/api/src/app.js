@@ -13,6 +13,7 @@ const aiRoutes = require("./routes/ai.routes");
 const profileRoutes = require("./routes/profile.routes");
 const profileAiRoutes = require("./routes/profile-ai.routes");
 const requestLogger = require("./middleware/request-logger.middleware");
+const { notFoundHandler, errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
 
@@ -49,5 +50,8 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/ai", aiLimiter, aiRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/profile", profileAiRoutes);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;

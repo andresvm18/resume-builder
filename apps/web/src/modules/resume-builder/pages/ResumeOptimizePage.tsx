@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
+import { getFriendlyErrorMessage } from "../../../shared/services/apiClient";
 import type { ResumeData } from "../types/resume.types";
 import { normalizeResumeData } from "../utils/resumeNormalizer";
 import {
@@ -18,6 +19,25 @@ export default function ResumeOptimizePage() {
   const resumeData = rawResumeData ? normalizeResumeData(rawResumeData) : null;
 
   const [status, setStatus] = useState("Preparando optimización con IA...");
+  const [error, setError] = useState("");
+
+  const goToOriginalResume = () => {
+    if (!resumeData) {
+      navigate("/resume-builder");
+      return;
+    }
+
+    navigate("/resume/generate", {
+      state: resumeData,
+      replace: true,
+    });
+  };
+
+  const retryOptimization = () => {
+    hasOptimized.current = false;
+    setError("");
+    setStatus("Preparando optimización con IA...");
+  };
 
   useEffect(() => {
     if (hasOptimized.current) return;
@@ -30,6 +50,7 @@ export default function ResumeOptimizePage() {
 
     const optimizeResume = async () => {
       try {
+        setError("");
         setStatus("Optimizando tu CV con IA...");
 
         const result = await optimizeFullResume(
@@ -47,8 +68,8 @@ export default function ResumeOptimizePage() {
               result.optimizedResumeData,
               resumeData.jobDescription
             );
-          } catch {
-            console.warn("No se pudo completar el análisis ATS final.");
+          } catch (atsError) {
+            console.warn("No se pudo completar el análisis ATS final.", atsError);
           }
         }
 
@@ -61,25 +82,21 @@ export default function ResumeOptimizePage() {
           },
           replace: true,
         });
-      } catch {
-        setStatus("No se pudo optimizar con IA. Generando CV original...");
-
-        navigate("/resume/generate", {
-          state: resumeData,
-          replace: true,
-        });
+      } catch (optimizeError) {
+        setError(getFriendlyErrorMessage(optimizeError));
+        setStatus("No se pudo optimizar el CV con IA.");
       }
     };
 
     optimizeResume();
-  }, [resumeData, navigate]);
+  }, [resumeData, navigate, error]);
 
   return (
     <main className="resume-optimize-page">
       <Header />
 
       <section className="resume-optimize-page__card">
-        <div className="resume-optimize-page__loader" />
+        {!error && <div className="resume-optimize-page__loader" />}
 
         <h1 className="resume-optimize-page__title">
           Optimizando tu currículum
@@ -87,9 +104,25 @@ export default function ResumeOptimizePage() {
 
         <p className="resume-optimize-page__status">{status}</p>
 
-        <p className="resume-optimize-page__hint">
-          Estamos optimizando tu CV, analizando su compatibilidad ATS y preparando tu PDF final.
-        </p>
+        {!error ? (
+          <p className="resume-optimize-page__hint">
+            Estamos optimizando tu CV, analizando su compatibilidad ATS y preparando tu PDF final.
+          </p>
+        ) : (
+          <div className="resume-optimize-page__error-box">
+            <p className="resume-optimize-page__hint">{error}</p>
+
+            <div className="resume-optimize-page__actions">
+              <button type="button" onClick={retryOptimization}>
+                Intentar nuevamente
+              </button>
+
+              <button type="button" onClick={goToOriginalResume}>
+                Generar CV original
+              </button>
+            </div>
+          </div>
+        )}
       </section>
     </main>
   );
