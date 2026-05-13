@@ -5,115 +5,74 @@ const {
   analyzeFinalAts,
 } = require("../services/ai.service");
 
-const logger = require("../utils/logger");
+const asyncHandler = require("../utils/asyncHandler");
+const createHttpError = require("../utils/httpError");
 
-async function optimizeResumeSummary(req, res) {
-  try {
-    const { resumeData, jobDescription } = req.body;
+const optimizeResumeSummary = asyncHandler(async (req, res) => {
+  const { resumeData, jobDescription } = req.body;
 
-    if (!resumeData) {
-      return res.status(400).json({
-        message: "resumeData es requerido",
-      });
-    }
-
-    const result = await optimizeSummary({
-      resumeData,
-      jobDescription,
-    });
-
-    return res.json(result);
-  } catch (error) {
-    logger.error("AI", "Error optimizing summary", {
-      message: error.message,
-    });
-
-    return res.status(500).json({
-      message: "Error al optimizar el resumen",
-    });
+  if (!resumeData) {
+    throw createHttpError(400, "resumeData es requerido");
   }
-}
 
-async function getAiRecommendations(req, res) {
-  try {
-    const { resumeData, jobDescription } = req.body;
+  const result = await optimizeSummary({
+    resumeData,
+    jobDescription,
+  });
 
-    if (!resumeData || !jobDescription) {
-      return res.status(400).json({
-        message: "resumeData y jobDescription son requeridos",
-      });
-    }
+  return res.json(result);
+});
 
-    const result = await generateAiRecommendations({
-      resumeData,
-      jobDescription,
-    });
+const getAiRecommendations = asyncHandler(async (req, res) => {
+  const { resumeData, jobDescription } = req.body;
 
-    return res.json(result);
-  } catch (error) {
-    logger.error("AI", "Error generating AI recommendations", {
-      message: error.message,
-    });
-
-    return res.status(500).json({
-      message: "Error al generar recomendaciones con IA",
-    });
+  if (!resumeData || !jobDescription) {
+    throw createHttpError(
+      400,
+      "resumeData y jobDescription son requeridos"
+    );
   }
-}
 
-async function optimizeResume(req, res) {
-  try {
-    const { resumeData, jobDescription } = req.body;
+  const result = await generateAiRecommendations({
+    resumeData,
+    jobDescription,
+  });
 
-    if (!resumeData) {
-      return res.status(400).json({
-        message: "resumeData es requerido",
-      });
-    }
+  return res.json(result);
+});
 
-    const result = await optimizeFullResume({
-      resumeData,
-      jobDescription,
-    });
+const optimizeResume = asyncHandler(async (req, res) => {
+  const { resumeData, jobDescription } = req.body;
 
-    return res.json(result);
-  } catch (error) {
-    logger.error("AI", "Error optimizing resume", {
-      message: error.message,
-    });
-
-    return res.status(500).json({
-      message: "Error al optimizar el CV con IA",
-    });
+  if (!resumeData) {
+    throw createHttpError(400, "resumeData es requerido");
   }
-}
 
-async function analyzeFinalResumeAts(req, res) {
-  try {
-    const { resumeData, jobDescription } = req.body;
+  const result = await optimizeFullResume({
+    resumeData,
+    jobDescription,
+  });
 
-    if (!resumeData || !jobDescription) {
-      return res.status(400).json({
-        message: "resumeData y jobDescription son requeridos",
-      });
-    }
+  return res.json(result);
+});
 
-    const result = await analyzeFinalAts({
-      resumeData,
-      jobDescription,
-    });
+const analyzeFinalResumeAts = asyncHandler(async (req, res) => {
+  const { resumeData, jobDescription } = req.body;
 
-    return res.json(result);
-  } catch (error) {
-    logger.error("AI", "Error analyzing final ATS", {
-      message: error.message,
-    });
-
-    return res.status(500).json({
-      message: "Error al analizar el CV final con ATS",
-    });
+  if (!resumeData || !jobDescription) {
+    throw createHttpError(
+      400,
+      "resumeData y jobDescription son requeridos"
+    );
   }
-}
+
+  const result = await analyzeFinalAts({
+    resumeData,
+    jobDescription,
+  });
+
+  return res.json(result);
+});
 
 module.exports = {
   optimizeResumeSummary,
