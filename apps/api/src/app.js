@@ -5,7 +5,7 @@ const {
   helmetMiddleware,
   apiLimiter,
   aiLimiter,
-} = require("./middlewares/security.middleware");
+} = require("./middleware/security.middleware");
 
 const authRoutes = require("./routes/auth.routes");
 const resumeRoutes = require("./routes/resume.routes");
