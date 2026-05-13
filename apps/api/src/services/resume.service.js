@@ -5,6 +5,7 @@ const { promisify } = require("util");
 
 const execFileAsync = promisify(execFile);
 const { prisma } = require("../lib/prisma");
+const logger = require("../utils/logger");
 
 const { normalizeResumeData } = require("../utils/resumeNormalizer");
 
@@ -586,6 +587,11 @@ async function renderResumePdf(data) {
 
   await fs.writeFile(texPath, texContent, "utf-8");
 
+  const start = Date.now();
+  logger.info("PDF", "Starting PDF generation", {
+    template: templateName,
+  });
+
   try {
     await execFileAsync("pdflatex", [
       "-interaction=nonstopmode",
@@ -595,9 +601,12 @@ async function renderResumePdf(data) {
       texPath,
     ]);
   } catch (error) {
-    console.error("Error compilando LaTeX:");
-    console.error(error.stdout);
-    console.error(error.stderr);
+    logger.error("PDF", "LaTeX compilation failed", {
+      message: error.message,
+      stdout: error.stdout,
+      stderr: error.stderr,
+    });
+
     throw new Error("PDF_GENERATION_FAILED");
   }
 
@@ -611,6 +620,12 @@ async function renderResumePdf(data) {
   await fs.unlink(path.join(outputDir, `cv-${fileId}.aux`)).catch(() => { });
   await fs.unlink(path.join(outputDir, `cv-${fileId}.log`)).catch(() => { });
   await fs.unlink(pdfPath).catch(() => { });
+
+  logger.info("PDF", "PDF generated successfully", {
+    template: templateName,
+    durationMs: Date.now() - start,
+    sizeBytes: pdfBuffer.length,
+  });
 
   return pdfBuffer;
 }

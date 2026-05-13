@@ -1,17 +1,20 @@
-import { env } from "../config/env.js";
+const env = require("../config/env");
+const logger = require("../utils/logger");
 
-export function notFoundHandler(req, res, next) {
-  res.status(404).json({
+function notFoundHandler(req, res, next) {
+  return res.status(404).json({
     message: `Route not found: ${req.method} ${req.originalUrl}`,
   });
 }
 
-export function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res, next) {
   const statusCode = err.statusCode || err.status || 500;
 
-  if (!env.isProduction) {
-    console.error("❌ Error:", err);
-  }
+  logger.error("ERROR", err.message || "Unhandled server error", {
+    method: req.method,
+    url: req.originalUrl,
+    statusCode,
+  });
 
   const response = {
     message:
@@ -24,5 +27,10 @@ export function errorHandler(err, req, res, next) {
     response.stack = err.stack;
   }
 
-  res.status(statusCode).json(response);
+  return res.status(statusCode).json(response);
 }
+
+module.exports = {
+  notFoundHandler,
+  errorHandler,
+};

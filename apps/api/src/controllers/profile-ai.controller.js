@@ -2,6 +2,8 @@ const {
   generateResumeFromCareerProfile,
 } = require("../services/profile-ai.service");
 
+const logger = require("../utils/logger");
+
 async function generateResumeFromProfile(req, res) {
   try {
     const result = await generateResumeFromCareerProfile({
@@ -12,7 +14,10 @@ async function generateResumeFromProfile(req, res) {
 
     return res.json(result);
   } catch (error) {
-    console.error("Error generating resume from profile:", error);
+    logger.error("PROFILE_AI", "Error generating resume from profile", {
+      message: error.message,
+      userId: req.user?.userId,
+    });
 
     return res.status(500).json({
       message: "Error generating resume from profile",

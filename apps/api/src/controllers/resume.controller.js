@@ -9,6 +9,7 @@ const {
 } = require("../services/resume.service");
 
 const { normalizeResumeData } = require("../utils/resumeNormalizer");
+const logger = require("../utils/logger");
 
 async function generateResume(req, res) {
   try {
@@ -32,7 +33,11 @@ async function generateResume(req, res) {
 
     return res.end(pdfBuffer);
   } catch (error) {
-    console.error("Error generating resume:", error);
+    logger.error("RESUME", "Error generating resume", {
+      message: error.message,
+      userId: req.user?.userId,
+    });
+
     const knownErrors = {
       PDF_GENERATION_FAILED:
         "No se pudo compilar el PDF. Revisa que los datos del CV no contengan contenido inválido.",
@@ -51,7 +56,11 @@ async function getResumes(req, res) {
     const resumes = await getUserResumes(req.user.userId);
     return res.json(resumes);
   } catch (error) {
-    console.error("Error fetching resumes:", error);
+    logger.error("RESUME", "Error fetching resumes", {
+      message: error.message,
+      userId: req.user?.userId,
+    });
+
     return res.status(500).json({
       message: "Error al obtener los CVs",
     });
@@ -77,7 +86,11 @@ async function downloadResume(req, res) {
       });
     }
 
-    console.error("Error downloading resume:", error);
+    logger.error("RESUME", "Error downloading resume", {
+      message: error.message,
+      userId: req.user?.userId,
+      resumeId: req.params.id,
+    });
 
     const knownErrors = {
       PDF_GENERATION_FAILED:
@@ -88,7 +101,7 @@ async function downloadResume(req, res) {
 
     return res.status(500).json({
       message: knownErrors[error.message] || "Error al descargar el CV",
-    });;
+    });
   }
 }
 
@@ -98,9 +111,11 @@ async function getResumeById(req, res) {
 
     return res.json(resume);
   } catch (error) {
-    if (process.env.NODE_ENV !== "test") {
-      console.error("Error fetching resume:", error);
-    }
+    logger.warn("RESUME", "Resume not found", {
+      message: error.message,
+      userId: req.user?.userId,
+      resumeId: req.params.id,
+    });
 
     return res.status(404).json({
       message: "CV no encontrado",
@@ -126,7 +141,11 @@ async function updateResume(req, res) {
       });
     }
 
-    console.error("Error updating resume:", error);
+    logger.error("RESUME", "Error updating resume", {
+      message: error.message,
+      userId: req.user?.userId,
+      resumeId: req.params.id,
+    });
 
     return res.status(500).json({
       message: "Error al actualizar el CV",
@@ -149,7 +168,11 @@ async function duplicateResume(req, res) {
       });
     }
 
-    console.error("Error duplicating resume:", error);
+    logger.error("RESUME", "Error duplicating resume", {
+      message: error.message,
+      userId: req.user?.userId,
+      resumeId: req.params.id,
+    });
 
     return res.status(500).json({
       message: "Error al duplicar el CV",
@@ -171,7 +194,11 @@ async function deleteResume(req, res) {
       });
     }
 
-    console.error("Error deleting resume:", error);
+    logger.error("RESUME", "Error deleting resume", {
+      message: error.message,
+      userId: req.user?.userId,
+      resumeId: req.params.id,
+    });
 
     return res.status(500).json({
       message: "Error al eliminar el CV",

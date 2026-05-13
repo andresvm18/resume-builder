@@ -5,6 +5,7 @@ import type { ResumeData } from "../types/resume.types";
 import type { FinalAtsAnalysisResponse } from "../services/ai.service";
 import { generateResumePdf } from "../services/resume.service";
 import { normalizeResumeData } from "../utils/resumeNormalizer";
+import { getFriendlyErrorMessage } from "../../../shared/services/apiClient";
 import "./ResumeGeneratePage.css";
 
 type ResumeGenerateState = ResumeData & {
@@ -112,12 +113,7 @@ export default function ResumeGeneratePage() {
         setFileName(generatedFileName);
         setStatus("CV generado correctamente.");
       } catch (err) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : "No se pudo generar el CV.";
-
-        setError(message);
+        setError(getFriendlyErrorMessage(err));
         setStatus("Error al generar el CV.");
       } finally {
         setIsGenerating(false);
