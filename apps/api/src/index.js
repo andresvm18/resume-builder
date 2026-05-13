@@ -3,17 +3,17 @@ require("dotenv").config({
   override: false,
 });
 
+const env = require("./config/env");
+
 if (
-  process.env.NODE_ENV === "test" &&
-  !process.env.DATABASE_URL?.includes("_test")
+  env.isTest &&
+  !env.DATABASE_URL?.includes("_test")
 ) {
   throw new Error("Tests are trying to use a non-test database.");
 }
 
 const app = require("./app");
 
-const PORT = process.env.PORT || 8080;
-
-app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
+app.listen(env.PORT, () => {
+  console.log(`API running on http://localhost:${env.PORT}`);
 });
