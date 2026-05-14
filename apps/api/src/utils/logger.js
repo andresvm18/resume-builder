@@ -1,19 +1,73 @@
 const env = require("../config/env");
 
+const SENSITIVE_KEYS = [
+  "password",
+  "token",
+  "authorization",
+  "apikey",
+  "apiKey",
+  "secret",
+  "jwt",
+  "DATABASE_URL",
+  "JWT_SECRET",
+];
+
 function getTimestamp() {
   return new Date().toISOString();
 }
 
-function formatMeta(meta = {}) {
-  if (!meta || Object.keys(meta).length === 0) return "";
+function shouldRedactKey(key = "") {
+  const normalizedKey = String(key).toLowerCase();
 
-  return ` ${JSON.stringify(meta)}`;
+  return SENSITIVE_KEYS.some((sensitiveKey) =>
+    normalizedKey.includes(String(sensitiveKey).toLowerCase())
+  );
 }
 
-function log(level, scope, message, meta) {
-  const timestamp = getTimestamp();
+function sanitizeMeta(meta = {}) {
+  if (!meta || typeof meta !== "object") return meta;
 
-  console.log(`[${timestamp}] [${level}] [${scope}] ${message}${formatMeta(meta)}`);
+  return Object.entries(meta).reduce((safeMeta, [key, value]) => {
+    if (shouldRedactKey(key)) {
+      safeMeta[key] = "[REDACTED]";
+      return safeMeta;
+    }
+
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      safeMeta[key] = sanitizeMeta(value);
+      return safeMeta;
+    }
+
+    safeMeta[key] = value;
+    return safeMeta;
+  }, {});
+}
+
+function formatMeta(meta = {}) {
+  const safeMeta = sanitizeMeta(meta);
+
+  if (!safeMeta || Object.keys(safeMeta).length === 0) return "";
+
+  return ` ${JSON.stringify(safeMeta)}`;
+}
+
+function log(level, scope, message, meta = {}) {
+  const payload = {
+    timestamp: getTimestamp(),
+    level,
+    scope,
+    message,
+    ...sanitizeMeta(meta),
+  };
+
+  if (env.isProduction) {
+    console.log(JSON.stringify(payload));
+    return;
+  }
+
+  console.log(
+    `[${payload.timestamp}] [${level}] [${scope}] ${message}${formatMeta(meta)}`
+  );
 }
 
 const logger = {

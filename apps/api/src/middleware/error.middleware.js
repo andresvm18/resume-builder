@@ -11,9 +11,11 @@ function errorHandler(err, req, res, next) {
   const statusCode = err.statusCode || err.status || 500;
 
   logger.error("ERROR", err.message || "Unhandled server error", {
+    requestId: req.requestId,
     method: req.method,
     url: req.originalUrl,
     statusCode,
+    userId: req.user?.userId,
   });
 
   const response = {
@@ -21,6 +23,7 @@ function errorHandler(err, req, res, next) {
       env.isProduction && statusCode === 500
         ? "Internal server error"
         : err.message || "Internal server error",
+    requestId: req.requestId,
   };
 
   if (!env.isProduction) {

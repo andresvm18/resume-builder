@@ -5,11 +5,16 @@ on:
     branches:
       - main
       - master
+      - develop
       - feature/**
+      - refactor/**
+      - fix/**
+      - chore/**
   pull_request:
     branches:
       - main
       - master
+      - develop
 
 jobs:
   api-tests:
@@ -35,6 +40,7 @@ jobs:
       NODE_ENV: test
       JWT_SECRET: test_secret
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/resume_builder_test
+      SENTRY_DSN_BACKEND: ""
 
     defaults:
       run:
@@ -54,6 +60,10 @@ jobs:
       - name: Install API dependencies
         run: npm ci
 
+      - name: Audit API dependencies
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
       - name: Generate Prisma client
         run: npx prisma generate
 
@@ -63,9 +73,13 @@ jobs:
       - name: Run API tests
         run: npm test
 
-  web-tests:
-    name: Web Tests
+  web-checks:
+    name: Web Checks
     runs-on: ubuntu-latest
+
+    env:
+      VITE_API_URL: http://localhost:8080/api
+      VITE_SENTRY_DSN: ""
 
     defaults:
       run:
@@ -82,11 +96,18 @@ jobs:
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
 
-      - name: Install dependencies
+      - name: Install Web dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Audit Web dependencies
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run Web lint
+        run: npm run lint
+
+      - name: Run Web tests
         run: npm test
 
-      - name: Build app
+      - name: Build Web app
         run: npm run build
