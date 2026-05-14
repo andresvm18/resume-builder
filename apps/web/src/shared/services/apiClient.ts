@@ -1,7 +1,7 @@
 import { STORAGE_KEYS } from "../constants/storageKeys";
+import { env } from "../config/env";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ?? "http://localhost:8080/api";
+const API_BASE_URL = env.API_URL;
 
 type RequestOptions = Omit<RequestInit, "headers"> & {
   auth?: boolean;

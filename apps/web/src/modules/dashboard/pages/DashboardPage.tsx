@@ -13,6 +13,7 @@ import { useToast } from "../../../shared/context/useToast";
 import SkeletonCard from "../../../shared/components/ui/SkeletonCard";
 import { useAsyncAction } from "../../../shared/hooks/useAsyncAction";
 import { APP_MESSAGES } from "../../../shared/constants/appMessages";
+import ConfirmDialog from "../../../shared/components/ui/ConfirmDialog";
 
 import {
   IconFileText,
@@ -461,62 +462,29 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {resumeToDelete && (
-        <div
-          className="dashboard-page__modal-backdrop"
-          role="presentation"
-          onClick={closeDeleteModal}
-        >
-          <div
-            className="dashboard-page__modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-resume-title"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="dashboard-page__modal-icon">!</div>
 
-            <h3
-              id="delete-resume-title"
-              className="dashboard-page__modal-title"
-            >
-              Eliminar currículum
-            </h3>
+      <ConfirmDialog
+        isOpen={Boolean(resumeToDelete)}
+        title={APP_MESSAGES.DASHBOARD.DELETE_TITLE}
+        description={
+          <>
+            ¿Estás seguro de que querés eliminar{" "}
+            <strong>{resumeToDelete?.title}</strong>? Esta acción no se puede
+            deshacer.
+          </>
+        }
+        cancelLabel={APP_MESSAGES.MODAL.CANCEL}
+        confirmLabel={
+          deleteResumeAction.isLoading
+            ? APP_MESSAGES.DASHBOARD.DELETING
+            : APP_MESSAGES.DASHBOARD.DELETE_ACTION
+        }
+        isLoading={deleteResumeAction.isLoading}
+        error={deleteError}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDeleteResume}
+      />
 
-            <p className="dashboard-page__modal-description">
-              ¿Estás seguro de que querés eliminar{" "}
-              <strong>{resumeToDelete.title}</strong>? Esta acción no se puede
-              deshacer.
-            </p>
-
-            {deleteError && (
-              <p className="dashboard-page__modal-error">{deleteError}</p>
-            )}
-
-            <div className="dashboard-page__modal-actions">
-              <button
-                type="button"
-                onClick={closeDeleteModal}
-                disabled={deleteResumeAction.isLoading}
-                className="dashboard-page__modal-cancel"
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                onClick={confirmDeleteResume}
-                disabled={deleteResumeAction.isLoading}
-                className="dashboard-page__modal-confirm"
-              >
-                {deleteResumeAction.isLoading
-                  ? APP_MESSAGES.DASHBOARD.DELETING
-                  : APP_MESSAGES.DASHBOARD.DELETE_ACTION}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

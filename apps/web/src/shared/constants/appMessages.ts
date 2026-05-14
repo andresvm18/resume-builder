@@ -75,5 +75,14 @@ export const APP_MESSAGES = {
 
     EMPTY_RESULTS_DESCRIPTION:
       "No hay currículums que coincidan con tu búsqueda actual.",
+
+    DELETE_TITLE: "Eliminar currículum",
+    DELETE_DESCRIPTION:
+      "Esta acción no se puede deshacer.",
   },
+
+  MODAL: {
+    CANCEL: "Cancelar",
+  },
+
 } as const;
