@@ -1,3 +1,5 @@
+import { STORAGE_KEYS } from "../constants/storageKeys";
+
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ?? "http://localhost:8080/api";
 
@@ -34,7 +36,7 @@ async function getApiErrorMessage(response: Response): Promise<string> {
 }
 
 function getAuthHeaders(): Record<string, string> {
-  const token = localStorage.getItem("auth_token");
+  const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
 
   if (!token) return {};
 

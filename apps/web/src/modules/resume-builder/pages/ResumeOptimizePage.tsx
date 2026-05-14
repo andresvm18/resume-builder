@@ -9,6 +9,7 @@ import {
   optimizeFullResume,
 } from "../services/ai.service";
 import "./ResumeOptimizePage.css";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 export default function ResumeOptimizePage() {
   const location = useLocation();
@@ -51,7 +52,7 @@ export default function ResumeOptimizePage() {
     const optimizeResume = async () => {
       try {
         setError("");
-        setStatus("Optimizando tu CV con IA...");
+        setStatus(APP_MESSAGES.AI.OPTIMIZING);
 
         const result = await optimizeFullResume(
           resumeData,
