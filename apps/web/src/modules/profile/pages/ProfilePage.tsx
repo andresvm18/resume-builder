@@ -4,6 +4,7 @@ import ResumeFormPanel from "../../resume-builder/components/ResumeFormPanel";
 import ProfileCompletenessCard from "../components/ProfileCompletenessCard";
 import { useResumeBuilder } from "../../resume-builder/hooks/useResumeBuilder";
 import { getProfile, updateProfile } from "../services/profile.service";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 import {
   IconUser,
@@ -105,7 +106,7 @@ export default function ProfilePage() {
     return (
       <main className="profile-page">
         <Header />
-        <p style={{ padding: "2rem" }}>Cargando perfil...</p>
+        <p style={{ padding: "2rem" }}>{APP_MESSAGES.PROFILE_PAGE.LOADING}</p>
       </main>
     );
   }
@@ -118,11 +119,10 @@ export default function ProfilePage() {
         <div className="profile-page__card rb-fade-up">
           <div className="profile-page__header">
             <div>
-              <h1 className="profile-page__title">Perfil profesional</h1>
+              <h1 className="profile-page__title">{APP_MESSAGES.PROFILE_PAGE.TITLE}</h1>
 
               <p className="profile-page__description">
-                Guarda toda tu información profesional para reutilizarla
-                automáticamente en futuros currículums.
+                {APP_MESSAGES.PROFILE_PAGE.DESCRIPTION}
               </p>
 
               <div
@@ -131,7 +131,7 @@ export default function ProfilePage() {
                 {saveStatus === "saving" && (
                   <>
                     <span className="profile-page__spinner" />
-                    Guardando cambios...
+                    {APP_MESSAGES.PROFILE_PAGE.SAVING}
                   </>
                 )}
 
@@ -145,9 +145,9 @@ export default function ProfilePage() {
                   </>
                 )}
 
-                {saveStatus === "saved" && !lastSavedAt && "Perfil cargado"}
+                {saveStatus === "saved" && !lastSavedAt && APP_MESSAGES.PROFILE_PAGE.LOADED}
 
-                {saveStatus === "error" && "No se pudieron guardar los cambios"}
+                {saveStatus === "error" && APP_MESSAGES.PROFILE_PAGE.SAVE_ERROR}
               </div>
             </div>
 
@@ -158,10 +158,10 @@ export default function ProfilePage() {
               className="profile-page__save-btn"
             >
               {isSaving
-                ? "Guardando..."
+                ? APP_MESSAGES.PROFILE_PAGE.SAVE_BUTTON_LOADING
                 : hasUnsavedChanges
-                  ? "Guardar cambios"
-                  : "Guardado"}
+                  ? APP_MESSAGES.PROFILE_PAGE.SAVE_BUTTON_DIRTY
+                  : APP_MESSAGES.PROFILE_PAGE.SAVE_BUTTON_SAVED}
             </button>
           </div>
 

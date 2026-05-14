@@ -34,4 +34,17 @@ export const APP_MESSAGES = {
     FAILED:
       "No se pudo actualizar el perfil.",
   },
+
+  PROFILE_PAGE: {
+    LOADING: "Cargando perfil...",
+    TITLE: "Perfil profesional",
+    DESCRIPTION:
+      "Guarda toda tu información profesional para reutilizarla automáticamente en futuros currículums.",
+    SAVING: "Guardando cambios...",
+    LOADED: "Perfil cargado",
+    SAVE_ERROR: "No se pudieron guardar los cambios",
+    SAVE_BUTTON_LOADING: "Guardando...",
+    SAVE_BUTTON_DIRTY: "Guardar cambios",
+    SAVE_BUTTON_SAVED: "Guardado",
+  },
 } as const;
