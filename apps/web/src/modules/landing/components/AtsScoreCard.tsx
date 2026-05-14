@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./AtsScoreCard.css";
 
 interface ScoreBreakdown {
@@ -17,6 +18,10 @@ const DEFAULT: ScoreBreakdown = {
   section_completeness: 76,
   format_quality: 80,
   role_alignment: 79,
+};
+
+const formatScoreFormula = (breakdown: ScoreBreakdown, score: number): string => {
+  return `(${breakdown.keyword_match}×0.4)+(${breakdown.section_completeness}×0.2)+(${breakdown.format_quality}×0.2)+(${breakdown.role_alignment}×0.2) = ${score}`;
 };
 
 export default function AtsScoreCard({ breakdown = DEFAULT }: AtsScoreCardProps) {
@@ -39,10 +44,10 @@ export default function AtsScoreCard({ breakdown = DEFAULT }: AtsScoreCardProps)
   }, [dashOffset]);
 
   const rows = [
-    { label: "Coincidencia de palabras clave", value: breakdown.keyword_match,        weight: 0.4, color: "teal" },
-    { label: "Integridad de secciones",       value: breakdown.section_completeness, weight: 0.2, color: "blue" },
-    { label: "Calidad del formato",            value: breakdown.format_quality,       weight: 0.2, color: "blue" },
-    { label: "Alineación con el rol",          value: breakdown.role_alignment,       weight: 0.2, color: "blue" },
+    { label: APP_MESSAGES.ATS.KEYWORD_MATCH_LABEL, value: breakdown.keyword_match, weight: 0.4, color: "teal" },
+    { label: APP_MESSAGES.ATS.SECTION_COMPLETENESS_LABEL, value: breakdown.section_completeness, weight: 0.2, color: "blue" },
+    { label: APP_MESSAGES.ATS.FORMAT_QUALITY_LABEL, value: breakdown.format_quality, weight: 0.2, color: "blue" },
+    { label: APP_MESSAGES.ATS.ROLE_ALIGNMENT_LABEL, value: breakdown.role_alignment, weight: 0.2, color: "blue" },
   ];
 
   return (
@@ -66,10 +71,9 @@ export default function AtsScoreCard({ breakdown = DEFAULT }: AtsScoreCardProps)
           <text x="55" y="50" textAnchor="middle" fontSize="22" fontWeight="500" fill="var(--lp-text-primary)" fontFamily="'DM Sans', sans-serif">{score}</text>
           <text x="55" y="65" textAnchor="middle" fontSize="11" fill="var(--lp-text-muted)" fontFamily="'DM Sans', sans-serif">/100</text>
         </svg>
-        <span className="ats-card__badge">Puntuación ATS</span>
+        <span className="ats-card__badge">{APP_MESSAGES.ATS.SCORE_BADGE}</span>
       </div>
 
-      {/* Breakdown */}
       <div className="ats-card__breakdown">
         {rows.map(({ label, value, weight, color }) => (
           <div key={label} className="ats-card__row">
@@ -89,8 +93,7 @@ export default function AtsScoreCard({ breakdown = DEFAULT }: AtsScoreCardProps)
         ))}
 
         <div className="ats-card__formula">
-          ({breakdown.keyword_match}×0.4)+({breakdown.section_completeness}×0.2)+
-          ({breakdown.format_quality}×0.2)+({breakdown.role_alignment}×0.2) = {score}
+          {formatScoreFormula(breakdown, score)}
         </div>
       </div>
     </div>

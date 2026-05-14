@@ -1,5 +1,6 @@
 import { isRouteErrorResponse, Link, useRouteError } from "react-router-dom";
 import Header from "../layout/Header";
+import { APP_MESSAGES } from "../../constants/appMessages";
 import "./AppErrorBoundary.css";
 
 export default function AppErrorBoundary() {
@@ -7,20 +8,20 @@ export default function AppErrorBoundary() {
 
   const title = isRouteErrorResponse(error)
     ? `${error.status} ${error.statusText}`
-    : "Ocurrió un error inesperado";
+    : APP_MESSAGES.ERROR_BOUNDARY.DEFAULT_TITLE;
 
   const message = isRouteErrorResponse(error)
-    ? error.data?.message || "No se pudo cargar esta página."
+    ? error.data?.message || APP_MESSAGES.ERROR_BOUNDARY.DEFAULT_MESSAGE
     : error instanceof Error
       ? error.message
-      : "Algo salió mal en la aplicación.";
+      : APP_MESSAGES.ERROR_BOUNDARY.FALLBACK_MESSAGE;
 
   return (
     <main className="app-error">
       <Header />
 
       <section className="app-error__card">
-        <span className="app-error__badge">Error</span>
+        <span className="app-error__badge">{APP_MESSAGES.ERROR_BOUNDARY.BADGE}</span>
 
         <h1 className="app-error__title">{title}</h1>
 
@@ -28,11 +29,11 @@ export default function AppErrorBoundary() {
 
         <div className="app-error__actions">
           <Link to="/" className="app-error__primary">
-            Volver al inicio
+            {APP_MESSAGES.ERROR_BOUNDARY.GO_HOME_BUTTON}
           </Link>
 
           <Link to="/dashboard" className="app-error__secondary">
-            Ir al dashboard
+            {APP_MESSAGES.ERROR_BOUNDARY.GO_DASHBOARD_BUTTON}
           </Link>
         </div>
       </section>

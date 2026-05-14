@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "../../../shared/components/layout/Header";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 import { generateResumeFromProfile } from "../services/profile-ai.service";
 import { getProfile } from "../services/profile.service";
@@ -14,6 +15,7 @@ export default function GenerateResumeFromProfilePage() {
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function validateProfile() {
@@ -51,6 +53,7 @@ export default function GenerateResumeFromProfilePage() {
   async function handleGenerate() {
     try {
       setIsGenerating(true);
+      setError("");
 
       const response = await generateResumeFromProfile(
         jobDescription,
@@ -72,6 +75,7 @@ export default function GenerateResumeFromProfilePage() {
       navigate("/resume-builder");
     } catch (error) {
       console.error(error);
+      setError(APP_MESSAGES.AI.GENERATION_ERROR);
     } finally {
       setIsGenerating(false);
     }
@@ -85,7 +89,7 @@ export default function GenerateResumeFromProfilePage() {
         <div className="profile-page__container">
           <div className="profile-page__card">
             <p className="profile-page__description">
-              Cargando tu perfil profesional...
+              {APP_MESSAGES.PROFILE.LOADING_PROFILE}
             </p>
           </div>
         </div>
@@ -101,12 +105,11 @@ export default function GenerateResumeFromProfilePage() {
         <div className="profile-page__container">
           <div className="profile-page__card">
             <h1 className="profile-page__title">
-              Completa tu perfil primero
+              {APP_MESSAGES.PROFILE.COMPLETE_PROFILE_TITLE}
             </h1>
 
             <p className="profile-page__description">
-              Necesitas completar tu perfil profesional antes de generar
-              currículums personalizados con IA.
+              {APP_MESSAGES.PROFILE.COMPLETE_PROFILE_DESCRIPTION}
             </p>
 
             <button
@@ -115,7 +118,7 @@ export default function GenerateResumeFromProfilePage() {
               className="profile-page__save-btn"
               style={{ marginTop: "1rem" }}
             >
-              Ir a mi perfil
+              {APP_MESSAGES.PROFILE.GO_TO_PROFILE_BUTTON}
             </button>
           </div>
         </div>
@@ -130,12 +133,11 @@ export default function GenerateResumeFromProfilePage() {
       <div className="profile-page__container">
         <div className="profile-page__card">
           <h1 className="profile-page__title">
-            Generar CV desde Perfil
+            {APP_MESSAGES.PROFILE.GENERATE_CV_TITLE}
           </h1>
 
           <p className="profile-page__description">
-            Pega una oferta laboral y la IA generará un CV optimizado usando tu
-            perfil profesional.
+            {APP_MESSAGES.PROFILE.GENERATE_CV_DESCRIPTION}
           </p>
 
           <div className="resume-builder-page__target-fields">
@@ -143,14 +145,14 @@ export default function GenerateResumeFromProfilePage() {
               value={targetRole}
               onChange={(e) => setTargetRole(e.target.value)}
               className="resume-builder-page__input"
-              placeholder="Puesto objetivo. Ej: Frontend Developer"
+              placeholder={APP_MESSAGES.PROFILE.TARGET_ROLE_PLACEHOLDER}
             />
 
             <input
               value={targetCompany}
               onChange={(e) => setTargetCompany(e.target.value)}
               className="resume-builder-page__input"
-              placeholder="Empresa objetivo. Ej: Roche"
+              placeholder={APP_MESSAGES.PROFILE.TARGET_COMPANY_PLACEHOLDER}
             />
           </div>
 
@@ -159,8 +161,14 @@ export default function GenerateResumeFromProfilePage() {
             onChange={(e) => setJobDescription(e.target.value)}
             className="resume-builder-page__textarea"
             rows={12}
-            placeholder="Pega aquí la oferta laboral..."
+            placeholder={APP_MESSAGES.PROFILE.JOB_DESCRIPTION_PLACEHOLDER}
           />
+
+          {error && (
+            <p className="profile-page__error" style={{ marginTop: "1rem" }}>
+              {error}
+            </p>
+          )}
 
           <button
             type="button"
@@ -173,7 +181,9 @@ export default function GenerateResumeFromProfilePage() {
             className="profile-page__save-btn"
             style={{ marginTop: "1rem" }}
           >
-            {isGenerating ? "Generando..." : "Generar CV"}
+            {isGenerating
+              ? APP_MESSAGES.PROFILE.GENERATING_BUTTON
+              : APP_MESSAGES.PROFILE.GENERATE_BUTTON}
           </button>
         </div>
       </div>

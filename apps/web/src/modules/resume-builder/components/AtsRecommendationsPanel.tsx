@@ -1,5 +1,6 @@
 import type { AiRecommendationsResponse } from "../services/ai.service";
 import KeywordGroup from "./KeywordGroup";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./AtsAnalysisPanel.css";
 
 type Props = {
@@ -20,24 +21,24 @@ export default function AtsRecommendationsPanel({
       {recommendations && (
         <div className="ats-panel__section">
           <h4 className="ats-panel__section-title">
-            Palabras clave analizadas por categoría
+            {APP_MESSAGES.ATS.KEYWORDS_SECTION_TITLE}
           </h4>
 
           <div className="ats-panel__keyword-groups">
             <KeywordGroup
-              title="Técnicas / herramientas"
+              title={APP_MESSAGES.ATS.KEYWORDS_TECHNICAL}
               keywords={recommendations.keywords.technical}
             />
             <KeywordGroup
-              title="Habilidades blandas"
+              title={APP_MESSAGES.ATS.KEYWORDS_SOFT_SKILLS}
               keywords={recommendations.keywords.softSkills}
             />
             <KeywordGroup
-              title="Certificaciones"
+              title={APP_MESSAGES.ATS.KEYWORDS_CERTIFICATIONS}
               keywords={recommendations.keywords.certifications}
             />
             <KeywordGroup
-              title="Responsabilidades"
+              title={APP_MESSAGES.ATS.KEYWORDS_RESPONSIBILITIES}
               keywords={recommendations.keywords.responsibilities}
             />
           </div>
@@ -45,11 +46,11 @@ export default function AtsRecommendationsPanel({
       )}
 
       <div className="ats-panel__section">
-        <h4 className="ats-panel__section-title">Recomendaciones</h4>
+        <h4 className="ats-panel__section-title">{APP_MESSAGES.ATS.RECOMMENDATIONS_TITLE}</h4>
 
         {isLoading && (
           <p className="ats-panel__empty">
-            Generando recomendaciones con IA...
+            {APP_MESSAGES.ATS.LOADING_RECOMMENDATIONS}
           </p>
         )}
 
@@ -68,13 +69,13 @@ export default function AtsRecommendationsPanel({
 
         {!isLoading && !hasError && displayedRecommendations.length === 0 && (
           <p className="ats-panel__empty">
-            Aún no hay recomendaciones generadas.
+            {APP_MESSAGES.ATS.NO_RECOMMENDATIONS}
           </p>
         )}
 
         {!isLoading && hasError && (
           <p className="ats-panel__empty">
-            No se pudieron generar recomendaciones con IA.
+            {APP_MESSAGES.ATS.RECOMMENDATIONS_FAILED}
           </p>
         )}
       </div>

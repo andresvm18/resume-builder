@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuthToken } from "../../auth/services/auth.service";
 import Header from "../../../shared/components/layout/Header";
 import AtsScoreCard from "../components/AtsScoreCard";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./LandingPage.css";
 
 export default function LandingPage() {
@@ -32,12 +33,12 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="hero">
         <div>
-          <span className="hero__badge">Plataforma de Currículums Optimizados para ATS</span>
-          <h2 className="hero__title">Construye un currículum profesional en minutos.</h2>
-          <p className="hero__description">Optimizado para ATS, exportable a PDF y diseñado para ayudarte a presentarte mejor.</p>
+          <span className="hero__badge">{APP_MESSAGES.LANDING.HERO_BADGE}</span>
+          <h2 className="hero__title">{APP_MESSAGES.LANDING.HERO_TITLE}</h2>
+          <p className="hero__description">{APP_MESSAGES.LANDING.HERO_DESCRIPTION}</p>
           <div className="hero__actions">
             <button onClick={handleCreateResume} className="btn-primary">
-              Crear tu Currículum
+              {APP_MESSAGES.LANDING.HERO_BUTTON}
             </button>
           </div>
         </div>
@@ -48,18 +49,18 @@ export default function LandingPage() {
 
       {/* Features */}
       <section className="features">
-        <p className="features__eyebrow">Por qué elegir ResumeBuilder</p>
-        <h3 className="features__title">Herramientas para presentar tu experiencia con claridad.</h3>
+        <p className="features__eyebrow">{APP_MESSAGES.LANDING.FEATURES_EYEBROW}</p>
+        <h3 className="features__title">{APP_MESSAGES.LANDING.FEATURES_TITLE}</h3>
         <div className="features__grid">
           <div className="feature-card">
             <div className="feature-card__icon">📄</div>
-            <h4 className="feature-card__title">Optimización ATS</h4>
-            <p className="feature-card__description">Analiza la compatibilidad de tu currículum con sistemas de seguimiento de candidatos.</p>
+            <h4 className="feature-card__title">{APP_MESSAGES.LANDING.FEATURE_ATS_TITLE}</h4>
+            <p className="feature-card__description">{APP_MESSAGES.LANDING.FEATURE_ATS_DESCRIPTION}</p>
           </div>
           <div className="feature-card">
             <div className="feature-card__icon">⬇</div>
-            <h4 className="feature-card__title">Exportar a PDF</h4>
-            <p className="feature-card__description">Descarga currículums en formato profesional, listos para enviar con un solo clic.</p>
+            <h4 className="feature-card__title">{APP_MESSAGES.LANDING.FEATURE_PDF_TITLE}</h4>
+            <p className="feature-card__description">{APP_MESSAGES.LANDING.FEATURE_PDF_DESCRIPTION}</p>
           </div>
         </div>
       </section>
@@ -67,11 +68,13 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="cta">
         <div className="cta__inner">
-          <h3 className="cta__title">Empieza a construir tu próximo <em>currículum</em> hoy.</h3>
-          <p className="cta__description">Una herramienta simple para presentar tu perfil de forma clara y profesional.</p>
+          <h3 className="cta__title">
+            {APP_MESSAGES.LANDING.CTA_TITLE}
+          </h3>
+          <p className="cta__description">{APP_MESSAGES.LANDING.CTA_DESCRIPTION}</p>
           <div className="cta__action">
             <button onClick={handleCTA} className="btn-primary">
-              Comenzar
+              {APP_MESSAGES.LANDING.CTA_BUTTON}
             </button>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./ConfirmDialog.css";
 
 type ConfirmDialogProps = {
@@ -17,7 +18,7 @@ export default function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = "Cancelar",
+  cancelLabel = APP_MESSAGES.CONFIRM_DIALOG.DEFAULT_CANCEL_LABEL,
   isLoading = false,
   error = "",
   onConfirm,

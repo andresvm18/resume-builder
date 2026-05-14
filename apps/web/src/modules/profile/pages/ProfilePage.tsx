@@ -19,13 +19,13 @@ import {
 import "./ProfilePage.css";
 
 const profileSteps = [
-  { id: "personal", label: "Personal", icon: IconUser, },
-  { id: "summary", label: "Resumen", icon: IconFileText, },
-  { id: "skills", label: "Habilidades", icon: IconTools, },
-  { id: "experience", label: "Experiencia", icon: IconBriefcase, },
-  { id: "education", label: "Educación", icon: IconSchool, },
-  { id: "languages", label: "Idiomas", icon: IconLanguage, },
-  { id: "projects", label: "Proyectos", icon: IconRocket, },
+  { id: "personal", label: APP_MESSAGES.PROFILE.STEP_PERSONAL, icon: IconUser },
+  { id: "summary", label: APP_MESSAGES.PROFILE.STEP_SUMMARY, icon: IconFileText },
+  { id: "skills", label: APP_MESSAGES.PROFILE.STEP_SKILLS, icon: IconTools },
+  { id: "experience", label: APP_MESSAGES.PROFILE.STEP_EXPERIENCE, icon: IconBriefcase },
+  { id: "education", label: APP_MESSAGES.PROFILE.STEP_EDUCATION, icon: IconSchool },
+  { id: "languages", label: APP_MESSAGES.PROFILE.STEP_LANGUAGES, icon: IconLanguage },
+  { id: "projects", label: APP_MESSAGES.PROFILE.STEP_PROJECTS, icon: IconRocket },
 ] as const;
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -137,7 +137,7 @@ export default function ProfilePage() {
 
                 {saveStatus === "saved" && lastSavedAt && (
                   <>
-                    Cambios guardados a las{" "}
+                    {APP_MESSAGES.PROFILE.SAVE_STATUS_SAVED_AT}
                     {lastSavedAt.toLocaleTimeString("es-CR", {
                       hour: "2-digit",
                       minute: "2-digit",

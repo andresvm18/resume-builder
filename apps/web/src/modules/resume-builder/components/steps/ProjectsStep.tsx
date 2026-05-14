@@ -1,5 +1,6 @@
 import type { Project } from "../../types/resume.types";
 import { IconX } from "@tabler/icons-react";
+import { APP_MESSAGES } from "../../../../shared/constants/appMessages";
 
 type ProjectsStepProps = {
   projects: Project[];
@@ -24,13 +25,14 @@ export default function ProjectsStep({
         <div key={project.id} className="resume-builder-page__item-card">
           <div className="resume-builder-page__item-header">
             <span className="resume-builder-page__item-title">
-              Proyecto
+              {APP_MESSAGES.RESUME_BUILDER.PROJECT_TITLE}
             </span>
 
             <button
               type="button"
               onClick={() => removeProject(project.id)}
               className="resume-builder-page__item-remove"
+              aria-label={`${APP_MESSAGES.RESUME_BUILDER.REMOVE_PROJECT_ARIA} ${project.name || APP_MESSAGES.RESUME_BUILDER.WITHOUT_TITLE}`}
             >
               <IconX size={14} stroke={2} />
             </button>
@@ -38,7 +40,7 @@ export default function ProjectsStep({
 
           <div className="resume-builder-page__item-fields">
             <input
-              placeholder="Nombre del proyecto"
+              placeholder={APP_MESSAGES.RESUME_BUILDER.PROJECT_NAME_PLACEHOLDER}
               value={project.name}
               onChange={(e) =>
                 updateProject(project.id, "name", e.target.value)
@@ -47,7 +49,7 @@ export default function ProjectsStep({
             />
 
             <input
-              placeholder="Tecnologías"
+              placeholder={APP_MESSAGES.RESUME_BUILDER.PROJECT_TECHNOLOGIES_PLACEHOLDER}
               value={project.technologies}
               onChange={(e) =>
                 updateProject(project.id, "technologies", e.target.value)
@@ -57,7 +59,7 @@ export default function ProjectsStep({
 
             <textarea
               rows={4}
-              placeholder="Descripción del proyecto"
+              placeholder={APP_MESSAGES.RESUME_BUILDER.PROJECT_DESCRIPTION_PLACEHOLDER}
               value={project.description}
               onChange={(e) =>
                 updateProject(project.id, "description", e.target.value)
@@ -66,7 +68,7 @@ export default function ProjectsStep({
             />
 
             <input
-              placeholder="Enlace (GitHub / Demo)"
+              placeholder={APP_MESSAGES.RESUME_BUILDER.PROJECT_LINK_PLACEHOLDER}
               value={project.link}
               onChange={(e) =>
                 updateProject(project.id, "link", e.target.value)
@@ -82,7 +84,7 @@ export default function ProjectsStep({
         onClick={addProject}
         className="resume-builder-page__add-btn"
       >
-        Agregar Proyecto
+        {APP_MESSAGES.RESUME_BUILDER.ADD_PROJECT_BUTTON}
       </button>
     </div>
   );

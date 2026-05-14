@@ -1,4 +1,5 @@
 import type { ResumeData } from "../../resume-builder/types/resume.types";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 type CompletenessCheck = {
   label: string;
@@ -19,34 +20,34 @@ export function calculateProfileCompleteness(
 ): ProfileCompletenessResult {
   const requiredChecks: CompletenessCheck[] = [
     {
-      label: "Información personal",
+      label: APP_MESSAGES.PROFILE.FIELD_PERSONAL_INFO,
       condition: Boolean(profile.fullName?.trim() && profile.email?.trim()),
     },
     {
-      label: "Educación",
+      label: APP_MESSAGES.PROFILE.FIELD_EDUCATION,
       condition: profile.education.length > 0,
     },
     {
-      label: "Habilidades",
+      label: APP_MESSAGES.PROFILE.FIELD_SKILLS,
       condition: profile.skills.length > 0,
     },
   ];
 
   const optionalChecks: CompletenessCheck[] = [
     {
-      label: "Resumen profesional",
+      label: APP_MESSAGES.PROFILE.FIELD_SUMMARY,
       condition: Boolean(profile.summary?.trim()),
     },
     {
-      label: "Experiencia",
+      label: APP_MESSAGES.PROFILE.FIELD_EXPERIENCE,
       condition: profile.experiences.length > 0,
     },
     {
-      label: "Idiomas",
+      label: APP_MESSAGES.PROFILE.FIELD_LANGUAGES,
       condition: profile.languages.length > 0,
     },
     {
-      label: "Proyectos",
+      label: APP_MESSAGES.PROFILE.FIELD_PROJECTS,
       condition: profile.projects.length > 0,
     },
   ];
