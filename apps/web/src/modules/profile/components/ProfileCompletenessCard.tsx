@@ -1,5 +1,6 @@
 import type { ResumeData } from "../../resume-builder/types/resume.types";
 import { calculateProfileCompleteness } from "../utils/profileCompleteness";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 type Props = {
   profile: ResumeData;
@@ -13,17 +14,17 @@ export default function ProfileCompletenessCard({ profile }: Props) {
       <div className="profile-completeness__header">
         <div>
           <p className="profile-completeness__eyebrow">
-            Estado del perfil
+            {APP_MESSAGES.PROFILE.COMPLETENESS_EYEBROW}
           </p>
 
           <h3 className="profile-completeness__title">
-            {result.percentage}% completado
+            {`${result.percentage}${APP_MESSAGES.PROFILE.COMPLETENESS_PERCENTAGE}`}
           </h3>
 
           <p className="profile-completeness__subtitle">
             {result.isReadyForAi
-              ? "Tu perfil ya tiene la información mínima para generar CVs con IA."
-              : "Completa la información requerida para generar CVs con IA."}
+              ? APP_MESSAGES.PROFILE.COMPLETENESS_READY
+              : APP_MESSAGES.PROFILE.COMPLETENESS_NOT_READY}
           </p>
         </div>
 
@@ -34,7 +35,9 @@ export default function ProfileCompletenessCard({ profile }: Props) {
               : "profile-completeness__badge"
           }
         >
-          {result.isReadyForAi ? "Listo para IA" : "Incompleto"}
+          {result.isReadyForAi 
+            ? APP_MESSAGES.PROFILE.BADGE_READY 
+            : APP_MESSAGES.PROFILE.BADGE_INCOMPLETE}
         </span>
       </div>
 
@@ -48,7 +51,7 @@ export default function ProfileCompletenessCard({ profile }: Props) {
       <div className="profile-completeness__grid">
         <div>
           <h4 className="profile-completeness__section-title">
-            Requerido
+            {APP_MESSAGES.PROFILE.SECTION_REQUIRED}
           </h4>
 
           <div className="profile-completeness__items">
@@ -74,7 +77,7 @@ export default function ProfileCompletenessCard({ profile }: Props) {
 
         <div>
           <h4 className="profile-completeness__section-title">
-            Opcional
+            {APP_MESSAGES.PROFILE.SECTION_OPTIONAL}
           </h4>
 
           <div className="profile-completeness__items">

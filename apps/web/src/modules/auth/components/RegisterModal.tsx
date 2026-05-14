@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { registerUser } from "../services/auth.service";
 import { useAuth } from "../../../shared/context/useAuth";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./RegisterModal.css";
 
 function EyeIcon({ hidden }: { hidden: boolean }) {
@@ -54,12 +55,12 @@ export default function RegisterModal() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
+      setError(APP_MESSAGES.AUTH.PASSWORD_MISMATCH);
       return;
     }
 
     if (password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+      setError(APP_MESSAGES.AUTH.PASSWORD_TOO_SHORT);
       return;
     }
 
@@ -74,7 +75,7 @@ export default function RegisterModal() {
 
       navigate("/dashboard");
     } catch {
-      setError("No se pudo crear la cuenta. Intenta con otro correo.");
+      setError(APP_MESSAGES.AUTH.REGISTER_ERROR);
     } finally {
       setLoading(false);
     }
@@ -83,22 +84,20 @@ export default function RegisterModal() {
   return (
     <div className="register-modal">
       <div className="register-modal__header">
-        <h2 className="register-modal__title">Crea tu cuenta</h2>
-        <p className="register-modal__subtitle">
-          Regístrate para comenzar a construir tu currículum optimizado para ATS.
-        </p>
+        <h2 className="register-modal__title">{APP_MESSAGES.AUTH.REGISTER_TITLE}</h2>
+        <p className="register-modal__subtitle">{APP_MESSAGES.AUTH.REGISTER_SUBTITLE}</p>
       </div>
 
       <form className="register-modal__form" onSubmit={handleRegister}>
         <div className="register-modal__row">
           <div className="register-modal__field">
             <label htmlFor="register-name" className="register-modal__label">
-              Nombre
+              {APP_MESSAGES.AUTH.FIRST_NAME_LABEL}
             </label>
             <input
               id="register-name"
               type="text"
-              placeholder="Juan"
+              placeholder={APP_MESSAGES.AUTH.FIRST_NAME_PLACEHOLDER}
               className="register-modal__input"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -111,12 +110,12 @@ export default function RegisterModal() {
               htmlFor="register-middle-name"
               className="register-modal__label"
             >
-              Segundo nombre
+              {APP_MESSAGES.AUTH.MIDDLE_NAME_LABEL}
             </label>
             <input
               id="register-middle-name"
               type="text"
-              placeholder="Carlos"
+              placeholder={APP_MESSAGES.AUTH.MIDDLE_NAME_PLACEHOLDER}
               className="register-modal__input"
               value={middleName}
               onChange={(e) => setMiddleName(e.target.value)}
@@ -126,12 +125,12 @@ export default function RegisterModal() {
 
         <div className="register-modal__field">
           <label htmlFor="register-last-name" className="register-modal__label">
-            Apellido
+            {APP_MESSAGES.AUTH.LAST_NAME_LABEL}
           </label>
           <input
             id="register-last-name"
             type="text"
-            placeholder="Pérez"
+            placeholder={APP_MESSAGES.AUTH.LAST_NAME_PLACEHOLDER}
             className="register-modal__input"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -141,7 +140,7 @@ export default function RegisterModal() {
 
         <div className="register-modal__field">
           <label htmlFor="register-email" className="register-modal__label">
-            Correo electrónico
+            {APP_MESSAGES.AUTH.EMAIL_LABEL}
           </label>
 
           <div className="register-modal__input-wrapper">
@@ -170,7 +169,7 @@ export default function RegisterModal() {
             <input
               id="register-email"
               type="email"
-              placeholder="tu@ejemplo.com"
+              placeholder={APP_MESSAGES.AUTH.EMAIL_PLACEHOLDER}
               className="register-modal__input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -182,14 +181,14 @@ export default function RegisterModal() {
         <div className="register-modal__row">
           <div className="register-modal__field">
             <label htmlFor="register-password" className="register-modal__label">
-              Contraseña
+              {APP_MESSAGES.AUTH.PASSWORD_LABEL}
             </label>
 
             <div className="register-modal__password-wrapper">
               <input
                 id="register-password"
                 type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
+                placeholder={APP_MESSAGES.AUTH.PASSWORD_PLACEHOLDER}
                 className="register-modal__input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -201,7 +200,7 @@ export default function RegisterModal() {
                 className="register-modal__toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={
-                  showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                  showPassword ? APP_MESSAGES.AUTH.HIDE_PASSWORD : APP_MESSAGES.AUTH.SHOW_PASSWORD
                 }
               >
                 <EyeIcon hidden={showPassword} />
@@ -214,14 +213,14 @@ export default function RegisterModal() {
               htmlFor="register-confirm-password"
               className="register-modal__label"
             >
-              Confirmar
+              {APP_MESSAGES.AUTH.CONFIRM_PASSWORD_LABEL}
             </label>
 
             <div className="register-modal__password-wrapper">
               <input
                 id="register-confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="••••••••"
+                placeholder={APP_MESSAGES.AUTH.PASSWORD_PLACEHOLDER}
                 className="register-modal__input"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -236,8 +235,8 @@ export default function RegisterModal() {
                 }
                 aria-label={
                   showConfirmPassword
-                    ? "Ocultar confirmación de contraseña"
-                    : "Mostrar confirmación de contraseña"
+                    ? APP_MESSAGES.AUTH.HIDE_CONFIRM_PASSWORD
+                    : APP_MESSAGES.AUTH.SHOW_CONFIRM_PASSWORD
                 }
               >
                 <EyeIcon hidden={showConfirmPassword} />
@@ -253,14 +252,14 @@ export default function RegisterModal() {
           className="register-modal__submit"
           disabled={loading}
         >
-          {loading ? "Creando cuenta..." : "Crear cuenta"}
+          {loading ? APP_MESSAGES.AUTH.REGISTER_BUTTON_LOADING : APP_MESSAGES.AUTH.REGISTER_BUTTON}
         </button>
       </form>
 
       <p className="register-modal__footer">
-        ¿Ya tienes una cuenta?{" "}
+        {APP_MESSAGES.AUTH.HAVE_ACCOUNT}{" "}
         <Link to="/login" className="register-modal__footer-link">
-          Iniciar sesión
+          {APP_MESSAGES.AUTH.LOGIN_LINK}
         </Link>
       </p>
     </div>

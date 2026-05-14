@@ -6,7 +6,8 @@ import {
 import type { ResumeData } from "../types/resume.types";
 import { analyzeResumeMatch } from "../utils/ats.utils";
 import KeywordGroup from "./KeywordGroup";
-import "./AtsAnalysisPanel.css";;
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
+import "./AtsAnalysisPanel.css";
 
 type Props = {
   jobDescription?: string;
@@ -57,34 +58,28 @@ export default function AtsAnalysisPanel({
 
   if (!jobDescription.trim()) return null;
 
-  // const displayedMatchedKeywords =
-  //   aiResult?.matchedKeywords ?? fallbackResult.matchedKeywords;
-
-  // const displayedMissingKeywords =
-  //   aiResult?.missingKeywords ?? fallbackResult.missingKeywords;
-
   const displayedRecommendations = aiResult?.recommendations ?? [];
 
   const metrics = [
     {
-      label: "Keyword Match",
+      label: APP_MESSAGES.ATS.KEYWORD_MATCH_LABEL,
       value: `${fallbackResult.matchPercentage}%`,
-      description: "Coincidencia estimada de palabras clave",
+      description: APP_MESSAGES.ATS.KEYWORD_MATCH_DESCRIPTION,
     },
     {
-      label: "Completitud",
+      label: APP_MESSAGES.ATS.COMPLETENESS_LABEL,
       value: `${fallbackResult.sectionCompleteness}%`,
-      description: "Secciones importantes del CV",
+      description: APP_MESSAGES.ATS.COMPLETENESS_DESCRIPTION,
     },
     {
-      label: "Formato",
+      label: APP_MESSAGES.ATS.FORMAT_LABEL,
       value: `${fallbackResult.formatQuality}%`,
-      description: "Claridad y estructura del CV",
+      description: APP_MESSAGES.ATS.FORMAT_DESCRIPTION,
     },
     {
-      label: "Alineación",
+      label: APP_MESSAGES.ATS.ALIGNMENT_LABEL,
       value: `${fallbackResult.roleAlignment}%`,
-      description: "Relación con el puesto",
+      description: APP_MESSAGES.ATS.ALIGNMENT_DESCRIPTION,
     },
   ];
 
@@ -92,15 +87,15 @@ export default function AtsAnalysisPanel({
     <section className="ats-panel">
       <header className="ats-panel__header">
         <div>
-          <h3 className="ats-panel__title">Análisis ATS</h3>
+          <h3 className="ats-panel__title">{APP_MESSAGES.ATS.ANALYSIS_TITLE}</h3>
           <p className="ats-panel__description">
-            Evaluación estimada de compatibilidad entre tu currículum y la oferta laboral.
+            {APP_MESSAGES.ATS.ANALYSIS_DESCRIPTION}
           </p>
         </div>
 
         <div className="ats-panel__score-card">
           <span className="ats-panel__score">{fallbackResult.atsScore}%</span>
-          <span className="ats-panel__score-label">Score ATS</span>
+          <span className="ats-panel__score-label">{APP_MESSAGES.ATS.SCORE_LABEL}</span>
         </div>
       </header>
 
@@ -119,92 +114,36 @@ export default function AtsAnalysisPanel({
       {aiResult && (
         <div className="ats-panel__section">
           <h4 className="ats-panel__section-title">
-            Palabras clave analizadas por categoría
+            {APP_MESSAGES.ATS.KEYWORDS_SECTION_TITLE}
           </h4>
 
           <div className="ats-panel__keyword-groups">
             <KeywordGroup
-              title="Técnicas / herramientas"
+              title={APP_MESSAGES.ATS.KEYWORDS_TECHNICAL}
               keywords={aiResult.keywords.technical}
             />
             <KeywordGroup
-              title="Habilidades blandas"
+              title={APP_MESSAGES.ATS.KEYWORDS_SOFT_SKILLS}
               keywords={aiResult.keywords.softSkills}
             />
             <KeywordGroup
-              title="Certificaciones"
+              title={APP_MESSAGES.ATS.KEYWORDS_CERTIFICATIONS}
               keywords={aiResult.keywords.certifications}
             />
             <KeywordGroup
-              title="Responsabilidades"
+              title={APP_MESSAGES.ATS.KEYWORDS_RESPONSIBILITIES}
               keywords={aiResult.keywords.responsibilities}
             />
           </div>
         </div>
       )}
 
-      {/* <div className="ats-panel__section">
-        <div className="ats-panel__section-header">
-          <h4 className="ats-panel__section-title">
-            Palabras clave encontradas
-          </h4>
-          <span className="ats-panel__counter">
-            {displayedMatchedKeywords.length}
-          </span>
-        </div>
-
-        <div className="ats-panel__keywords">
-          {displayedMatchedKeywords.length === 0 ? (
-            <span className="ats-panel__empty">
-              Aún no hay coincidencias detectadas.
-            </span>
-          ) : (
-            displayedMatchedKeywords.map((word) => (
-              <span
-                key={word}
-                className="ats-panel__tag ats-panel__tag--matched"
-              >
-                {word}
-              </span>
-            ))
-          )}
-        </div>
-      </div> */}
-
-      {/* <div className="ats-panel__section">
-        <div className="ats-panel__section-header">
-          <h4 className="ats-panel__section-title">
-            Palabras clave faltantes
-          </h4>
-          <span className="ats-panel__counter">
-            {displayedMissingKeywords.length}
-          </span>
-        </div>
-
-        <div className="ats-panel__keywords">
-          {displayedMissingKeywords.length === 0 ? (
-            <span className="ats-panel__empty">
-              No se detectaron palabras clave faltantes.
-            </span>
-          ) : (
-            displayedMissingKeywords.map((word) => (
-              <span
-                key={word}
-                className="ats-panel__tag ats-panel__tag--missing"
-              >
-                {word}
-              </span>
-            ))
-          )}
-        </div>
-      </div> */}
-
       <div className="ats-panel__section">
-        <h4 className="ats-panel__section-title">Recomendaciones</h4>
+        <h4 className="ats-panel__section-title">{APP_MESSAGES.ATS.RECOMMENDATIONS_TITLE}</h4>
 
         {isLoadingAiRecommendations && (
           <p className="ats-panel__empty">
-            Generando recomendaciones con IA...
+            {APP_MESSAGES.ATS.LOADING_RECOMMENDATIONS}
           </p>
         )}
 
@@ -224,7 +163,7 @@ export default function AtsAnalysisPanel({
         {!isLoadingAiRecommendations && aiFailed && (
           <>
             <p className="ats-panel__empty">
-              No se pudo generar la recomendación con IA. Mostrando recomendaciones básicas.
+              {APP_MESSAGES.ATS.RECOMMENDATIONS_FAILED}
             </p>
 
             <ul className="ats-panel__recommendations">
@@ -242,9 +181,7 @@ export default function AtsAnalysisPanel({
       </div>
 
       <p className="ats-panel__disclaimer">
-        Este score es una estimación heurística basada en coincidencia de palabras clave,
-        estructura del currículum y alineación con la oferta. Las keywords y recomendaciones
-        pueden ser generadas por IA cuando el servicio está disponible.
+        {APP_MESSAGES.ATS.DISCLAIMER}
       </p>
     </section>
   );

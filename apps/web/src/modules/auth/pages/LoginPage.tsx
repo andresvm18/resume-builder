@@ -1,5 +1,6 @@
 import Header from "../../../shared/components/layout/Header";
 import LoginModal from "../components/LoginModal";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./LoginPage.css";
 
 export default function LoginPage() {
@@ -9,40 +10,36 @@ export default function LoginPage() {
 
       <section className="login-page__section">
         <div className="login-page__inner">
-          {/* Left side - Editorial copy */}
           <div className="login-page__copy">
-            <div className="login-page__eyebrow">Bienvenido de nuevo</div>
+            <div className="login-page__eyebrow">{APP_MESSAGES.AUTH.LOGIN_PAGE_EYEBROW}</div>
             <h1 className="login-page__headline">
-              Continúa tu <em>viaje</em>
+              {APP_MESSAGES.AUTH.LOGIN_PAGE_HEADLINE}
             </h1>
             <p className="login-page__body">
-              Inicia sesión para acceder a tus currículums, ver tus puntuaciones ATS y seguir construyendo
-              documentos que definen tu carrera y llaman la atención.
+              {APP_MESSAGES.AUTH.LOGIN_PAGE_BODY}
             </p>
             <ul className="login-page__benefits">
               <li className="login-page__benefit">
                 <span className="login-page__benefit-dot"></span>
-                Accede a todos tus currículums guardados
+                {APP_MESSAGES.AUTH.LOGIN_BENEFIT_1}
               </li>
               <li className="login-page__benefit">
                 <span className="login-page__benefit-dot"></span>
-                Monitorea tu progreso de optimización ATS
+                {APP_MESSAGES.AUTH.LOGIN_BENEFIT_2}
               </li>
               <li className="login-page__benefit">
                 <span className="login-page__benefit-dot"></span>
-                Continúa donde lo dejaste
+                {APP_MESSAGES.AUTH.LOGIN_BENEFIT_3}
               </li>
             </ul>
           </div>
 
-          {/* Right side - Login Modal */}
           <div className="login-page__modal">
             <LoginModal />
           </div>
         </div>
       </section>
 
-      {/* Decorative orb */}
       <div className="login-page__orb-bottom"></div>
     </main>
   );

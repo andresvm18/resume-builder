@@ -1,3 +1,5 @@
+import { APP_MESSAGES } from "../../../../shared/constants/appMessages";
+
 type PersonalStepProps = {
   fullName: string;
   setFullName: (value: string) => void;
@@ -25,28 +27,28 @@ export default function PersonalStep({
         <input
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          placeholder="Nombre Completo"
+          placeholder={APP_MESSAGES.RESUME_BUILDER.FULL_NAME_PLACEHOLDER}
           className="resume-builder-page__input"
         />
 
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Correo Electrónico"
+          placeholder={APP_MESSAGES.RESUME_BUILDER.EMAIL_PLACEHOLDER}
           className="resume-builder-page__input"
         />
 
         <input
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="Teléfono"
+          placeholder={APP_MESSAGES.RESUME_BUILDER.PHONE_PLACEHOLDER}
           className="resume-builder-page__input"
         />
 
         <input
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          placeholder="Ubicación"
+          placeholder={APP_MESSAGES.RESUME_BUILDER.LOCATION_PLACEHOLDER}
           className="resume-builder-page__input"
         />
       </div>

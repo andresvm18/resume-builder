@@ -6,6 +6,7 @@ import type { FinalAtsAnalysisResponse } from "../services/ai.service";
 import { generateResumePdf } from "../services/resume.service";
 import { normalizeResumeData } from "../utils/resumeNormalizer";
 import { getFriendlyErrorMessage } from "../../../shared/services/apiClient";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./ResumeGeneratePage.css";
 
 type ResumeGenerateState = ResumeData & {
@@ -13,10 +14,10 @@ type ResumeGenerateState = ResumeData & {
 };
 
 const loadingMessages = [
-  "Preparando la información del currículum...",
-  "Normalizando secciones y formato...",
-  "Generando PDF con LaTeX...",
-  "Preparando vista previa y descarga...",
+  APP_MESSAGES.RESUME_GENERATE.LOADING_MESSAGE_1,
+  APP_MESSAGES.RESUME_GENERATE.LOADING_MESSAGE_2,
+  APP_MESSAGES.RESUME_GENERATE.LOADING_MESSAGE_3,
+  APP_MESSAGES.RESUME_GENERATE.LOADING_MESSAGE_4,
 ];
 
 function formatFileName(name: string) {
@@ -44,7 +45,7 @@ export default function ResumeGeneratePage() {
   const resumeData = location.state as ResumeGenerateState | null;
   const finalAtsAnalysis = resumeData?.finalAtsAnalysis ?? null;
 
-  const [status, setStatus] = useState("Preparando generación del CV...");
+  const [status, setStatus] = useState<string>(APP_MESSAGES.RESUME_GENERATE.INITIAL_STATUS);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState("cv.pdf");
@@ -84,7 +85,7 @@ export default function ResumeGeneratePage() {
 
     const generateResume = async () => {
       try {
-        setStatus("Enviando información al servidor...");
+        setStatus(APP_MESSAGES.RESUME_GENERATE.SENDING_STATUS);
 
         const rawPayload = Object.fromEntries(
           Object.entries(resumeData).filter(([key]) => key !== "finalAtsAnalysis")
@@ -94,7 +95,7 @@ export default function ResumeGeneratePage() {
 
         setGeneratedResumeData(resumePayload);
 
-        setStatus("Generando PDF con LaTeX...");
+        setStatus(APP_MESSAGES.RESUME_GENERATE.GENERATING_STATUS);
 
         const blob = await generateResumePdf(resumePayload);
 
@@ -111,10 +112,10 @@ export default function ResumeGeneratePage() {
 
         setPdfUrl(generatedUrl);
         setFileName(generatedFileName);
-        setStatus("CV generado correctamente.");
+        setStatus(APP_MESSAGES.RESUME_GENERATE.SUCCESS_STATUS);
       } catch (err) {
         setError(getFriendlyErrorMessage(err));
-        setStatus("Error al generar el CV.");
+        setStatus(APP_MESSAGES.RESUME_GENERATE.ERROR_STATUS);
       } finally {
         setIsGenerating(false);
       }
@@ -136,7 +137,7 @@ export default function ResumeGeneratePage() {
       {!pdfUrl && (
         <section className="resume-generate-page__card">
           <h1 className="resume-generate-page__title">
-            Generando tu currículum
+            {APP_MESSAGES.RESUME_GENERATE.GENERATING_TITLE}
           </h1>
 
           <p
@@ -151,7 +152,7 @@ export default function ResumeGeneratePage() {
           {error && (
             <div className="resume-generate-page__error-box">
               <p className="resume-generate-page__error-title">
-                No pudimos generar tu CV
+                {APP_MESSAGES.RESUME_GENERATE.ERROR_TITLE}
               </p>
 
               <p className="resume-generate-page__error-message">
@@ -164,7 +165,7 @@ export default function ResumeGeneratePage() {
                   onClick={handleBackToEdit}
                   className="resume-generate-page__secondary"
                 >
-                  Volver a editar
+                  {APP_MESSAGES.RESUME_GENERATE.BACK_TO_EDIT_BUTTON}
                 </button>
 
                 <button
@@ -172,7 +173,7 @@ export default function ResumeGeneratePage() {
                   onClick={() => window.location.reload()}
                   className="resume-generate-page__download"
                 >
-                  Intentar de nuevo
+                  {APP_MESSAGES.RESUME_GENERATE.RETRY_BUTTON}
                 </button>
               </div>
             </div>
@@ -184,7 +185,7 @@ export default function ResumeGeneratePage() {
         <div className="resume-generate-page__success">
           <div className="resume-generate-page__top-bar">
             <h1 className="resume-generate-page__title">
-              Tu currículum
+              {APP_MESSAGES.RESUME_GENERATE.SUCCESS_TITLE}
             </h1>
 
             <p className="resume-generate-page__status">{status}</p>
@@ -195,7 +196,7 @@ export default function ResumeGeneratePage() {
                 download={fileName}
                 className="resume-generate-page__download"
               >
-                Descargar CV
+                {APP_MESSAGES.RESUME_GENERATE.DOWNLOAD_BUTTON}
               </a>
 
               <button
@@ -203,7 +204,7 @@ export default function ResumeGeneratePage() {
                 onClick={handleBackToEdit}
                 className="resume-generate-page__secondary"
               >
-                Volver a editar
+                {APP_MESSAGES.RESUME_GENERATE.BACK_TO_EDIT_BUTTON}
               </button>
 
               <button
@@ -211,7 +212,7 @@ export default function ResumeGeneratePage() {
                 onClick={() => navigate("/dashboard")}
                 className="resume-generate-page__secondary"
               >
-                Ir al dashboard
+                {APP_MESSAGES.RESUME_GENERATE.GO_TO_DASHBOARD_BUTTON}
               </button>
             </div>
           </div>
@@ -226,7 +227,7 @@ export default function ResumeGeneratePage() {
 
             <aside className="resume-generate-page__ats-panel">
               <h2 className="resume-generate-page__ats-title">
-                Análisis ATS
+                {APP_MESSAGES.RESUME_GENERATE.ATS_PANEL_TITLE}
               </h2>
 
               {finalAtsAnalysis ? (
@@ -236,15 +237,12 @@ export default function ResumeGeneratePage() {
                       {finalAtsAnalysis.atsScore}%
                     </span>
                     <span className="resume-generate-page__ats-score-label">
-                      Compatibilidad estimada
+                      {APP_MESSAGES.RESUME_GENERATE.ATS_SCORE_LABEL}
                     </span>
                   </div>
 
                   <p className="resume-generate-page__ats-disclaimer">
-                    Esta puntuación es una estimación basada en los criterios
-                    típicos de los sistemas ATS, no una evaluación realizada por
-                    un sistema real. Los resultados pueden variar según el ATS
-                    específico que utilice cada empresa.
+                    {APP_MESSAGES.RESUME_GENERATE.ATS_DISCLAIMER}
                   </p>
 
                   {finalAtsAnalysis.summary && (
@@ -254,13 +252,13 @@ export default function ResumeGeneratePage() {
                   )}
 
                   <AnalysisSection
-                    title="Fortalezas"
+                    title={APP_MESSAGES.RESUME_GENERATE.ATS_STRENGTHS_TITLE}
                     items={finalAtsAnalysis.strengths}
                   />
                 </>
               ) : (
                 <p className="resume-generate-page__ats-empty">
-                  No se pudo generar el análisis ATS.
+                  {APP_MESSAGES.RESUME_GENERATE.ATS_EMPTY}
                 </p>
               )}
             </aside>

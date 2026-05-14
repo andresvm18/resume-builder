@@ -9,6 +9,7 @@ import {
   optimizeFullResume,
 } from "../services/ai.service";
 import "./ResumeOptimizePage.css";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 export default function ResumeOptimizePage() {
   const location = useLocation();
@@ -18,7 +19,7 @@ export default function ResumeOptimizePage() {
   const rawResumeData = location.state as ResumeData | null;
   const resumeData = rawResumeData ? normalizeResumeData(rawResumeData) : null;
 
-  const [status, setStatus] = useState("Preparando optimización con IA...");
+  const [status, setStatus] = useState<string>(APP_MESSAGES.RESUME_OPTIMIZE.INITIAL_STATUS);
   const [error, setError] = useState("");
 
   const goToOriginalResume = () => {
@@ -36,7 +37,7 @@ export default function ResumeOptimizePage() {
   const retryOptimization = () => {
     hasOptimized.current = false;
     setError("");
-    setStatus("Preparando optimización con IA...");
+    setStatus(APP_MESSAGES.RESUME_OPTIMIZE.INITIAL_STATUS);
   };
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function ResumeOptimizePage() {
     const optimizeResume = async () => {
       try {
         setError("");
-        setStatus("Optimizando tu CV con IA...");
+        setStatus(APP_MESSAGES.AI.OPTIMIZING);
 
         const result = await optimizeFullResume(
           resumeData,
@@ -62,18 +63,18 @@ export default function ResumeOptimizePage() {
 
         if (resumeData.jobDescription?.trim()) {
           try {
-            setStatus("Analizando el CV final como un sistema ATS...");
+            setStatus(APP_MESSAGES.RESUME_OPTIMIZE.ANALYZING_STATUS);
 
             finalAtsAnalysis = await analyzeFinalAts(
               result.optimizedResumeData,
               resumeData.jobDescription
             );
-          } catch (atsError) {
-            console.warn("No se pudo completar el análisis ATS final.", atsError);
+          } catch {
+            setStatus(APP_MESSAGES.PDF.OPTIMIZATION_ERROR);
           }
         }
 
-        setStatus("Preparando generación del PDF...");
+        setStatus(APP_MESSAGES.PDF.PREPARING);
 
         navigate("/resume/generate", {
           state: {
@@ -84,12 +85,12 @@ export default function ResumeOptimizePage() {
         });
       } catch (optimizeError) {
         setError(getFriendlyErrorMessage(optimizeError));
-        setStatus("No se pudo optimizar el CV con IA.");
+        setStatus(APP_MESSAGES.RESUME_OPTIMIZE.ERROR_STATUS);
       }
     };
 
     optimizeResume();
-  }, [resumeData, navigate, error]);
+  }, [resumeData, navigate]);
 
   return (
     <main className="resume-optimize-page">
@@ -99,14 +100,14 @@ export default function ResumeOptimizePage() {
         {!error && <div className="resume-optimize-page__loader" />}
 
         <h1 className="resume-optimize-page__title">
-          Optimizando tu currículum
+          {APP_MESSAGES.RESUME_OPTIMIZE.TITLE}
         </h1>
 
         <p className="resume-optimize-page__status">{status}</p>
 
         {!error ? (
           <p className="resume-optimize-page__hint">
-            Estamos optimizando tu CV, analizando su compatibilidad ATS y preparando tu PDF final.
+            {APP_MESSAGES.RESUME_OPTIMIZE.HINT_TEXT}
           </p>
         ) : (
           <div className="resume-optimize-page__error-box">
@@ -114,11 +115,11 @@ export default function ResumeOptimizePage() {
 
             <div className="resume-optimize-page__actions">
               <button type="button" onClick={retryOptimization}>
-                Intentar nuevamente
+                {APP_MESSAGES.RESUME_OPTIMIZE.RETRY_BUTTON}
               </button>
 
               <button type="button" onClick={goToOriginalResume}>
-                Generar CV original
+                {APP_MESSAGES.RESUME_OPTIMIZE.GENERATE_ORIGINAL_BUTTON}
               </button>
             </div>
           </div>

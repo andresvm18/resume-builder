@@ -1,20 +1,21 @@
 import { useMemo, useState } from "react";
 import type { Experience } from "../../types/resume.types";
 import { IconX } from "@tabler/icons-react";
+import { APP_MESSAGES } from "../../../../shared/constants/appMessages";
 
 const months = [
-  { value: "01", label: "Enero" },
-  { value: "02", label: "Febrero" },
-  { value: "03", label: "Marzo" },
-  { value: "04", label: "Abril" },
-  { value: "05", label: "Mayo" },
-  { value: "06", label: "Junio" },
-  { value: "07", label: "Julio" },
-  { value: "08", label: "Agosto" },
-  { value: "09", label: "Septiembre" },
-  { value: "10", label: "Octubre" },
-  { value: "11", label: "Noviembre" },
-  { value: "12", label: "Diciembre" },
+  { value: "01", label: APP_MESSAGES.MONTHS.JANUARY },
+  { value: "02", label: APP_MESSAGES.MONTHS.FEBRUARY },
+  { value: "03", label: APP_MESSAGES.MONTHS.MARCH },
+  { value: "04", label: APP_MESSAGES.MONTHS.APRIL },
+  { value: "05", label: APP_MESSAGES.MONTHS.MAY },
+  { value: "06", label: APP_MESSAGES.MONTHS.JUNE },
+  { value: "07", label: APP_MESSAGES.MONTHS.JULY },
+  { value: "08", label: APP_MESSAGES.MONTHS.AUGUST },
+  { value: "09", label: APP_MESSAGES.MONTHS.SEPTEMBER },
+  { value: "10", label: APP_MESSAGES.MONTHS.OCTOBER },
+  { value: "11", label: APP_MESSAGES.MONTHS.NOVEMBER },
+  { value: "12", label: APP_MESSAGES.MONTHS.DECEMBER },
 ];
 
 const splitDate = (date: string) => {
@@ -125,14 +126,14 @@ export default function ExperienceStep({
           <div key={exp.id} className="resume-builder-page__item-card">
             <div className="resume-builder-page__item-header">
               <span className="resume-builder-page__item-title">
-                Experiencia Laboral
+                {APP_MESSAGES.RESUME_BUILDER.EXPERIENCE_TITLE}
               </span>
 
               <button
                 type="button"
                 onClick={() => removeExperience(exp.id)}
                 className="resume-builder-page__item-remove"
-                aria-label={`Eliminar experiencia ${exp.title || "sin título"}`}
+                aria-label={`${APP_MESSAGES.RESUME_BUILDER.REMOVE_EXPERIENCE_ARIA} ${exp.title || APP_MESSAGES.RESUME_BUILDER.WITHOUT_TITLE}`}
               >
                 <IconX size={14} stroke={2} />
               </button>
@@ -140,7 +141,7 @@ export default function ExperienceStep({
 
             <div className="resume-builder-page__item-fields">
               <input
-                placeholder="Puesto"
+                placeholder={APP_MESSAGES.RESUME_BUILDER.JOB_TITLE_PLACEHOLDER}
                 value={exp.title}
                 onChange={(e) =>
                   updateExperience(exp.id, "title", e.target.value)
@@ -149,7 +150,7 @@ export default function ExperienceStep({
               />
 
               <input
-                placeholder="Empresa"
+                placeholder={APP_MESSAGES.RESUME_BUILDER.COMPANY_PLACEHOLDER}
                 value={exp.location}
                 onChange={(e) =>
                   updateExperience(exp.id, "location", e.target.value)
@@ -172,7 +173,7 @@ export default function ExperienceStep({
                   className={`resume-builder-page__select ${!start.month ? "resume-builder-page__select--placeholder" : ""
                     }`}
                 >
-                  <option value="">Mes de inicio</option>
+                  <option value="">{APP_MESSAGES.RESUME_BUILDER.START_MONTH_PLACEHOLDER}</option>
                   {months.map((month) => (
                     <option key={month.value} value={month.value}>
                       {month.label}
@@ -194,7 +195,7 @@ export default function ExperienceStep({
                   className={`resume-builder-page__select ${!start.year ? "resume-builder-page__select--placeholder" : ""
                     }`}
                 >
-                  <option value="">Año de inicio</option>
+                  <option value="">{APP_MESSAGES.RESUME_BUILDER.START_YEAR_PLACEHOLDER}</option>
                   {years.map((year) => (
                     <option key={year} value={year}>
                       {year}
@@ -219,7 +220,7 @@ export default function ExperienceStep({
                     className={`resume-builder-page__select ${!end.month ? "resume-builder-page__select--placeholder" : ""
                       }`}
                   >
-                    <option value="">Mes de finalización</option>
+                    <option value="">{APP_MESSAGES.RESUME_BUILDER.END_MONTH_PLACEHOLDER}</option>
                     {months.map((month) => (
                       <option key={month.value} value={month.value}>
                         {month.label}
@@ -241,7 +242,7 @@ export default function ExperienceStep({
                     className={`resume-builder-page__select ${!end.year ? "resume-builder-page__select--placeholder" : ""
                       }`}
                   >
-                    <option value="">Año finalización</option>
+                    <option value="">{APP_MESSAGES.RESUME_BUILDER.END_YEAR_PLACEHOLDER}</option>
                     {years.map((year) => (
                       <option key={year} value={year}>
                         {year}
@@ -261,12 +262,12 @@ export default function ExperienceStep({
                   className="resume-builder-page__checkbox"
                 />
 
-                <span>Actualmente trabajo aquí</span>
+                <span>{APP_MESSAGES.RESUME_BUILDER.CURRENTLY_WORKING_LABEL}</span>
               </label>
 
               <textarea
                 rows={4}
-                placeholder="Descripción (cada punto en una nueva línea)"
+                placeholder={APP_MESSAGES.RESUME_BUILDER.DESCRIPTION_PLACEHOLDER}
                 value={exp.description}
                 onChange={(e) =>
                   updateExperience(exp.id, "description", e.target.value)
@@ -283,7 +284,7 @@ export default function ExperienceStep({
         onClick={addExperience}
         className="resume-builder-page__add-btn"
       >
-        Agregar Experiencia
+        {APP_MESSAGES.RESUME_BUILDER.ADD_EXPERIENCE_BUTTON}
       </button>
     </div>
   );

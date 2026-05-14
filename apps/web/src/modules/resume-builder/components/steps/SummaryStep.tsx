@@ -1,3 +1,5 @@
+import { APP_MESSAGES } from "../../../../shared/constants/appMessages";
+
 type SummaryStepProps = {
   summary: string;
   setSummary: (value: string) => void;
@@ -16,7 +18,7 @@ export default function SummaryStep({
         rows={8}
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
-        placeholder="Escribe un resumen profesional atractivo que destaque tu experiencia, habilidades y objetivos..."
+        placeholder={APP_MESSAGES.RESUME_BUILDER.SUMMARY_PLACEHOLDER}
         className="resume-builder-page__textarea"
       />
     </div>

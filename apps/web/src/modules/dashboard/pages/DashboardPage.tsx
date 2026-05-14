@@ -11,6 +11,9 @@ import Header from "../../../shared/components/layout/Header";
 import "./DashboardPage.css";
 import { useToast } from "../../../shared/context/useToast";
 import SkeletonCard from "../../../shared/components/ui/SkeletonCard";
+import { useAsyncAction } from "../../../shared/hooks/useAsyncAction";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
+import ConfirmDialog from "../../../shared/components/ui/ConfirmDialog";
 
 import {
   IconFileText,
@@ -46,7 +49,6 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "oldest" | "name">("recent");
   const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const { showToast } = useToast()
 
@@ -112,20 +114,31 @@ export default function DashboardPage() {
 
       URL.revokeObjectURL(url);
     } catch {
-      showToast("No se pudo descargar el CV", "error");
+      showToast(APP_MESSAGES.DASHBOARD.DOWNLOAD_FAILED);
     }
   };
 
-  const handleDuplicateResume = async (resumeId: string) => {
-    try {
-      const duplicatedResume = await duplicateResumeById(resumeId);
+  const duplicateResumeAction = useAsyncAction(
+    duplicateResumeById,
+    {
+      successMessage:
+        APP_MESSAGES.DASHBOARD.DUPLICATE_SUCCESS,
 
-      setResumes((prev) => [duplicatedResume, ...prev]);
+      showToast,
 
-      showToast("CV duplicado correctamente", "success");
-    } catch {
-      showToast("No se pudo duplicar el CV", "error");
+      onSuccess: (duplicatedResume) => {
+        setResumes((prev) => [
+          duplicatedResume,
+          ...prev,
+        ]);
+      },
     }
+  );
+
+  const handleDuplicateResume = async (
+    resumeId: string
+  ) => {
+    await duplicateResumeAction.execute(resumeId);
   };
 
   const openDeleteModal = (resume: Resume) => {
@@ -134,30 +147,40 @@ export default function DashboardPage() {
   };
 
   const closeDeleteModal = () => {
-    if (isDeleting) return;
+    if (deleteResumeAction.isLoading) return;
 
     setResumeToDelete(null);
     setDeleteError("");
   };
 
+  const deleteResumeAction = useAsyncAction(
+    deleteResumeById,
+    {
+      showToast,
+
+      onSuccess: (_, deletedId) => {
+        setResumes((prev) =>
+          prev.filter(
+            (resume) => resume.id !== deletedId
+          )
+        );
+
+        setResumeToDelete(null);
+      },
+    }
+  );
+
   const confirmDeleteResume = async () => {
     if (!resumeToDelete) return;
 
-    try {
-      setIsDeleting(true);
-      setDeleteError("");
+    const deleted = await deleteResumeAction.execute(
+      resumeToDelete.id
+    );
 
-      await deleteResumeById(resumeToDelete.id);
-
-      setResumes((prev) =>
-        prev.filter((resume) => resume.id !== resumeToDelete.id)
+    if (!deleted) {
+      setDeleteError(
+        APP_MESSAGES.DASHBOARD.DELETE_FAILED
       );
-
-      setResumeToDelete(null);
-    } catch {
-      setDeleteError("No se pudo eliminar el CV. Intentalo nuevamente.");
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -172,60 +195,52 @@ export default function DashboardPage() {
         <div className="dashboard-page__content rb-fade-up">
           <div className="dashboard-page__welcome">
             <div className="dashboard-page__welcome-text">
-              <h1 className="dashboard-page__greeting">Bienvenido de nuevo</h1>
-              <p className="dashboard-page__subtext">
-                Gestiona tus currículums y crea nuevas oportunidades.
-              </p>
+              <h1 className="dashboard-page__greeting">{APP_MESSAGES.DASHBOARD.GREETING}</h1>
+              <p className="dashboard-page__subtext">{APP_MESSAGES.DASHBOARD.SUBTEXT}</p>
             </div>
 
             <Link to="/resume/new" className="dashboard-page__create-btn">
-              <span>Crear Currículum</span>
+              {APP_MESSAGES.DASHBOARD.CREATE_BUTTON}
               <IconPlus size={16} stroke={1.8} />
             </Link>
           </div>
 
           <div className="dashboard-page__stats">
             <div className="stat-card">
-              <div className="stat-card__label">Total de Currículums</div>
+              <div className="stat-card__label">{APP_MESSAGES.DASHBOARD.STATS_TOTAL_RESUMES}</div>
               <div className="stat-card__value">
                 0
-                <span className="stat-card__unit">documentos</span>
+                <span className="stat-card__unit">{APP_MESSAGES.DASHBOARD.STATS_DOCUMENTS_UNIT}</span>
               </div>
             </div>
 
             <div className="stat-card">
-              <div className="stat-card__label">Versiones Guardadas</div>
+              <div className="stat-card__label">{APP_MESSAGES.DASHBOARD.STATS_TOTAL_VERSIONS}</div>
               <div className="stat-card__value">
                 0
-                <span className="stat-card__unit">versiones</span>
+                <span className="stat-card__unit">{APP_MESSAGES.DASHBOARD.STATS_VERSIONS_UNIT}</span>
               </div>
             </div>
 
             <div className="stat-card">
-              <div className="stat-card__label">Última Actualización</div>
+              <div className="stat-card__label">{APP_MESSAGES.DASHBOARD.STATS_LAST_UPDATED}</div>
               <div className="stat-card__value stat-card__value--date">
-                Sin actividad
+                {APP_MESSAGES.DASHBOARD.STATS_NO_ACTIVITY}
               </div>
             </div>
           </div>
 
-          {/* Empty State Mejorado */}
           <div className="empty-state">
             <div className="empty-state__icon">
               <IconFilePlus size={48} stroke={1.2} />
             </div>
 
-            <h3 className="empty-state__title">
-              Aún no tienes currículums
-            </h3>
+            <h3 className="empty-state__title">{APP_MESSAGES.DASHBOARD.EMPTY_TITLE}</h3>
 
-            <p className="empty-state__description">
-              Comienza creando tu primer CV profesional en minutos.
-              Podrás editarlo, descargarlo y administrar todas sus versiones.
-            </p>
+            <p className="empty-state__description">{APP_MESSAGES.DASHBOARD.EMPTY_DESCRIPTION}</p>
 
             <Link to="/resume/new" className="empty-state__btn">
-              Nuevo Currículum
+              {APP_MESSAGES.DASHBOARD.EMPTY_BUTTON}
               <IconPlus size={18} stroke={1.8} />
             </Link>
           </div>
@@ -244,54 +259,52 @@ export default function DashboardPage() {
       <div className="dashboard-page__content rb-fade-up">
         <div className="dashboard-page__welcome">
           <div className="dashboard-page__welcome-text">
-            <h1 className="dashboard-page__greeting">Bienvenido de nuevo</h1>
-            <p className="dashboard-page__subtext">
-              Gestiona tus currículums y crea nuevas oportunidades.
-            </p>
+            <h1 className="dashboard-page__greeting">{APP_MESSAGES.DASHBOARD.GREETING}</h1>
+            <p className="dashboard-page__subtext">{APP_MESSAGES.DASHBOARD.SUBTEXT}</p>
           </div>
 
           <Link to="/resume/new" className="dashboard-page__create-btn">
-            <span>Crear Currículum</span>
+            <span>{APP_MESSAGES.DASHBOARD.CREATE_BUTTON}</span>
             <IconPlus size={16} stroke={1.8} />
           </Link>
         </div>
 
         <div className="dashboard-page__stats">
           <div className="stat-card">
-            <div className="stat-card__label">Total de Currículums</div>
+            <div className="stat-card__label">{APP_MESSAGES.DASHBOARD.STATS_TOTAL_RESUMES}</div>
             <div className="stat-card__value">
               {stats.totalResumes}
-              <span className="stat-card__unit">documentos</span>
+              <span className="stat-card__unit">{APP_MESSAGES.DASHBOARD.STATS_DOCUMENTS_UNIT}</span>
             </div>
           </div>
 
           <div className="stat-card">
-            <div className="stat-card__label">Versiones Guardadas</div>
+            <div className="stat-card__label">{APP_MESSAGES.DASHBOARD.STATS_TOTAL_VERSIONS}</div>
             <div className="stat-card__value">
               {stats.totalVersions}
-              <span className="stat-card__unit">versiones</span>
+              <span className="stat-card__unit">{APP_MESSAGES.DASHBOARD.STATS_VERSIONS_UNIT}</span>
             </div>
           </div>
 
           <div className="stat-card">
-            <div className="stat-card__label">Última Actualización</div>
+            <div className="stat-card__label">{APP_MESSAGES.DASHBOARD.STATS_LAST_UPDATED}</div>
             <div className="stat-card__value stat-card__value--date">
               {resumes.length > 0
                 ? formatDate(resumes[0].updatedAt || resumes[0].createdAt)
-                : "Sin actividad"}
+                : APP_MESSAGES.DASHBOARD.STATS_NO_ACTIVITY}
             </div>
           </div>
         </div>
 
         <div className="dashboard-page__section-header">
-          <h2 className="dashboard-page__section-title">Tus Currículums</h2>
+          <h2 className="dashboard-page__section-title">{APP_MESSAGES.DASHBOARD.SECTION_TITLE}</h2>
 
           <div className="dashboard-page__filters">
             <input
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Buscar por título..."
+              placeholder={APP_MESSAGES.DASHBOARD.SEARCH_PLACEHOLDER}
               className="dashboard-page__search"
             />
 
@@ -303,9 +316,9 @@ export default function DashboardPage() {
                 }
                 className="dashboard-page__sort"
               >
-                <option value="recent">Más recientes</option>
-                <option value="oldest">Más antiguos</option>
-                <option value="name">Nombre A-Z</option>
+                <option value="recent">{APP_MESSAGES.DASHBOARD.SORT_RECENT}</option>
+                <option value="recent">{APP_MESSAGES.DASHBOARD.SORT_OLDEST}</option>
+                <option value="recent">{APP_MESSAGES.DASHBOARD.SORT_NAME}</option>
               </select>
 
               <IconChevronDown
@@ -340,7 +353,7 @@ export default function DashboardPage() {
                     <div className="resume-card__header">
                       <span className="resume-card__badge">
                         <IconFileText size={14} stroke={1.8} />
-                        CV guardado
+                        {APP_MESSAGES.DASHBOARD.CARD_BADGE}
                       </span>
 
                       <span className="resume-card__date">
@@ -368,9 +381,7 @@ export default function DashboardPage() {
                       </div>
                     )}
 
-                    <p className="resume-card__description">
-                      CV generado automáticamente
-                    </p>
+                    <p className="resume-card__description">{APP_MESSAGES.DASHBOARD.CARD_DESCRIPTION}</p>
 
                     <div className="resume-card__actions">
                       <Link
@@ -378,7 +389,7 @@ export default function DashboardPage() {
                         className="resume-card__edit-btn"
                       >
                         <IconEdit size={15} stroke={1.8} />
-                        Editar
+                        {APP_MESSAGES.DASHBOARD.CARD_EDIT_BUTTON}
                       </Link>
 
                       <button
@@ -387,7 +398,7 @@ export default function DashboardPage() {
                         className="resume-card__duplicate-btn"
                       >
                         <IconCopy size={15} stroke={1.8} />
-                        Duplicar
+                        {APP_MESSAGES.DASHBOARD.CARD_DUPLICATE_BUTTON}
                       </button>
 
                       <button
@@ -396,7 +407,7 @@ export default function DashboardPage() {
                         className="resume-card__delete-btn"
                       >
                         <IconTrash size={15} stroke={1.8} />
-                        Eliminar
+                        {APP_MESSAGES.DASHBOARD.CARD_DELETE_BUTTON}
                       </button>
 
                       <button
@@ -407,7 +418,7 @@ export default function DashboardPage() {
                         className="resume-card__download-btn"
                       >
                         <IconDownload size={15} stroke={1.8} />
-                        Descargar
+                        {APP_MESSAGES.DASHBOARD.CARD_DOWNLOAD_BUTTON}
                       </button>
                     </div>
                   </div>
@@ -419,11 +430,9 @@ export default function DashboardPage() {
 
         {!loading && resumes.length > 0 && filteredResumes.length === 0 && (
           <div className="empty-state">
-            <h3 className="empty-state__title">No encontramos resultados</h3>
+            <h3 className="empty-state__title">{APP_MESSAGES.DASHBOARD.EMPTY_RESULTS}</h3>
 
-            <p className="empty-state__description">
-              No hay currículums que coincidan con tu búsqueda actual.
-            </p>
+            <p className="empty-state__description"> {APP_MESSAGES.DASHBOARD.EMPTY_RESULTS_DESCRIPTION} </p>
 
             <button
               type="button"
@@ -433,66 +442,34 @@ export default function DashboardPage() {
               }}
               className="empty-state__btn"
             >
-              Limpiar filtros
+              {APP_MESSAGES.DASHBOARD.CLEAR_FILTERS_BUTTON}
             </button>
           </div>
         )}
       </div>
 
-      {resumeToDelete && (
-        <div
-          className="dashboard-page__modal-backdrop"
-          role="presentation"
-          onClick={closeDeleteModal}
-        >
-          <div
-            className="dashboard-page__modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-resume-title"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="dashboard-page__modal-icon">!</div>
 
-            <h3
-              id="delete-resume-title"
-              className="dashboard-page__modal-title"
-            >
-              Eliminar currículum
-            </h3>
+      <ConfirmDialog
+        isOpen={Boolean(resumeToDelete)}
+        title={APP_MESSAGES.DASHBOARD.DELETE_TITLE}
+        description={
+          <>
+            {APP_MESSAGES.DASHBOARD.DELETE_CONFIRM} {" "}
+            <strong>{resumeToDelete?.title}</strong>? {APP_MESSAGES.DASHBOARD.DELETE_DESCRIPTION}
+          </>
+        }
+        cancelLabel={APP_MESSAGES.MODAL.CANCEL}
+        confirmLabel={
+          deleteResumeAction.isLoading
+            ? APP_MESSAGES.DASHBOARD.DELETING
+            : APP_MESSAGES.DASHBOARD.DELETE_ACTION
+        }
+        isLoading={deleteResumeAction.isLoading}
+        error={deleteError}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDeleteResume}
+      />
 
-            <p className="dashboard-page__modal-description">
-              ¿Estás seguro de que querés eliminar{" "}
-              <strong>{resumeToDelete.title}</strong>? Esta acción no se puede
-              deshacer.
-            </p>
-
-            {deleteError && (
-              <p className="dashboard-page__modal-error">{deleteError}</p>
-            )}
-
-            <div className="dashboard-page__modal-actions">
-              <button
-                type="button"
-                onClick={closeDeleteModal}
-                disabled={isDeleting}
-                className="dashboard-page__modal-cancel"
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                onClick={confirmDeleteResume}
-                disabled={isDeleting}
-                className="dashboard-page__modal-confirm"
-              >
-                {isDeleting ? "Eliminando..." : "Eliminar CV"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

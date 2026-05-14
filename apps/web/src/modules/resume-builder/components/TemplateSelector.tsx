@@ -1,4 +1,5 @@
 import type { ResumeTemplate } from "../types/resume.types";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 type Props = {
   template: ResumeTemplate;
@@ -8,18 +9,18 @@ type Props = {
 const templates: { id: ResumeTemplate; label: string; description: string }[] = [
   {
     id: "classic",
-    label: "Clásico",
-    description: "Diseño compatible con ATS con divisores de sección tradicionales.",
+    label: APP_MESSAGES.RESUME_BUILDER.TEMPLATE_CLASSIC_LABEL,
+    description: APP_MESSAGES.RESUME_BUILDER.TEMPLATE_CLASSIC_DESCRIPTION,
   },
   {
     id: "modern",
-    label: "Moderno",
-    description: "Encabezado centrado con acentos dorados y espaciado refinado.",
+    label: APP_MESSAGES.RESUME_BUILDER.TEMPLATE_MODERN_LABEL,
+    description: APP_MESSAGES.RESUME_BUILDER.TEMPLATE_MODERN_DESCRIPTION,
   },
   {
     id: "compact",
-    label: "Compacto",
-    description: "Diseño reducido para currículums extensos y contenido denso.",
+    label: APP_MESSAGES.RESUME_BUILDER.TEMPLATE_COMPACT_LABEL,
+    description: APP_MESSAGES.RESUME_BUILDER.TEMPLATE_COMPACT_DESCRIPTION,
   },
 ];
 
@@ -27,7 +28,7 @@ export default function TemplateSelector({ template, setTemplate }: Props) {
   return (
     <section className="resume-builder-page__template-selector">
       <h3 className="resume-builder-page__template-title">
-        Plantilla del CV
+        {APP_MESSAGES.RESUME_BUILDER.TEMPLATE_TITLE}
       </h3>
 
       <div className="resume-builder-page__template-grid">
