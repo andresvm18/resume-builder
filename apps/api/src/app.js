@@ -15,6 +15,10 @@ const profileAiRoutes = require("./routes/profile-ai.routes");
 const requestLogger = require("./middleware/request-logger.middleware");
 const { notFoundHandler, errorHandler } = require("./middleware/error.middleware");
 
+const {
+  getSystemHealth,
+} = require("./services/system/health.service");
+
 const app = express();
 
 app.set("trust proxy", 1);
@@ -29,20 +33,15 @@ if (process.env.NODE_ENV === "production") {
   app.use("/api", apiLimiter);
 }
 
-app.get("/api/health", (req, res) => {
-  const memoryUsage = process.memoryUsage();
+app.get("/api/health", async (req, res) => {
+  const health = await getSystemHealth();
 
-  res.json({
-    status: "ok",
-    environment: process.env.NODE_ENV || "development",
-    uptime: process.uptime(),
-    memory: {
-      rss: memoryUsage.rss,
-      heapTotal: memoryUsage.heapTotal,
-      heapUsed: memoryUsage.heapUsed,
-    },
-    timestamp: new Date().toISOString(),
-  });
+  const statusCode =
+    health.status === "healthy"
+      ? 200
+      : 503;
+
+  return res.status(statusCode).json(health);
 });
 
 app.use("/api/auth", authRoutes);
