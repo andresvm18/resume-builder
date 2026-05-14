@@ -30,4 +30,5 @@ export const env = {
   isDevelopment,
   isTest,
   API_URL: getApiUrl(),
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || "",
 };

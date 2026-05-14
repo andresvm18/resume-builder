@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@sentry/react": "^10.53.1",
     "@tabler/icons-react": "^3.44.0",
     "@tailwindcss/vite": "^4.2.4",
     "html2canvas": "^1.4.1",

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { loginUser } from "../services/auth.service";
 import { useAuth } from "../../../shared/context/useAuth";
 import { APP_MESSAGES } from "../../../shared/constants/appMessages";
+
 import "./LoginModal.css";
 
 export default function LoginModal() {
