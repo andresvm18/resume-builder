@@ -1,14 +1,25 @@
 import { useCallback, useState } from "react";
 import { getFriendlyErrorMessage } from "../services/apiClient";
 
-type AsyncActionOptions<TResult> = {
-  onSuccess?: (result: TResult) => void;
+type AsyncActionOptions<
+  TArgs extends unknown[],
+  TResult
+> = {
+  successMessage?: string;
+
+  onSuccess?: (result: TResult, ...args: TArgs) => void;
+
   onError?: (error: unknown) => void;
+
+  showToast?: (
+    message: string,
+    type: "success" | "error"
+  ) => void;
 };
 
 export function useAsyncAction<TArgs extends unknown[], TResult>(
   action: (...args: TArgs) => Promise<TResult>,
-  options: AsyncActionOptions<TResult> = {}
+  options: AsyncActionOptions<TArgs, TResult> = {}
 ) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,11 +32,25 @@ export function useAsyncAction<TArgs extends unknown[], TResult>(
 
         const result = await action(...args);
 
-        options.onSuccess?.(result);
+        if (options.successMessage && options.showToast) {
+          options.showToast(
+            options.successMessage,
+            "success"
+          );
+        }
+
+        options.onSuccess?.(result, ...args);
 
         return result;
       } catch (error) {
-        setError(getFriendlyErrorMessage(error));
+        const message = getFriendlyErrorMessage(error);
+
+        setError(message);
+
+        if (options.showToast) {
+          options.showToast(message, "error");
+        }
+
         options.onError?.(error);
 
         return null;

@@ -47,4 +47,33 @@ export const APP_MESSAGES = {
     SAVE_BUTTON_DIRTY: "Guardar cambios",
     SAVE_BUTTON_SAVED: "Guardado",
   },
+
+  DASHBOARD: {
+    DOWNLOAD_FAILED:
+      "No se pudo descargar el CV.",
+
+    DUPLICATE_SUCCESS:
+      "CV duplicado correctamente.",
+
+    DUPLICATE_FAILED:
+      "No se pudo duplicar el CV.",
+
+    DELETE_FAILED:
+      "No se pudo eliminar el CV.",
+
+    DELETE_CONFIRM:
+      "¿Estás seguro de que querés eliminar este currículum?",
+
+    DELETE_ACTION:
+      "Eliminar CV",
+
+    DELETING:
+      "Eliminando...",
+
+    EMPTY_RESULTS:
+      "No encontramos resultados.",
+
+    EMPTY_RESULTS_DESCRIPTION:
+      "No hay currículums que coincidan con tu búsqueda actual.",
+  },
 } as const;

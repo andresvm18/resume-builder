@@ -11,6 +11,8 @@ import Header from "../../../shared/components/layout/Header";
 import "./DashboardPage.css";
 import { useToast } from "../../../shared/context/useToast";
 import SkeletonCard from "../../../shared/components/ui/SkeletonCard";
+import { useAsyncAction } from "../../../shared/hooks/useAsyncAction";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 import {
   IconFileText,
@@ -46,7 +48,6 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "oldest" | "name">("recent");
   const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const { showToast } = useToast()
 
@@ -116,16 +117,27 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDuplicateResume = async (resumeId: string) => {
-    try {
-      const duplicatedResume = await duplicateResumeById(resumeId);
+  const duplicateResumeAction = useAsyncAction(
+    duplicateResumeById,
+    {
+      successMessage:
+        APP_MESSAGES.DASHBOARD.DUPLICATE_SUCCESS,
 
-      setResumes((prev) => [duplicatedResume, ...prev]);
+      showToast,
 
-      showToast("CV duplicado correctamente", "success");
-    } catch {
-      showToast("No se pudo duplicar el CV", "error");
+      onSuccess: (duplicatedResume) => {
+        setResumes((prev) => [
+          duplicatedResume,
+          ...prev,
+        ]);
+      },
     }
+  );
+
+  const handleDuplicateResume = async (
+    resumeId: string
+  ) => {
+    await duplicateResumeAction.execute(resumeId);
   };
 
   const openDeleteModal = (resume: Resume) => {
@@ -134,30 +146,40 @@ export default function DashboardPage() {
   };
 
   const closeDeleteModal = () => {
-    if (isDeleting) return;
+    if (deleteResumeAction.isLoading) return;
 
     setResumeToDelete(null);
     setDeleteError("");
   };
 
+  const deleteResumeAction = useAsyncAction(
+    deleteResumeById,
+    {
+      showToast,
+
+      onSuccess: (_, deletedId) => {
+        setResumes((prev) =>
+          prev.filter(
+            (resume) => resume.id !== deletedId
+          )
+        );
+
+        setResumeToDelete(null);
+      },
+    }
+  );
+
   const confirmDeleteResume = async () => {
     if (!resumeToDelete) return;
 
-    try {
-      setIsDeleting(true);
-      setDeleteError("");
+    const deleted = await deleteResumeAction.execute(
+      resumeToDelete.id
+    );
 
-      await deleteResumeById(resumeToDelete.id);
-
-      setResumes((prev) =>
-        prev.filter((resume) => resume.id !== resumeToDelete.id)
+    if (!deleted) {
+      setDeleteError(
+        APP_MESSAGES.DASHBOARD.DELETE_FAILED
       );
-
-      setResumeToDelete(null);
-    } catch {
-      setDeleteError("No se pudo eliminar el CV. Intentalo nuevamente.");
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -475,7 +497,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={closeDeleteModal}
-                disabled={isDeleting}
+                disabled={deleteResumeAction.isLoading}
                 className="dashboard-page__modal-cancel"
               >
                 Cancelar
@@ -484,10 +506,12 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={confirmDeleteResume}
-                disabled={isDeleting}
+                disabled={deleteResumeAction.isLoading}
                 className="dashboard-page__modal-confirm"
               >
-                {isDeleting ? "Eliminando..." : "Eliminar CV"}
+                {deleteResumeAction.isLoading
+                  ? APP_MESSAGES.DASHBOARD.DELETING
+                  : APP_MESSAGES.DASHBOARD.DELETE_ACTION}
               </button>
             </div>
           </div>
