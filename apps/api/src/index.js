@@ -5,6 +5,9 @@ require("dotenv").config({
 
 const env = require("./config/env");
 const logger = require("./utils/logger");
+const { initializeSentry } = require("./config/sentry");
+
+initializeSentry();
 
 if (env.isTest && !env.DATABASE_URL?.includes("_test")) {
   throw new Error("Tests are trying to use a non-test database.");

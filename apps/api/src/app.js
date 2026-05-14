@@ -1,5 +1,7 @@
 const express = require("express");
 
+const { Sentry } = require("./config/sentry");
+
 const {
   corsMiddleware,
   helmetMiddleware,
@@ -49,6 +51,8 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/ai", aiLimiter, aiRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/profile", profileAiRoutes);
+
+Sentry.setupExpressErrorHandler(app);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
