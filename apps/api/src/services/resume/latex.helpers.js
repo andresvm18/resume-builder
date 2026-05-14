@@ -157,51 +157,138 @@ function getSoftSkillDescription(skill = "") {
     return "Administración eficiente de tareas y entregas dentro de plazos definidos.";
   }
 
+  if (normalized.includes("empatia")) {
+    return "Interacción respetuosa y comprensión de necesidades en distintos contextos profesionales.";
+  }
+
+  if (normalized.includes("responsabilidad")) {
+    return "Cumplimiento consistente de tareas, procesos y compromisos asignados.";
+  }
+
+  if (normalized.includes("servicio")) {
+    return "Orientación a brindar apoyo y atención efectiva según las necesidades del entorno.";
+  }
+
+  if (normalized.includes("liderazgo")) {
+    return "Capacidad para coordinar actividades y apoyar el trabajo colaborativo.";
+  }
+
   return "Aplicación práctica demostrada en experiencias laborales, académicas o proyectos.";
 }
 
 function categorizeTechnicalSkill(skill = "") {
   const normalized = normalizeText(skill);
 
+  // Software / IT
+  if (
+    normalized.includes("javascript") ||
+    normalized.includes("typescript") ||
+    normalized.includes("react") ||
+    normalized.includes("node") ||
+    normalized.includes("sql") ||
+    normalized.includes("python") ||
+    normalized.includes("java") ||
+    normalized.includes("api") ||
+    normalized.includes("programacion") ||
+    normalized.includes("desarrollo")
+  ) {
+    return "Tecnologías y desarrollo";
+  }
+
+  // Data / Analytics
   if (
     normalized.includes("power bi") ||
     normalized.includes("dashboard") ||
-    normalized.includes("reporte") ||
     normalized.includes("kpi") ||
-    normalized.includes("indicadores")
-  ) {
-    return "Visualización y reportería";
-  }
-
-  if (
+    normalized.includes("analisis") ||
+    normalized.includes("datos") ||
     normalized.includes("excel") ||
-    normalized.includes("tabla") ||
-    normalized.includes("formula") ||
-    normalized.includes("macro")
+    normalized.includes("reportes")
   ) {
-    return "Herramientas de productividad";
+    return "Análisis y reportería";
   }
 
+  // Healthcare / Veterinary
   if (
-    normalized.includes("sql") ||
-    normalized.includes("base de datos") ||
-    normalized.includes("bases de datos") ||
-    normalized.includes("datos")
+    normalized.includes("paciente") ||
+    normalized.includes("clinico") ||
+    normalized.includes("medico") ||
+    normalized.includes("veterin") ||
+    normalized.includes("diagnostico") ||
+    normalized.includes("tratamiento") ||
+    normalized.includes("procedimiento")
   ) {
-    return "Bases de datos y análisis";
+    return "Atención y procedimientos";
   }
 
+  // Construction / Industry
   if (
-    normalized.includes("proceso") ||
-    normalized.includes("operacion") ||
-    normalized.includes("planeacion") ||
+    normalized.includes("obra") ||
+    normalized.includes("construccion") ||
+    normalized.includes("seguridad industrial") ||
+    normalized.includes("maquinaria") ||
+    normalized.includes("mantenimiento") ||
+    normalized.includes("operacion")
+  ) {
+    return "Operaciones y ejecución";
+  }
+
+  // Education
+  if (
+    normalized.includes("docencia") ||
+    normalized.includes("ensenanza") ||
+    normalized.includes("capacitacion") ||
+    normalized.includes("educacion") ||
+    normalized.includes("aprendizaje")
+  ) {
+    return "Educación y formación";
+  }
+
+  // Customer Service / Sales
+  if (
+    normalized.includes("cliente") ||
+    normalized.includes("ventas") ||
+    normalized.includes("servicio") ||
+    normalized.includes("call center") ||
+    normalized.includes("soporte")
+  ) {
+    return "Atención y servicio";
+  }
+
+  // Logistics / Operations
+  if (
+    normalized.includes("inventario") ||
+    normalized.includes("logistica") ||
+    normalized.includes("bodega") ||
+    normalized.includes("suministro") ||
+    normalized.includes("distribucion")
+  ) {
+    return "Logística y operaciones";
+  }
+
+  // Administration
+  if (
+    normalized.includes("administracion") ||
     normalized.includes("gestion") ||
-    normalized.includes("control")
+    normalized.includes("documentacion") ||
+    normalized.includes("procesos") ||
+    normalized.includes("organizacion")
   ) {
-    return "Gestión y procesos";
+    return "Gestión y administración";
   }
 
-  return "Otras habilidades técnicas";
+  // Marketing / Design
+  if (
+    normalized.includes("marketing") ||
+    normalized.includes("seo") ||
+    normalized.includes("contenido") ||
+    normalized.includes("diseno") ||
+    normalized.includes("campana")
+  ) {
+    return "Marketing y comunicación";
+  }
+
+  return "Otras habilidades profesionales";
 }
 
 function cleanBulletLine(line = "") {
@@ -381,20 +468,20 @@ function buildSkills(data = {}) {
 
   return `
 ${technicalSection
-    ? `\\textbf{Habilidades técnicas}
+      ? `\\textbf{Habilidades técnicas}
 \\begin{itemize}
 ${technicalSection}
 \\end{itemize}`
-    : ""
-}
+      : ""
+    }
 
 ${softSection
-    ? `\\textbf{Habilidades blandas}
+      ? `\\textbf{Habilidades blandas}
 \\begin{itemize}
 ${softSection}
 \\end{itemize}`
-    : ""
-}
+      : ""
+    }
 `;
 }
 

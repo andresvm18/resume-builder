@@ -7,9 +7,14 @@ Reescribir el resumen profesional para que suene natural, humano, específico y 
 
 Estilo deseado:
 - Español natural, fluido y profesional.
-- Evita frases genéricas como "profesional altamente motivado", "apasionado por la tecnología" o "orientado a resultados" si no están respaldadas.
-- No debe sonar como texto generado por IA.
-- Usa un tono sobrio, claro y creíble.
+- El texto debe sonar escrito por una persona real.
+- Usa vocabulario coherente con el área profesional detectada.
+- Evita frases genéricas como:
+  "profesional altamente motivado",
+  "apasionado por la tecnología",
+  "orientado a resultados".
+- Evita exageraciones o buzzwords innecesarias.
+- Prioriza claridad y credibilidad.
 - Máximo 4 líneas.
 - No uses comillas.
 - No uses markdown.

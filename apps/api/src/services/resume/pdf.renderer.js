@@ -50,6 +50,7 @@ async function renderResumePdf(data) {
 
   await fs.mkdir(outputDir, { recursive: true });
 
+  console.log(JSON.stringify(data, null, 2));
   const texContent = template
     .replaceAll("{{FULL_NAME}}", latexValue(data.fullName))
     .replaceAll("{{EMAIL}}", latexValue(data.email))
