@@ -27,10 +27,54 @@ const corsMiddleware = cors({
   credentials: true,
 });
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+
+  max: env.isProduction ? 10 : 5000,
+
+  standardHeaders: true,
+  legacyHeaders: false,
+
+  message: {
+    message:
+      "Too many login attempts. Please try again later.",
+  },
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+
+  max: env.isProduction ? 5 : 5000,
+
+  standardHeaders: true,
+  legacyHeaders: false,
+
+  message: {
+    message:
+      "Too many registration attempts. Please try again later.",
+  },
+});
+
 const helmetMiddleware = helmet({
   crossOriginResourcePolicy: {
     policy: "cross-origin",
   },
+
+  contentSecurityPolicy: env.isProduction
+    ? {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", env.FRONTEND_URL],
+        fontSrc: ["'self'", "https:", "data:"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+      },
+    }
+    : false,
 });
 
 const apiLimiter = rateLimit({
@@ -56,6 +100,8 @@ const aiLimiter = rateLimit({
 
 module.exports = {
   corsMiddleware,
+  loginLimiter,
+  registerLimiter,
   helmetMiddleware,
   apiLimiter,
   aiLimiter,

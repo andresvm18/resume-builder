@@ -1,9 +1,20 @@
 const env = require("../config/env");
 const logger = require("../utils/logger");
 
+function getSafeErrorMessage(err, statusCode) {
+  if (env.isProduction && statusCode >= 500) {
+    return "Internal server error";
+  }
+
+  return err.message || "Internal server error";
+}
+
 function notFoundHandler(req, res, next) {
   return res.status(404).json({
-    message: `Route not found: ${req.method} ${req.originalUrl}`,
+    message: env.isProduction
+      ? "Route not found"
+      : `Route not found: ${req.method} ${req.originalUrl}`,
+    requestId: req.requestId,
   });
 }
 
@@ -19,10 +30,7 @@ function errorHandler(err, req, res, next) {
   });
 
   const response = {
-    message:
-      env.isProduction && statusCode === 500
-        ? "Internal server error"
-        : err.message || "Internal server error",
+    message: getSafeErrorMessage(err, statusCode),
     requestId: req.requestId,
   };
 

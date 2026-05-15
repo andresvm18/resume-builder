@@ -17,7 +17,7 @@ async function createTestUserAndToken() {
     .send({
       name: "Resume Test User",
       email,
-      password: "12345678",
+      password: "Test1234",
     });
 
   return {
