@@ -68,8 +68,8 @@ export default function AtsScoreCard({ breakdown = DEFAULT }: AtsScoreCardProps)
             transform="rotate(-90 55 55)"
             className="ats-card__ring-progress"
           />
-          <text x="55" y="50" textAnchor="middle" fontSize="22" fontWeight="500" fill="var(--lp-text-primary)" fontFamily="'DM Sans', sans-serif">{score}</text>
-          <text x="55" y="65" textAnchor="middle" fontSize="11" fill="var(--lp-text-muted)" fontFamily="'DM Sans', sans-serif">/100</text>
+          <text x="55" y="50" textAnchor="middle" fontSize="22" fontWeight="500" fill="var(--text-primary)" fontFamily="'DM Sans', sans-serif">{score}</text>
+          <text x="55" y="65" textAnchor="middle" fontSize="11" fill="var(--text-muted)" fontFamily="'DM Sans', sans-serif">/100</text>
         </svg>
         <span className="ats-card__badge">{APP_MESSAGES.ATS.SCORE_BADGE}</span>
       </div>
