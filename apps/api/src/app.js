@@ -9,6 +9,10 @@ const {
   aiLimiter,
 } = require("./middleware/security.middleware");
 
+const {
+  sanitizeRequest,
+} = require("./middleware/sanitize.middleware");
+
 const authRoutes = require("./routes/auth.routes");
 const resumeRoutes = require("./routes/resume.routes");
 const aiRoutes = require("./routes/ai.routes");
@@ -29,6 +33,7 @@ app.disable("x-powered-by");
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
 app.use(express.json({ limit: "750kb" }));
+app.use(sanitizeRequest);
 app.use(requestLogger);
 
 if (process.env.NODE_ENV === "production") {
