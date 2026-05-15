@@ -1,0 +1,108 @@
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+
+const env = require("../config/env");
+
+const allowedOrigins = [
+  env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://localhost:5174",
+].filter(Boolean);
+
+const corsMiddleware = cors({
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (!env.isProduction && origin.startsWith("http://localhost")) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+});
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+
+  max: env.isProduction ? 10 : 5000,
+
+  standardHeaders: true,
+  legacyHeaders: false,
+
+  message: {
+    message:
+      "Too many login attempts. Please try again later.",
+  },
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+
+  max: env.isProduction ? 5 : 5000,
+
+  standardHeaders: true,
+  legacyHeaders: false,
+
+  message: {
+    message:
+      "Too many registration attempts. Please try again later.",
+  },
+});
+
+const helmetMiddleware = helmet({
+  crossOriginResourcePolicy: {
+    policy: "cross-origin",
+  },
+
+  contentSecurityPolicy: env.isProduction
+    ? {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", env.FRONTEND_URL],
+        fontSrc: ["'self'", "https:", "data:"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+      },
+    }
+    : false,
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: env.isProduction ? 300 : 5000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Demasiadas solicitudes. Intenta de nuevo más tarde.",
+  },
+});
+
+const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: env.isProduction ? 20 : 5000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "Demasiadas solicitudes de IA. Intenta de nuevo en unos minutos.",
+  },
+});
+
+module.exports = {
+  corsMiddleware,
+  loginLimiter,
+  registerLimiter,
+  helmetMiddleware,
+  apiLimiter,
+  aiLimiter,
+};

@@ -2,23 +2,17 @@ const {
   generateResumeFromCareerProfile,
 } = require("../services/profile-ai.service");
 
-async function generateResumeFromProfile(req, res) {
-  try {
-    const result = await generateResumeFromCareerProfile({
-      userId: req.user.userId,
-      jobDescription: req.body.jobDescription,
-      template: req.body.template,
-    });
+const asyncHandler = require("../utils/asyncHandler");
 
-    return res.json(result);
-  } catch (error) {
-    console.error("Error generating resume from profile:", error);
+const generateResumeFromProfile = asyncHandler(async (req, res) => {
+  const result = await generateResumeFromCareerProfile({
+    userId: req.user.userId,
+    jobDescription: req.body.jobDescription,
+    template: req.body.template,
+  });
 
-    return res.status(500).json({
-      message: "Error generating resume from profile",
-    });
-  }
-}
+  return res.json(result);
+});
 
 module.exports = {
   generateResumeFromProfile,

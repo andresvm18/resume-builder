@@ -1,40 +1,65 @@
 const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+
+const { Sentry } = require("./config/sentry");
+
+const {
+  corsMiddleware,
+  helmetMiddleware,
+  apiLimiter,
+  aiLimiter,
+} = require("./middleware/security.middleware");
+
+const {
+  sanitizeRequest,
+} = require("./middleware/sanitize.middleware");
 
 const authRoutes = require("./routes/auth.routes");
 const resumeRoutes = require("./routes/resume.routes");
 const aiRoutes = require("./routes/ai.routes");
 const profileRoutes = require("./routes/profile.routes");
 const profileAiRoutes = require("./routes/profile-ai.routes");
+const requestLogger = require("./middleware/request-logger.middleware");
+const { notFoundHandler, errorHandler } = require("./middleware/error.middleware");
+
+const {
+  getSystemHealth,
+} = require("./services/system/health.service");
 
 const app = express();
 
 app.set("trust proxy", 1);
+app.disable("x-powered-by");
 
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === "production" ? 300 : 5000,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    message: "Demasiadas solicitudes. Intenta de nuevo más tarde.",
-  },
-});
-
-app.use(helmet());
-app.use(cors());
-app.use(express.json({ limit: "1mb" }));
+app.use(helmetMiddleware);
+app.use(corsMiddleware);
+app.use(express.json({ limit: "750kb" }));
+app.use(sanitizeRequest);
+app.use(requestLogger);
 
 if (process.env.NODE_ENV === "production") {
   app.use("/api", apiLimiter);
 }
 
+app.get("/api/health", async (req, res) => {
+  const health = await getSystemHealth();
+
+  const statusCode =
+    health.status === "healthy"
+      ? 200
+      : 503;
+
+  return res.status(statusCode).json(health);
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
-app.use("/api/ai", aiRoutes);
+app.use("/api/ai", aiLimiter, aiRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/profile", profileAiRoutes);
+
+Sentry.setupExpressErrorHandler(app);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;

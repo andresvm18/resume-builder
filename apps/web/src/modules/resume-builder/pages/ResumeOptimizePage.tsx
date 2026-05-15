@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
+import { getFriendlyErrorMessage } from "../../../shared/services/apiClient";
 import type { ResumeData } from "../types/resume.types";
 import { normalizeResumeData } from "../utils/resumeNormalizer";
 import {
@@ -8,6 +9,7 @@ import {
   optimizeFullResume,
 } from "../services/ai.service";
 import "./ResumeOptimizePage.css";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 export default function ResumeOptimizePage() {
   const location = useLocation();
@@ -17,7 +19,26 @@ export default function ResumeOptimizePage() {
   const rawResumeData = location.state as ResumeData | null;
   const resumeData = rawResumeData ? normalizeResumeData(rawResumeData) : null;
 
-  const [status, setStatus] = useState("Preparando optimización con IA...");
+  const [status, setStatus] = useState<string>(APP_MESSAGES.RESUME_OPTIMIZE.INITIAL_STATUS);
+  const [error, setError] = useState("");
+
+  const goToOriginalResume = () => {
+    if (!resumeData) {
+      navigate("/resume-builder");
+      return;
+    }
+
+    navigate("/resume/generate", {
+      state: resumeData,
+      replace: true,
+    });
+  };
+
+  const retryOptimization = () => {
+    hasOptimized.current = false;
+    setError("");
+    setStatus(APP_MESSAGES.RESUME_OPTIMIZE.INITIAL_STATUS);
+  };
 
   useEffect(() => {
     if (hasOptimized.current) return;
@@ -30,7 +51,8 @@ export default function ResumeOptimizePage() {
 
     const optimizeResume = async () => {
       try {
-        setStatus("Optimizando tu CV con IA...");
+        setError("");
+        setStatus(APP_MESSAGES.AI.OPTIMIZING);
 
         const result = await optimizeFullResume(
           resumeData,
@@ -41,18 +63,18 @@ export default function ResumeOptimizePage() {
 
         if (resumeData.jobDescription?.trim()) {
           try {
-            setStatus("Analizando el CV final como un sistema ATS...");
+            setStatus(APP_MESSAGES.RESUME_OPTIMIZE.ANALYZING_STATUS);
 
             finalAtsAnalysis = await analyzeFinalAts(
               result.optimizedResumeData,
               resumeData.jobDescription
             );
           } catch {
-            console.warn("No se pudo completar el análisis ATS final.");
+            setStatus(APP_MESSAGES.PDF.OPTIMIZATION_ERROR);
           }
         }
 
-        setStatus("Preparando generación del PDF...");
+        setStatus(APP_MESSAGES.PDF.PREPARING);
 
         navigate("/resume/generate", {
           state: {
@@ -61,13 +83,9 @@ export default function ResumeOptimizePage() {
           },
           replace: true,
         });
-      } catch {
-        setStatus("No se pudo optimizar con IA. Generando CV original...");
-
-        navigate("/resume/generate", {
-          state: resumeData,
-          replace: true,
-        });
+      } catch (optimizeError) {
+        setError(getFriendlyErrorMessage(optimizeError));
+        setStatus(APP_MESSAGES.RESUME_OPTIMIZE.ERROR_STATUS);
       }
     };
 
@@ -79,17 +97,33 @@ export default function ResumeOptimizePage() {
       <Header />
 
       <section className="resume-optimize-page__card">
-        <div className="resume-optimize-page__loader" />
+        {!error && <div className="resume-optimize-page__loader" />}
 
         <h1 className="resume-optimize-page__title">
-          Optimizando tu currículum
+          {APP_MESSAGES.RESUME_OPTIMIZE.TITLE}
         </h1>
 
         <p className="resume-optimize-page__status">{status}</p>
 
-        <p className="resume-optimize-page__hint">
-          Estamos optimizando tu CV, analizando su compatibilidad ATS y preparando tu PDF final.
-        </p>
+        {!error ? (
+          <p className="resume-optimize-page__hint">
+            {APP_MESSAGES.RESUME_OPTIMIZE.HINT_TEXT}
+          </p>
+        ) : (
+          <div className="resume-optimize-page__error-box">
+            <p className="resume-optimize-page__hint">{error}</p>
+
+            <div className="resume-optimize-page__actions">
+              <button type="button" onClick={retryOptimization}>
+                {APP_MESSAGES.RESUME_OPTIMIZE.RETRY_BUTTON}
+              </button>
+
+              <button type="button" onClick={goToOriginalResume}>
+                {APP_MESSAGES.RESUME_OPTIMIZE.GENERATE_ORIGINAL_BUTTON}
+              </button>
+            </div>
+          </div>
+        )}
       </section>
     </main>
   );

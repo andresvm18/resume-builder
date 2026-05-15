@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { Education } from "../../types/resume.types";
 import { IconX } from "@tabler/icons-react";
+import { APP_MESSAGES } from "../../../../shared/constants/appMessages";
 
 type EducationStepProps = {
   education: Education[];
@@ -35,13 +36,15 @@ export default function EducationStep({
       {education.map((edu) => (
         <div key={edu.id} className="resume-builder-page__item-card">
           <div className="resume-builder-page__item-header">
-            <span className="resume-builder-page__item-title">Educación</span>
+            <span className="resume-builder-page__item-title">
+              {APP_MESSAGES.RESUME_BUILDER.EDUCATION_TITLE}
+            </span>
 
             <button
               type="button"
               onClick={() => removeEducation(edu.id)}
               className="resume-builder-page__item-remove"
-              aria-label={`Eliminar educación ${edu.degree || "sin título"}`}
+              aria-label={`${APP_MESSAGES.RESUME_BUILDER.REMOVE_EDUCATION_ARIA} ${edu.degree || APP_MESSAGES.RESUME_BUILDER.WITHOUT_TITLE}`}
             >
               <IconX size={14} stroke={2} />
             </button>
@@ -49,7 +52,7 @@ export default function EducationStep({
 
           <div className="resume-builder-page__item-fields">
             <input
-              placeholder="Institución"
+              placeholder={APP_MESSAGES.RESUME_BUILDER.INSTITUTION_PLACEHOLDER}
               value={edu.institution}
               onChange={(e) =>
                 updateEducation(edu.id, "institution", e.target.value)
@@ -58,7 +61,7 @@ export default function EducationStep({
             />
 
             <input
-              placeholder="Título / Grado"
+              placeholder={APP_MESSAGES.RESUME_BUILDER.DEGREE_PLACEHOLDER}
               value={edu.degree}
               onChange={(e) =>
                 updateEducation(edu.id, "degree", e.target.value)
@@ -72,7 +75,9 @@ export default function EducationStep({
               className={`resume-builder-page__select ${!edu.date ? "resume-builder-page__select--placeholder" : ""
                 }`}
             >
-              <option value="">Año de finalización (o estimado)</option>
+              <option value="">
+                {APP_MESSAGES.RESUME_BUILDER.GRADUATION_YEAR_PLACEHOLDER}
+              </option>
               {years.map((year) => (
                 <option key={year} value={year}>
                   {year}
@@ -88,7 +93,7 @@ export default function EducationStep({
         onClick={addEducation}
         className="resume-builder-page__add-btn"
       >
-        Agregar Educación
+        {APP_MESSAGES.RESUME_BUILDER.ADD_EDUCATION_BUTTON}
       </button>
     </div>
   );

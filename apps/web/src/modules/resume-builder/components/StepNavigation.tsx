@@ -1,3 +1,4 @@
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./StepNavigation.css";
 
 type StepNavigationProps = {
@@ -28,7 +29,7 @@ export default function StepNavigation({
         disabled={isFirst}
         className="resume-builder-page__nav-btn resume-builder-page__nav-btn--prev"
       >
-        Anterior
+        {APP_MESSAGES.RESUME_BUILDER.NAV_PREV_BUTTON}
       </button>
 
       {!isLast ? (
@@ -38,7 +39,7 @@ export default function StepNavigation({
           disabled={disableNext}
           className="resume-builder-page__nav-btn resume-builder-page__nav-btn--next"
         >
-          Siguiente
+          {APP_MESSAGES.RESUME_BUILDER.NAV_NEXT_BUTTON}
         </button>
       ) : (
         <button
@@ -46,7 +47,7 @@ export default function StepNavigation({
           onClick={onFinish}
           className="resume-builder-page__nav-btn resume-builder-page__nav-btn--finish"
         >
-          ¡Listo! Generar CV
+          {APP_MESSAGES.RESUME_BUILDER.NAV_FINISH_BUTTON}
         </button>
       )}
     </div>

@@ -1,5 +1,6 @@
 import { apiRequest } from "../../../shared/services/apiClient";
 import type { ResumeData } from "../types/resume.types";
+import { API_ROUTES } from "../../../shared/constants/apiRoutes";
 
 export type AiProvider = "openrouter" | "gemini" | "openai" | "fallback" | "mock";
 
@@ -44,7 +45,7 @@ export async function optimizeSummary(
   resumeData: ResumeData,
   jobDescription: string
 ): Promise<OptimizeSummaryResponse> {
-  return apiRequest<OptimizeSummaryResponse>("/ai/optimize-summary", {
+  return apiRequest<OptimizeSummaryResponse>(API_ROUTES.AI.OPTIMIZE_SUMMARY, {
     method: "POST",
     body: JSON.stringify({
       resumeData,
@@ -57,7 +58,7 @@ export async function getAiRecommendations(
   resumeData: ResumeData,
   jobDescription: string
 ): Promise<AiRecommendationsResponse> {
-  return apiRequest<AiRecommendationsResponse>("/ai/recommendations", {
+  return apiRequest<AiRecommendationsResponse>(API_ROUTES.AI.RECOMMENDATIONS, {
     method: "POST",
     body: JSON.stringify({
       resumeData,
@@ -70,7 +71,7 @@ export async function optimizeFullResume(
   resumeData: ResumeData,
   jobDescription: string
 ): Promise<OptimizeResumeResponse> {
-  return apiRequest<OptimizeResumeResponse>("/ai/optimize-resume", {
+  return apiRequest<OptimizeResumeResponse>(API_ROUTES.AI.OPTIMIZE_RESUME, {
     method: "POST",
     body: JSON.stringify({
       resumeData,
@@ -83,7 +84,7 @@ export async function analyzeFinalAts(
   resumeData: ResumeData,
   jobDescription: string
 ): Promise<FinalAtsAnalysisResponse> {
-  return apiRequest<FinalAtsAnalysisResponse>("/ai/final-ats-analysis", {
+  return apiRequest<FinalAtsAnalysisResponse>(API_ROUTES.AI.FINAL_ATS_ANALYSIS, {
     method: "POST",
     body: JSON.stringify({
       resumeData,

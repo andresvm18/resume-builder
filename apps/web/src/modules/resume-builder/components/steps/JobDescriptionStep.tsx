@@ -1,3 +1,5 @@
+import { APP_MESSAGES } from "../../../../shared/constants/appMessages";
+
 type JobDescriptionStepProps = {
   jobDescription: string;
   setJobDescription: (value: string) => void;
@@ -21,14 +23,14 @@ export default function JobDescriptionStep({
         <input
           value={targetRole}
           onChange={(e) => setTargetRole(e.target.value)}
-          placeholder="Puesto objetivo. Ej: Frontend Developer"
+          placeholder={APP_MESSAGES.RESUME_BUILDER.TARGET_ROLE_PLACEHOLDER}
           className="resume-builder-page__input"
         />
 
         <input
           value={targetCompany}
           onChange={(e) => setTargetCompany(e.target.value)}
-          placeholder="Empresa objetivo. Ej: Empresa XYZ"
+          placeholder={APP_MESSAGES.RESUME_BUILDER.TARGET_COMPANY_PLACEHOLDER}
           className="resume-builder-page__input"
         />
       </div>
@@ -37,7 +39,7 @@ export default function JobDescriptionStep({
         rows={10}
         value={jobDescription}
         onChange={(e) => setJobDescription(e.target.value)}
-        placeholder="Pega aquí la descripción de la oferta laboral para analizar palabras clave, requisitos y compatibilidad ATS..."
+        placeholder={APP_MESSAGES.RESUME_BUILDER.JOB_DESCRIPTION_PLACEHOLDER}
         className="resume-builder-page__textarea"
       />
     </div>

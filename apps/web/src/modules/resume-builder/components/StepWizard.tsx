@@ -1,4 +1,5 @@
 import type { Step, StepItem } from "../types/resume.types";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./StepWizard.css";
 
 type StepWizardProps = {
@@ -43,7 +44,7 @@ export default function StepWizard({
                 } ${isCompleted ? "resume-builder-page__step--completed" : ""
                 }`}
               aria-current={isActive ? "step" : undefined}
-              aria-label={`Paso ${stepNumber}: ${step.label}`}
+              aria-label={`${APP_MESSAGES.RESUME_BUILDER.WIZARD_STEP_ARIA} ${stepNumber}: ${step.label}`}
             >
               <div className="resume-builder-page__step-number">
                 {isCompleted ? "✓" : stepNumber}

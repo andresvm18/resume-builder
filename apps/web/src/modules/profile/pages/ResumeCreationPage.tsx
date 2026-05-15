@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../../../shared/components/layout/Header";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 
 import {
   IconSparkles,
@@ -18,16 +19,15 @@ export default function ResumeCreationPage() {
       <section className="resume-creation-page__container">
         <div className="resume-creation-page__header">
           <span className="resume-creation-page__eyebrow">
-            Nuevo currículum
+            {APP_MESSAGES.RESUME_CREATION.EYEBROW}
           </span>
 
           <h1 className="resume-creation-page__title">
-            ¿Cómo quieres crear tu CV?
+            {APP_MESSAGES.RESUME_CREATION.TITLE}
           </h1>
 
           <p className="resume-creation-page__description">
-            Elige si quieres generar un currículum automáticamente desde tu
-            perfil profesional o empezar manualmente desde cero.
+            {APP_MESSAGES.RESUME_CREATION.DESCRIPTION}
           </p>
         </div>
 
@@ -42,17 +42,15 @@ export default function ResumeCreationPage() {
             </span>
 
             <span className="resume-creation-page__card-title">
-              Generar desde mi perfil
+              {APP_MESSAGES.RESUME_CREATION.GENERATE_FROM_PROFILE_TITLE}
             </span>
 
-
             <span className="resume-creation-page__card-description">
-              Usa tu perfil profesional y una oferta laboral para crear un CV
-              optimizado automáticamente con IA.
+              {APP_MESSAGES.RESUME_CREATION.GENERATE_FROM_PROFILE_DESCRIPTION}
             </span>
 
             <span className="resume-creation-page__card-badge">
-              Recomendado
+              {APP_MESSAGES.RESUME_CREATION.RECOMMENDED_BADGE}
             </span>
           </button>
 
@@ -66,12 +64,11 @@ export default function ResumeCreationPage() {
             </span>
 
             <span className="resume-creation-page__card-title">
-              Crear desde cero
+              {APP_MESSAGES.RESUME_CREATION.CREATE_FROM_SCRATCH_TITLE}
             </span>
 
             <span className="resume-creation-page__card-description">
-              Completa manualmente cada sección usando el asistente paso a paso
-              del constructor de CVs.
+              {APP_MESSAGES.RESUME_CREATION.CREATE_FROM_SCRATCH_DESCRIPTION}
             </span>
           </button>
         </div>

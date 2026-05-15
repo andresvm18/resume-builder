@@ -13,6 +13,7 @@ import { optimizeSummary } from "../services/ai.service";
 import { updateResumeById } from "../services/resume.service";
 import TemplateSelector from "../components/TemplateSelector";
 import { useToast } from "../../../shared/context/useToast";
+import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./ResumeBuilderPage.css";
 
 type SaveStatus = "idle" | "unsaved" | "saving" | "saved" | "error";
@@ -89,7 +90,7 @@ export default function ResumeBuilderPage() {
     initialData: routerLocation.state,
     onResumeNotFound: () => {
       showToast(
-        "No encontramos ese CV. Puede haber sido eliminado o no tienes acceso",
+        APP_MESSAGES.RESUME_BUILDER.RESUME_NOT_FOUND_ERROR,
         "error"
       );
       navigate("/dashboard");
@@ -146,49 +147,49 @@ export default function ResumeBuilderPage() {
   const steps: StepItem[] = [
     {
       id: "personal",
-      label: "Personal",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_PERSONAL_LABEL,
       title: "Información personal",
       description: "Tus datos básicos de contacto",
     },
     {
       id: "jobDescription",
-      label: "Oferta",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_JOB_DESCRIPTION_LABEL,
       title: "Oferta laboral",
       description: "Pega la descripción del puesto objetivo",
     },
     {
       id: "summary",
-      label: "Resumen",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_SUMMARY_LABEL,
       title: "Resumen profesional",
       description: "Describe tu perfil en pocas líneas",
     },
     {
       id: "experience",
-      label: "Experiencia",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_EXPERIENCE_LABEL,
       title: "Experiencia laboral",
       description: "Tus trabajos y responsabilidades",
     },
     {
       id: "education",
-      label: "Educación",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_EDUCATION_LABEL,
       title: "Formación académica",
       description: "Tus estudios y certificaciones",
     },
     {
       id: "skills",
-      label: "Habilidades",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_SKILLS_LABEL,
       title: "Habilidades",
       description: "Tus competencias técnicas y blandas",
     },
     {
       id: "languages",
-      label: "Idiomas",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_LANGUAGES_LABEL,
       title: "Idiomas",
       description: "Tus competencias lingüísticas",
     },
     {
       id: "projects",
-      label: "Proyectos",
+      label: APP_MESSAGES.RESUME_BUILDER.STEP_PROJECTS_LABEL,
       title: "Proyectos",
       description: "Trabajos destacados y personales",
     },
@@ -211,7 +212,7 @@ export default function ResumeBuilderPage() {
 
       setSummary(result.optimizedSummary);
     } catch {
-      showToast("No se pudo optimizar el resumen", "error");
+      showToast(APP_MESSAGES.RESUME_BUILDER.OPTIMIZE_SUMMARY_ERROR, "error");
     } finally {
       setIsOptimizingSummary(false);
     }
@@ -227,7 +228,7 @@ export default function ResumeBuilderPage() {
 
     if (!result) {
       showToast(
-        "No se pudieron generar recomendaciones con IA. Puedes continuar manualmente",
+        APP_MESSAGES.RESUME_BUILDER.GENERATE_RECOMMENDATIONS_ERROR,
         "error"
       );
     }
@@ -258,10 +259,10 @@ export default function ResumeBuilderPage() {
       await updateResumeById(id, resumeData);
 
       setSaveStatus("saved");
-      showToast("CV actualizado correctamente", "success");
+      showToast(APP_MESSAGES.RESUME_BUILDER.RESUME_SAVED_SUCCESS, "success");
     } catch {
       setSaveStatus("error");
-      showToast("No se pudo guardar el CV", "error");
+      showToast(APP_MESSAGES.RESUME_BUILDER.RESUME_SAVE_ERROR, "error");
     } finally {
       setIsSavingResume(false);
     }
@@ -299,12 +300,11 @@ export default function ResumeBuilderPage() {
           <div className="resume-builder-page__loading-spinner" />
 
           <h1 className="resume-builder-page__loading-title">
-            Generando recomendaciones
+            {APP_MESSAGES.RESUME_BUILDER.GENERATING_RECOMMENDATIONS_TITLE}
           </h1>
 
           <p className="resume-builder-page__loading-text">
-            La IA está revisando la oferta laboral para sugerirte mejoras antes
-            de continuar.
+            {APP_MESSAGES.RESUME_BUILDER.GENERATING_RECOMMENDATIONS_TEXT}
           </p>
         </section>
       </main>
@@ -318,10 +318,10 @@ export default function ResumeBuilderPage() {
       <section className="resume-builder-page__hero">
         <div className="resume-builder-page__hero-content">
           <h1 className="resume-builder-page__title">
-            Diseña tu currículum profesional
+            {APP_MESSAGES.RESUME_BUILDER.HERO_TITLE}
           </h1>
           <p className="resume-builder-page__subtitle">
-            Crea un CV moderno, estructurado y listo para destacar.
+            {APP_MESSAGES.RESUME_BUILDER.HERO_SUBTITLE}
           </p>
         </div>
       </section>
@@ -394,11 +394,11 @@ export default function ResumeBuilderPage() {
               <span
                 className={`resume-builder-page__save-status resume-builder-page__save-status--${saveStatus}`}
               >
-                {saveStatus === "idle" && "Editor listo"}
-                {saveStatus === "unsaved" && "Cambios sin guardar"}
-                {saveStatus === "saving" && "Guardando..."}
-                {saveStatus === "saved" && "Guardado automáticamente"}
-                {saveStatus === "error" && "No se pudo guardar"}
+                {saveStatus === "idle" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_IDLE}
+                {saveStatus === "unsaved" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_UNSAVED}
+                {saveStatus === "saving" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_SAVING}
+                {saveStatus === "saved" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_SAVED}
+                {saveStatus === "error" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_ERROR}
               </span>
 
               <button
@@ -408,8 +408,8 @@ export default function ResumeBuilderPage() {
                 className="resume-builder-page__save-existing-btn"
               >
                 {isSavingResume || saveStatus === "saving"
-                  ? "Guardando..."
-                  : "Guardar cambios"}
+                  ? APP_MESSAGES.RESUME_BUILDER.SAVE_BUTTON_LOADING
+                  : APP_MESSAGES.RESUME_BUILDER.SAVE_BUTTON}
               </button>
             </div>
           )}

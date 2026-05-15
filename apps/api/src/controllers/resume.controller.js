@@ -9,56 +9,58 @@ const {
 } = require("../services/resume.service");
 
 const { normalizeResumeData } = require("../utils/resumeNormalizer");
+const asyncHandler = require("../utils/asyncHandler");
+const createHttpError = require("../utils/httpError");
 
-async function generateResume(req, res) {
+const PDF_ERROR_MESSAGES = {
+  PDF_GENERATION_FAILED:
+    "No se pudo compilar el PDF. Revisa que los datos del CV no contengan contenido inválido.",
+  PDF_EMPTY_OR_INVALID: "El PDF generado está vacío o es inválido.",
+};
+
+const DOWNLOAD_PDF_ERROR_MESSAGES = {
+  PDF_GENERATION_FAILED: "No se pudo compilar el PDF para este CV.",
+  PDF_EMPTY_OR_INVALID: "El PDF generado está vacío o es inválido.",
+};
+
+function getPdfErrorMessage(error, fallbackMessage) {
+  return PDF_ERROR_MESSAGES[error.message] || fallbackMessage;
+}
+
+function getDownloadPdfErrorMessage(error, fallbackMessage) {
+  return DOWNLOAD_PDF_ERROR_MESSAGES[error.message] || fallbackMessage;
+}
+
+const generateResume = asyncHandler(async (req, res) => {
+  const { fullName, email, summary } = req.body;
+
+  if (!fullName || !email || !summary) {
+    throw createHttpError(400, "Nombre, correo y resumen son requeridos");
+  }
+
+  const cleanData = normalizeResumeData(req.body);
+
   try {
-    const { fullName, email, summary } = req.body;
-
-    if (!fullName || !email || !summary) {
-      return res.status(400).json({
-        message: "Nombre, correo y resumen son requeridos",
-      });
-    }
-
-    const cleanData = normalizeResumeData(req.body);
-
-    const pdfBuffer = await generateResumePdf(
-      cleanData,
-      req.user.userId
-    );
+    const pdfBuffer = await generateResumePdf(cleanData, req.user.userId);
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "attachment; filename=cv.pdf");
 
     return res.end(pdfBuffer);
   } catch (error) {
-    console.error("Error generating resume:", error);
-    const knownErrors = {
-      PDF_GENERATION_FAILED:
-        "No se pudo compilar el PDF. Revisa que los datos del CV no contengan contenido inválido.",
-      PDF_EMPTY_OR_INVALID:
-        "El PDF generado está vacío o es inválido.",
-    };
-
-    return res.status(500).json({
-      message: knownErrors[error.message] || "Error al generar el CV",
-    });
+    throw createHttpError(
+      500,
+      getPdfErrorMessage(error, "Error al generar el CV")
+    );
   }
-}
+});
 
-async function getResumes(req, res) {
-  try {
-    const resumes = await getUserResumes(req.user.userId);
-    return res.json(resumes);
-  } catch (error) {
-    console.error("Error fetching resumes:", error);
-    return res.status(500).json({
-      message: "Error al obtener los CVs",
-    });
-  }
-}
+const getResumes = asyncHandler(async (req, res) => {
+  const resumes = await getUserResumes(req.user.userId);
+  return res.json(resumes);
+});
 
-async function downloadResume(req, res) {
+const downloadResume = asyncHandler(async (req, res) => {
   try {
     const pdfBuffer = await generateResumePdfById(
       req.params.id,
@@ -72,46 +74,33 @@ async function downloadResume(req, res) {
     return res.end(pdfBuffer);
   } catch (error) {
     if (error.message === "RESUME_NOT_FOUND") {
-      return res.status(404).json({
-        message: "CV no encontrado",
-      });
+      throw createHttpError(404, "CV no encontrado");
     }
 
-    console.error("Error downloading resume:", error);
-
-    const knownErrors = {
-      PDF_GENERATION_FAILED:
-        "No se pudo compilar el PDF para este CV.",
-      PDF_EMPTY_OR_INVALID:
-        "El PDF generado está vacío o es inválido.",
-    };
-
-    return res.status(500).json({
-      message: knownErrors[error.message] || "Error al descargar el CV",
-    });;
+    throw createHttpError(
+      500,
+      getDownloadPdfErrorMessage(error, "Error al descargar el CV")
+    );
   }
-}
+});
 
-async function getResumeById(req, res) {
+const getResumeById = asyncHandler(async (req, res) => {
   try {
     const resume = await getUserResumeById(req.params.id, req.user.userId);
-
     return res.json(resume);
   } catch (error) {
-    if (process.env.NODE_ENV !== "test") {
-      console.error("Error fetching resume:", error);
+    if (error.message === "RESUME_NOT_FOUND") {
+      throw createHttpError(404, "CV no encontrado");
     }
 
-    return res.status(404).json({
-      message: "CV no encontrado",
-    });
+    throw error;
   }
-}
+});
 
-async function updateResume(req, res) {
+const updateResume = asyncHandler(async (req, res) => {
+  const cleanData = normalizeResumeData(req.body);
+
   try {
-    const cleanData = normalizeResumeData(req.body);
-
     const updatedResume = await updateUserResume(
       req.params.id,
       req.user.userId,
@@ -121,20 +110,14 @@ async function updateResume(req, res) {
     return res.json(updatedResume);
   } catch (error) {
     if (error.message === "RESUME_NOT_FOUND") {
-      return res.status(404).json({
-        message: "CV no encontrado",
-      });
+      throw createHttpError(404, "CV no encontrado");
     }
 
-    console.error("Error updating resume:", error);
-
-    return res.status(500).json({
-      message: "Error al actualizar el CV",
-    });
+    throw createHttpError(500, "Error al actualizar el CV");
   }
-}
+});
 
-async function duplicateResume(req, res) {
+const duplicateResume = asyncHandler(async (req, res) => {
   try {
     const duplicatedResume = await duplicateUserResume(
       req.params.id,
@@ -144,20 +127,14 @@ async function duplicateResume(req, res) {
     return res.status(201).json(duplicatedResume);
   } catch (error) {
     if (error.message === "RESUME_NOT_FOUND") {
-      return res.status(404).json({
-        message: "CV no encontrado",
-      });
+      throw createHttpError(404, "CV no encontrado");
     }
 
-    console.error("Error duplicating resume:", error);
-
-    return res.status(500).json({
-      message: "Error al duplicar el CV",
-    });
+    throw createHttpError(500, "Error al duplicar el CV");
   }
-}
+});
 
-async function deleteResume(req, res) {
+const deleteResume = asyncHandler(async (req, res) => {
   try {
     await deleteUserResume(req.params.id, req.user.userId);
 
@@ -166,18 +143,12 @@ async function deleteResume(req, res) {
     });
   } catch (error) {
     if (error.message === "RESUME_NOT_FOUND") {
-      return res.status(404).json({
-        message: "CV no encontrado",
-      });
+      throw createHttpError(404, "CV no encontrado");
     }
 
-    console.error("Error deleting resume:", error);
-
-    return res.status(500).json({
-      message: "Error al eliminar el CV",
-    });
+    throw createHttpError(500, "Error al eliminar el CV");
   }
-}
+});
 
 module.exports = {
   generateResume,

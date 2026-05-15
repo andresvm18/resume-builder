@@ -4,6 +4,7 @@ const { prisma, pool } = require("../lib/prisma");
 
 describe("Auth API", () => {
   const testEmail = `test-${Date.now()}@test.com`;
+  const validPassword = "Test1234";
 
   afterEach(async () => {
     await prisma.resumeVersion.deleteMany();
@@ -23,13 +24,12 @@ describe("Auth API", () => {
   });
 
   it("registers a new user", async () => {
-
     const response = await request(app)
       .post("/api/auth/register")
       .send({
         name: "Test User",
         email: testEmail,
-        password: "12345678",
+        password: validPassword,
       });
 
     expect(response.statusCode).toBe(201);
@@ -43,14 +43,14 @@ describe("Auth API", () => {
       .send({
         name: "Login User",
         email: `login-${testEmail}`,
-        password: "12345678",
+        password: validPassword,
       });
 
     const response = await request(app)
       .post("/api/auth/login")
       .send({
         email: `login-${testEmail}`,
-        password: "12345678",
+        password: validPassword,
       });
 
     expect(response.statusCode).toBe(200);
@@ -73,7 +73,7 @@ describe("Auth API", () => {
       .post("/api/auth/register")
       .send({
         email: "missing@test.com",
-        password: "12345678",
+        password: validPassword,
       });
 
     expect(response.statusCode).toBe(400);
@@ -87,7 +87,7 @@ describe("Auth API", () => {
       .send({
         name: "Duplicate User",
         email,
-        password: "12345678",
+        password: validPassword,
       });
 
     const response = await request(app)
@@ -95,7 +95,7 @@ describe("Auth API", () => {
       .send({
         name: "Duplicate User",
         email,
-        password: "12345678",
+        password: validPassword,
       });
 
     expect(response.statusCode).toBe(409);
@@ -120,7 +120,7 @@ describe("Auth API", () => {
       .send({
         name: "Me User",
         email,
-        password: "12345678",
+        password: validPassword,
       });
 
     const response = await request(app)

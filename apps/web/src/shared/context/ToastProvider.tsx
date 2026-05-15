@@ -65,12 +65,14 @@ export function ToastProvider({
         aria-live="polite"
       >
         {toasts.map((toast) => (
-          <div
+          <button
             key={toast.id}
+            type="button"
             className={`toast toast--${toast.type}`}
+            onClick={() => removeToast(toast.id)}
           >
             {toast.message}
-          </div>
+          </button>
         ))}
       </div>
     </ToastContext.Provider>

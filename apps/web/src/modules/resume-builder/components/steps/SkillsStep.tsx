@@ -1,4 +1,5 @@
 import { IconX } from "@tabler/icons-react";
+import { APP_MESSAGES } from "../../../../shared/constants/appMessages";
 
 type SkillsStepProps = {
   skills: string[];
@@ -27,7 +28,7 @@ export default function SkillsStep({
               addSkill();
             }
           }}
-          placeholder="Escribe tus habilidades Ej: 'React, TypeScript, Node.js'"
+          placeholder={APP_MESSAGES.RESUME_BUILDER.SKILLS_PLACEHOLDER}
           className="resume-builder-page__input"
         />
 
@@ -36,7 +37,7 @@ export default function SkillsStep({
           onClick={addSkill}
           className="resume-builder-page__add-btn"
         >
-          Agregar
+          {APP_MESSAGES.RESUME_BUILDER.ADD_SKILL_BUTTON}
         </button>
       </div>
 
@@ -52,7 +53,7 @@ export default function SkillsStep({
               type="button"
               onClick={() => removeSkill(index)}
               className="resume-builder-page__skill-remove"
-              aria-label={`Eliminar habilidad ${skill}`}
+              aria-label={`${APP_MESSAGES.RESUME_BUILDER.REMOVE_SKILL_ARIA} ${skill}`}
             >
               <IconX size={14} stroke={2} />
             </button>
