@@ -12,7 +12,7 @@
 }
 
 .resume-creation-page__header {
-  max-width: 720px;
+  max-width: 900px;
   margin-bottom: 2rem;
 }
 
@@ -36,7 +36,7 @@
 }
 
 .resume-creation-page__description {
-  max-width: 680px;
+  max-width: 8600px;
   margin: 1rem 0 0;
   color: var(--text-muted);
   font-size: 1rem;
