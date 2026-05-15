@@ -31,6 +31,22 @@ const helmetMiddleware = helmet({
   crossOriginResourcePolicy: {
     policy: "cross-origin",
   },
+
+  contentSecurityPolicy: env.isProduction
+    ? {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", env.FRONTEND_URL],
+        fontSrc: ["'self'", "https:", "data:"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+      },
+    }
+    : false,
 });
 
 const apiLimiter = rateLimit({
