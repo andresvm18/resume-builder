@@ -4,9 +4,15 @@ const { prisma } = require("../lib/prisma");
 
 const { getJwtSecret } = require("../config/jwt");
 
+function normalizeEmail(email = "") {
+  return String(email).trim().toLowerCase();
+}
+
 async function registerUser({ name, email, password }) {
+  const normalizedEmail = normalizeEmail(email);
+
   const existingUser = await prisma.user.findUnique({
-    where: { email },
+    where: { email: normalizedEmail },
   });
 
   if (existingUser) {
@@ -17,8 +23,8 @@ async function registerUser({ name, email, password }) {
 
   const user = await prisma.user.create({
     data: {
-      name,
-      email,
+      name: name.trim(),
+      email: normalizedEmail,
       password: hashedPassword,
     },
   });
@@ -39,16 +45,16 @@ async function registerUser({ name, email, password }) {
   };
 }
 
-
 async function loginUser({ email, password }) {
+  const normalizedEmail = normalizeEmail(email);
+
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email: normalizedEmail },
   });
 
   if (!user) {
     throw new Error("INVALID_CREDENTIALS");
   }
-
 
   const passwordMatches = await bcrypt.compare(password, user.password);
 
