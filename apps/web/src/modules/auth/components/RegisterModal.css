@@ -121,7 +121,15 @@
 
 .register-modal__input:focus {
   border-color: var(--color-border-focus);
-  background-color: #fafaf8;
+  background-color: var(--color-surface-white);
+}
+
+/* ── Dark mode input focus ── */
+[data-theme="dark"] .register-modal__input:focus,
+.dark .register-modal__input:focus {
+  background-color: var(--color-surface);
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
 
 /* ── Input with icon (email) ── */

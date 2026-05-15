@@ -119,6 +119,12 @@
   background-color: #fafaf8;
 }
 
+[data-theme="dark"] .login-modal__input:focus,
+.dark .login-modal__input:focus {
+  background-color: var(--color-surface);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
 /* ── Input with icon (email) ── */
 .login-modal__input-wrapper .login-modal__input {
   padding-left: 2.25rem;
