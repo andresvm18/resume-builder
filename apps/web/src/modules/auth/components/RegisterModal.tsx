@@ -59,8 +59,13 @@ export default function RegisterModal() {
       return;
     }
 
-    if (password.length < 8) {
-      setError(APP_MESSAGES.AUTH.PASSWORD_TOO_SHORT);
+    const passwordRequirements =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,100}$/;
+
+    if (!passwordRequirements.test(password)) {
+      setError(
+        "La contraseña debe tener entre 8 y 100 caracteres, incluir al menos una mayúscula, una minúscula y un número."
+      );
       return;
     }
 
