@@ -45,12 +45,20 @@ export default function ResumeGeneratePage() {
   const resumeData = location.state as ResumeGenerateState | null;
   const finalAtsAnalysis = resumeData?.finalAtsAnalysis ?? null;
 
-  const [status, setStatus] = useState<string>(APP_MESSAGES.RESUME_GENERATE.INITIAL_STATUS);
+  const [status, setStatus] = useState<string>(
+    APP_MESSAGES.RESUME_GENERATE.INITIAL_STATUS
+  );
+
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+
   const [fileName, setFileName] = useState("cv.pdf");
+
   const [isGenerating, setIsGenerating] = useState(true);
+
   const [error, setError] = useState("");
+
   const [generatedResumeData, setGeneratedResumeData] =
     useState<ResumeData | null>(null);
 
@@ -65,7 +73,9 @@ export default function ResumeGeneratePage() {
 
     const intervalId = window.setInterval(() => {
       setLoadingMessageIndex((currentIndex) =>
-        currentIndex === loadingMessages.length - 1 ? currentIndex : currentIndex + 1
+        currentIndex === loadingMessages.length - 1
+          ? currentIndex
+          : currentIndex + 1
       );
     }, 1200);
 
@@ -88,40 +98,58 @@ export default function ResumeGeneratePage() {
         setStatus(APP_MESSAGES.RESUME_GENERATE.SENDING_STATUS);
 
         const rawPayload = Object.fromEntries(
-          Object.entries(resumeData).filter(([key]) => key !== "finalAtsAnalysis")
+          Object.entries(resumeData).filter(
+            ([key]) => key !== "finalAtsAnalysis"
+          )
         ) as ResumeData;
 
         const resumePayload = normalizeResumeData(rawPayload);
 
-        setGeneratedResumeData(resumePayload);
+        const resumePayloadWithSettings: ResumeData = {
+          ...resumePayload,
+          template: resumePayload.template || "classic",
+          language: resumePayload.language || "es",
+        };
+
+        setGeneratedResumeData(resumePayloadWithSettings);
 
         setStatus(APP_MESSAGES.RESUME_GENERATE.GENERATING_STATUS);
 
-        const blob = await generateResumePdf(resumePayload);
+        const blob = await generateResumePdf(
+          resumePayloadWithSettings
+        );
 
         generatedUrl = URL.createObjectURL(blob);
 
-        const generatedFileName = `${formatFileName(resumePayload.fullName || "cv")}.pdf`;
+        const generatedFileName = `${formatFileName(
+          resumePayloadWithSettings.fullName || "cv"
+        )}-${resumePayloadWithSettings.language}.pdf`;
 
         const link = document.createElement("a");
+
         link.href = generatedUrl;
         link.download = generatedFileName;
+
         document.body.appendChild(link);
+
         link.click();
+
         document.body.removeChild(link);
 
         setPdfUrl(generatedUrl);
         setFileName(generatedFileName);
+
         setStatus(APP_MESSAGES.RESUME_GENERATE.SUCCESS_STATUS);
       } catch (err) {
         setError(getFriendlyErrorMessage(err));
+
         setStatus(APP_MESSAGES.RESUME_GENERATE.ERROR_STATUS);
       } finally {
         setIsGenerating(false);
       }
     };
 
-    generateResume();
+    void generateResume();
 
     return () => {
       if (generatedUrl) {
@@ -144,10 +172,14 @@ export default function ResumeGeneratePage() {
             key={loadingMessageIndex}
             className="resume-generate-page__status resume-generate-page__status--animated"
           >
-            {isGenerating ? loadingMessages[loadingMessageIndex] : status}
+            {isGenerating
+              ? loadingMessages[loadingMessageIndex]
+              : status}
           </p>
 
-          {isGenerating && <div className="resume-generate-page__loader" />}
+          {isGenerating && (
+            <div className="resume-generate-page__loader" />
+          )}
 
           {error && (
             <div className="resume-generate-page__error-box">
@@ -188,7 +220,9 @@ export default function ResumeGeneratePage() {
               {APP_MESSAGES.RESUME_GENERATE.SUCCESS_TITLE}
             </h1>
 
-            <p className="resume-generate-page__status">{status}</p>
+            <p className="resume-generate-page__status">
+              {status}
+            </p>
 
             <div className="resume-generate-page__actions">
               <a
@@ -212,7 +246,10 @@ export default function ResumeGeneratePage() {
                 onClick={() => navigate("/dashboard")}
                 className="resume-generate-page__secondary"
               >
-                {APP_MESSAGES.RESUME_GENERATE.GO_TO_DASHBOARD_BUTTON}
+                {
+                  APP_MESSAGES.RESUME_GENERATE
+                    .GO_TO_DASHBOARD_BUTTON
+                }
               </button>
             </div>
           </div>
@@ -236,6 +273,7 @@ export default function ResumeGeneratePage() {
                     <span className="resume-generate-page__ats-score">
                       {finalAtsAnalysis.atsScore}%
                     </span>
+
                     <span className="resume-generate-page__ats-score-label">
                       {APP_MESSAGES.RESUME_GENERATE.ATS_SCORE_LABEL}
                     </span>
@@ -252,7 +290,10 @@ export default function ResumeGeneratePage() {
                   )}
 
                   <AnalysisSection
-                    title={APP_MESSAGES.RESUME_GENERATE.ATS_STRENGTHS_TITLE}
+                    title={
+                      APP_MESSAGES.RESUME_GENERATE
+                        .ATS_STRENGTHS_TITLE
+                    }
                     items={finalAtsAnalysis.strengths}
                   />
                 </>
@@ -284,12 +325,17 @@ function AnalysisSection({
 
   return (
     <section className="resume-generate-page__ats-section">
-      <h3 className="resume-generate-page__ats-section-title">{title}</h3>
+      <h3 className="resume-generate-page__ats-section-title">
+        {title}
+      </h3>
 
       {variant === "tags" ? (
         <div className="resume-generate-page__ats-tags">
           {items.map((item) => (
-            <span key={item} className="resume-generate-page__ats-tag">
+            <span
+              key={item}
+              className="resume-generate-page__ats-tag"
+            >
               {item}
             </span>
           ))}

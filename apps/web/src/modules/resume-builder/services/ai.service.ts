@@ -1,8 +1,13 @@
 import { apiRequest } from "../../../shared/services/apiClient";
-import type { ResumeData } from "../types/resume.types";
+import type { ResumeData, ResumeLanguage } from "../types/resume.types";
 import { API_ROUTES } from "../../../shared/constants/apiRoutes";
 
-export type AiProvider = "openrouter" | "gemini" | "openai" | "fallback" | "mock";
+export type AiProvider =
+  | "openrouter"
+  | "gemini"
+  | "openai"
+  | "fallback"
+  | "mock";
 
 type OptimizeSummaryResponse = {
   optimizedSummary: string;
@@ -41,54 +46,72 @@ type OptimizeResumeResponse = {
   source: AiProvider;
 };
 
+function resolveLanguage(
+  resumeData: ResumeData,
+  language?: ResumeLanguage
+): ResumeLanguage {
+  return language || resumeData.language || "es";
+}
+
 export async function optimizeSummary(
   resumeData: ResumeData,
-  jobDescription: string
+  jobDescription: string,
+  language?: ResumeLanguage
 ): Promise<OptimizeSummaryResponse> {
   return apiRequest<OptimizeSummaryResponse>(API_ROUTES.AI.OPTIMIZE_SUMMARY, {
     method: "POST",
     body: JSON.stringify({
       resumeData,
       jobDescription,
+      language: resolveLanguage(resumeData, language),
     }),
   });
 }
 
 export async function getAiRecommendations(
   resumeData: ResumeData,
-  jobDescription: string
+  jobDescription: string,
+  language?: ResumeLanguage
 ): Promise<AiRecommendationsResponse> {
   return apiRequest<AiRecommendationsResponse>(API_ROUTES.AI.RECOMMENDATIONS, {
     method: "POST",
     body: JSON.stringify({
       resumeData,
       jobDescription,
+      language: resolveLanguage(resumeData, language),
     }),
   });
 }
 
 export async function optimizeFullResume(
   resumeData: ResumeData,
-  jobDescription: string
+  jobDescription: string,
+  language?: ResumeLanguage
 ): Promise<OptimizeResumeResponse> {
   return apiRequest<OptimizeResumeResponse>(API_ROUTES.AI.OPTIMIZE_RESUME, {
     method: "POST",
     body: JSON.stringify({
       resumeData,
       jobDescription,
+      language: resolveLanguage(resumeData, language),
     }),
   });
 }
 
 export async function analyzeFinalAts(
   resumeData: ResumeData,
-  jobDescription: string
+  jobDescription: string,
+  language?: ResumeLanguage
 ): Promise<FinalAtsAnalysisResponse> {
-  return apiRequest<FinalAtsAnalysisResponse>(API_ROUTES.AI.FINAL_ATS_ANALYSIS, {
-    method: "POST",
-    body: JSON.stringify({
-      resumeData,
-      jobDescription,
-    }),
-  });
+  return apiRequest<FinalAtsAnalysisResponse>(
+    API_ROUTES.AI.FINAL_ATS_ANALYSIS,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        resumeData,
+        jobDescription,
+        language: resolveLanguage(resumeData, language),
+      }),
+    }
+  );
 }

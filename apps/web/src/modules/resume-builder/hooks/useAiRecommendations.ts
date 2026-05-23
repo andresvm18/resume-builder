@@ -8,13 +8,17 @@ import type { ResumeData } from "../types/resume.types";
 export function useAiRecommendations() {
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] =
     useState(false);
-  const [recommendationsFailed, setRecommendationsFailed] = useState(false);
+
+  const [recommendationsFailed, setRecommendationsFailed] =
+    useState(false);
+
   const [aiRecommendations, setAiRecommendations] =
     useState<AiRecommendationsResponse | null>(null);
 
   const generateRecommendations = async (
     resumeData: ResumeData,
-    jobDescription: string
+    jobDescription: string,
+    language?: ResumeData["language"]
   ) => {
     if (!jobDescription.trim()) {
       return null;
@@ -22,16 +26,23 @@ export function useAiRecommendations() {
 
     try {
       setIsGeneratingRecommendations(true);
+
       setRecommendationsFailed(false);
+
       setAiRecommendations(null);
 
-      const result = await getAiRecommendations(resumeData, jobDescription);
+      const result = await getAiRecommendations(
+        resumeData,
+        jobDescription,
+        language
+      );
 
       setAiRecommendations(result);
 
       return result;
     } catch {
       setRecommendationsFailed(true);
+
       return null;
     } finally {
       setIsGeneratingRecommendations(false);

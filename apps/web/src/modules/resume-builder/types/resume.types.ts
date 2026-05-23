@@ -43,7 +43,8 @@ export type Step =
   | "skills"
   | "projects"
   | "languages"
-  | "jobDescription";
+  | "jobDescription"
+  | "configuration";
 
 export type StepItem = {
   id: Step;
@@ -62,28 +63,47 @@ export type SoftSkill = {
   description: string;
 };
 
+export type ResumeLanguage = "es" | "en";
+
+export type ResumeTemplate =
+  | "classic"
+  | "modern"
+  | "compact";
+
 export type ResumeData = {
   fullName: string;
   email: string;
   phone: string;
   location: string;
+
   summary: string;
+
   targetRole: string;
   targetCompany: string;
+
   skills: string[];
+
   technicalSkills?: TechnicalSkillGroup[];
   softSkills?: SoftSkill[];
+
   languages: Language[];
+
   experiences: Experience[];
+
   education: Education[];
+
   projects: Project[];
+
   jobDescription: string;
+
   template: ResumeTemplate;
+
+  language: ResumeLanguage;
 };
 
 export type ResumeVersion = {
   id: string;
-  data: unknown; // 👈 en vez de any
+  data: unknown;
   createdAt: string;
 };
 
@@ -95,17 +115,22 @@ export type Resume = {
   versions: ResumeVersion[];
 };
 
-export type ResumeTemplate = "classic" | "modern" | "compact";
-
 export const DEFAULT_RESUME_DATA: ResumeData = {
   fullName: "",
   email: "",
   phone: "",
   location: "",
+
   summary: "",
+
   targetRole: "",
   targetCompany: "",
+
   skills: [],
+
+  technicalSkills: [],
+  softSkills: [],
+
   languages: [
     {
       id: Date.now(),
@@ -113,6 +138,7 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
       level: "Advanced",
     },
   ],
+
   experiences: [
     {
       id: Date.now(),
@@ -123,6 +149,7 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
       description: "",
     },
   ],
+
   education: [
     {
       id: Date.now(),
@@ -131,6 +158,7 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
       date: "",
     },
   ],
+
   projects: [
     {
       id: Date.now(),
@@ -140,8 +168,12 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
       link: "",
     },
   ],
+
   jobDescription: "",
+
   template: "classic",
+
+  language: "es",
 };
 
 export const RESUME_STEPS: StepItem[] = [

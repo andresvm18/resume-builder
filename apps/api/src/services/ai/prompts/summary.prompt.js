@@ -1,4 +1,8 @@
-function buildSummaryPrompt({ resumeData, jobDescription }) {
+function buildSummaryPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Eres un redactor profesional de currículums, con experiencia en reclutamiento técnico y optimización ATS.
 
@@ -39,24 +43,24 @@ Habilidades: ${(resumeData.skills || []).join(", ")}
 
 Experiencia:
 ${(resumeData.experiences || [])
-  .map(
-    (exp) =>
-      `- ${exp.title || ""} ${exp.location || ""}: ${exp.description || ""}`
-  )
-  .join("\n")}
+      .map(
+        (exp) =>
+          `- ${exp.title || ""} ${exp.location || ""}: ${exp.description || ""}`
+      )
+      .join("\n")}
 
 Educación:
 ${(resumeData.education || [])
-  .map((edu) => `- ${edu.degree || ""} ${edu.institution || ""}`)
-  .join("\n")}
+      .map((edu) => `- ${edu.degree || ""} ${edu.institution || ""}`)
+      .join("\n")}
 
 Proyectos:
 ${(resumeData.projects || [])
-  .map(
-    (project) =>
-      `- ${project.name || ""}: ${project.technologies || ""} ${project.description || ""}`
-  )
-  .join("\n")}
+      .map(
+        (project) =>
+          `- ${project.name || ""}: ${project.technologies || ""} ${project.description || ""}`
+      )
+      .join("\n")}
 
 Oferta laboral:
 ${jobDescription || "No se proporcionó oferta laboral."}

@@ -44,7 +44,16 @@ export function useResumeBuilder(
       : DEFAULT_RESUME_DATA;
   });
 
-  const [currentStep, setCurrentStep] = useState<Step>("personal");
+  const [currentStep, setCurrentStep] = useState<Step>(() => {
+    const storedStep = localStorage.getItem("resume-builder-start-step");
+
+    if (storedStep === "configuration") {
+      localStorage.removeItem("resume-builder-start-step");
+      return "configuration";
+    }
+
+    return "personal";
+  });
   const [skillInput, setSkillInput] = useState("");
 
   useEffect(() => {
@@ -280,8 +289,10 @@ export function useResumeBuilder(
 
     resumeData,
     setResumeData,
+
     currentStep,
     setCurrentStep,
+
     skillInput,
     setSkillInput,
 
@@ -318,6 +329,10 @@ export function useResumeBuilder(
     template: resumeData.template,
     setTemplate: (value: ResumeData["template"]) =>
       updateField("template", value),
+
+    language: resumeData.language,
+    setLanguage: (value: ResumeData["language"]) =>
+      updateField("language", value),
 
     addSkill,
     removeSkill,

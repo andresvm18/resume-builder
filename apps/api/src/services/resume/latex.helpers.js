@@ -1,9 +1,9 @@
 const {
-  MONTHS_ES,
-  LANGUAGE_LEVELS_ES,
   SOFT_SKILLS,
   ALLOWED_TEMPLATES,
 } = require("./latex.constants");
+
+const { getPdfTranslations } = require("./latex.i18n");
 
 function sanitizeText(value = "") {
   return String(value)
@@ -54,17 +54,25 @@ function capitalizeSkill(skill = "") {
     .join(" ");
 }
 
-function formatEducationDate(date = "") {
+function formatEducationDate(
+  date = "",
+  translations = getPdfTranslations("es")
+) {
   const year = Number(String(date).slice(0, 4));
 
   if (!year) return "";
 
   const currentYear = new Date().getFullYear();
 
-  return year > currentYear ? `${year} (estimado)` : String(year);
+  return year > currentYear
+    ? `${year} (${translations.dates.estimated})`
+    : String(year);
 }
 
-function formatExperienceDate(date = "") {
+function formatExperienceDate(
+  date = "",
+  translations = getPdfTranslations("es")
+) {
   if (!date) return "";
 
   const [year, month] = String(date).split("-");
@@ -74,11 +82,15 @@ function formatExperienceDate(date = "") {
     return date;
   }
 
-  return `${MONTHS_ES[monthIndex]} ${year}`;
+  return `${translations.dates.months[monthIndex]} ${year}`;
 }
 
-function formatExperienceRange(startDate = "", endDate = "") {
-  const start = formatExperienceDate(startDate);
+function formatExperienceRange(
+  startDate = "",
+  endDate = "",
+  translations = getPdfTranslations("es")
+) {
+  const start = formatExperienceDate(startDate, translations);
   const normalizedEndDate = normalizeText(endDate);
 
   if (!start && !endDate) return "";
@@ -88,18 +100,22 @@ function formatExperienceRange(startDate = "", endDate = "") {
     normalizedEndDate === "present" ||
     normalizedEndDate === "presente" ||
     normalizedEndDate === "actual" ||
-    normalizedEndDate === "actualidad"
+    normalizedEndDate === "actualidad" ||
+    normalizedEndDate === "current"
   ) {
-    return `${start} - Presente`;
+    return `${start} - ${translations.dates.present}`;
   }
 
-  const end = formatExperienceDate(endDate);
+  const end = formatExperienceDate(endDate, translations);
 
   return `${start} - ${end}`;
 }
 
-function formatLanguageLevel(level = "") {
-  return LANGUAGE_LEVELS_ES[level] || level;
+function formatLanguageLevel(
+  level = "",
+  translations = getPdfTranslations("es")
+) {
+  return translations.languageLevels[level] || level;
 }
 
 function isSoftSkill(skill = "") {
@@ -110,76 +126,121 @@ function isSoftSkill(skill = "") {
   );
 }
 
-function getSoftSkillDescription(skill = "") {
+function getSoftSkillDescription(
+  skill = "",
+  translations = getPdfTranslations("es")
+) {
   const normalized = normalizeText(skill);
+  const descriptions = translations.skills.fallbackSoftDescriptions;
 
-  if (normalized.includes("resolucion de problemas")) {
-    return "Análisis de situaciones complejas para identificar causas y proponer soluciones efectivas.";
+  if (
+    normalized.includes("resolucion de problemas") ||
+    normalized.includes("problem solving")
+  ) {
+    return descriptions.problemSolving;
   }
 
-  if (normalized.includes("proactividad")) {
-    return "Iniciativa para anticipar necesidades, optimizar procesos y mejorar resultados.";
+  if (
+    normalized.includes("proactividad") ||
+    normalized.includes("proactivity")
+  ) {
+    return descriptions.proactivity;
   }
 
-  if (normalized.includes("trabajo en equipo")) {
-    return "Colaboración efectiva con otras personas para alcanzar objetivos comunes.";
+  if (
+    normalized.includes("trabajo en equipo") ||
+    normalized.includes("teamwork")
+  ) {
+    return descriptions.teamwork;
   }
 
-  if (normalized.includes("adaptabilidad")) {
-    return "Aprendizaje rápido de nuevas herramientas, procesos y entornos de trabajo.";
+  if (
+    normalized.includes("adaptabilidad") ||
+    normalized.includes("adaptability")
+  ) {
+    return descriptions.adaptability;
   }
 
-  if (normalized.includes("comunicacion")) {
-    return "Explicación clara de ideas, resultados o conceptos técnicos a distintas audiencias.";
+  if (
+    normalized.includes("comunicacion") ||
+    normalized.includes("communication")
+  ) {
+    return descriptions.communication;
   }
 
-  if (normalized.includes("liderazgo")) {
-    return "Capacidad para orientar tareas, coordinar esfuerzos y apoyar la toma de decisiones.";
+  if (
+    normalized.includes("liderazgo") ||
+    normalized.includes("leadership")
+  ) {
+    return descriptions.leadership;
   }
 
-  if (normalized.includes("analitico")) {
-    return "Interpretación de información y datos para detectar patrones, oportunidades y mejoras.";
+  if (
+    normalized.includes("analitico") ||
+    normalized.includes("analytical")
+  ) {
+    return descriptions.analytical;
   }
 
-  if (normalized.includes("estrategico")) {
-    return "Evaluación de información y objetivos para tomar decisiones alineadas al negocio.";
+  if (
+    normalized.includes("estrategico") ||
+    normalized.includes("strategic")
+  ) {
+    return descriptions.strategic;
   }
 
-  if (normalized.includes("organizacion")) {
-    return "Gestión ordenada de tareas, prioridades e información para cumplir objetivos.";
+  if (
+    normalized.includes("organizacion") ||
+    normalized.includes("organization")
+  ) {
+    return descriptions.organization;
   }
 
-  if (normalized.includes("detalle")) {
-    return "Revisión cuidadosa de información para reducir errores y asegurar calidad.";
+  if (
+    normalized.includes("detalle") ||
+    normalized.includes("detail")
+  ) {
+    return descriptions.detail;
   }
 
-  if (normalized.includes("tiempo")) {
-    return "Administración eficiente de tareas y entregas dentro de plazos definidos.";
+  if (
+    normalized.includes("tiempo") ||
+    normalized.includes("time management")
+  ) {
+    return descriptions.timeManagement;
   }
 
-  if (normalized.includes("empatia")) {
-    return "Interacción respetuosa y comprensión de necesidades en distintos contextos profesionales.";
+  if (
+    normalized.includes("empatia") ||
+    normalized.includes("empathy")
+  ) {
+    return descriptions.empathy;
   }
 
-  if (normalized.includes("responsabilidad")) {
-    return "Cumplimiento consistente de tareas, procesos y compromisos asignados.";
+  if (
+    normalized.includes("responsabilidad") ||
+    normalized.includes("responsibility")
+  ) {
+    return descriptions.responsibility;
   }
 
-  if (normalized.includes("servicio")) {
-    return "Orientación a brindar apoyo y atención efectiva según las necesidades del entorno.";
+  if (
+    normalized.includes("servicio") ||
+    normalized.includes("service")
+  ) {
+    return descriptions.service;
   }
 
-  if (normalized.includes("liderazgo")) {
-    return "Capacidad para coordinar actividades y apoyar el trabajo colaborativo.";
-  }
-
-  return "Aplicación práctica demostrada en experiencias laborales, académicas o proyectos.";
+  return descriptions.default;
 }
 
-function categorizeTechnicalSkill(skill = "") {
+function categorizeTechnicalSkill(
+  skill = "",
+  translations = getPdfTranslations("es")
+) {
   const normalized = normalizeText(skill);
+  const categories = translations.skills.fallbackTechnicalCategories;
 
-  // Software / IT
   if (
     normalized.includes("javascript") ||
     normalized.includes("typescript") ||
@@ -190,105 +251,134 @@ function categorizeTechnicalSkill(skill = "") {
     normalized.includes("java") ||
     normalized.includes("api") ||
     normalized.includes("programacion") ||
-    normalized.includes("desarrollo")
+    normalized.includes("programming") ||
+    normalized.includes("desarrollo") ||
+    normalized.includes("development")
   ) {
-    return "Tecnologías y desarrollo";
+    return categories.software;
   }
 
-  // Data / Analytics
   if (
     normalized.includes("power bi") ||
     normalized.includes("dashboard") ||
     normalized.includes("kpi") ||
     normalized.includes("analisis") ||
+    normalized.includes("analysis") ||
     normalized.includes("datos") ||
+    normalized.includes("data") ||
     normalized.includes("excel") ||
-    normalized.includes("reportes")
+    normalized.includes("reportes") ||
+    normalized.includes("reporting")
   ) {
-    return "Análisis y reportería";
+    return categories.data;
   }
 
-  // Healthcare / Veterinary
   if (
     normalized.includes("paciente") ||
+    normalized.includes("patient") ||
     normalized.includes("clinico") ||
+    normalized.includes("clinical") ||
     normalized.includes("medico") ||
+    normalized.includes("medical") ||
     normalized.includes("veterin") ||
     normalized.includes("diagnostico") ||
+    normalized.includes("diagnosis") ||
     normalized.includes("tratamiento") ||
-    normalized.includes("procedimiento")
+    normalized.includes("treatment") ||
+    normalized.includes("procedimiento") ||
+    normalized.includes("procedure")
   ) {
-    return "Atención y procedimientos";
+    return categories.healthcare;
   }
 
-  // Construction / Industry
   if (
     normalized.includes("obra") ||
     normalized.includes("construccion") ||
+    normalized.includes("construction") ||
     normalized.includes("seguridad industrial") ||
+    normalized.includes("industrial safety") ||
     normalized.includes("maquinaria") ||
+    normalized.includes("machinery") ||
     normalized.includes("mantenimiento") ||
-    normalized.includes("operacion")
+    normalized.includes("maintenance") ||
+    normalized.includes("operacion") ||
+    normalized.includes("operation")
   ) {
-    return "Operaciones y ejecución";
+    return categories.construction;
   }
 
-  // Education
   if (
     normalized.includes("docencia") ||
+    normalized.includes("teaching") ||
     normalized.includes("ensenanza") ||
     normalized.includes("capacitacion") ||
+    normalized.includes("training") ||
     normalized.includes("educacion") ||
-    normalized.includes("aprendizaje")
+    normalized.includes("education") ||
+    normalized.includes("aprendizaje") ||
+    normalized.includes("learning")
   ) {
-    return "Educación y formación";
+    return categories.education;
   }
 
-  // Customer Service / Sales
   if (
     normalized.includes("cliente") ||
+    normalized.includes("customer") ||
     normalized.includes("ventas") ||
+    normalized.includes("sales") ||
     normalized.includes("servicio") ||
+    normalized.includes("service") ||
     normalized.includes("call center") ||
-    normalized.includes("soporte")
+    normalized.includes("soporte") ||
+    normalized.includes("support")
   ) {
-    return "Atención y servicio";
+    return categories.customerService;
   }
 
-  // Logistics / Operations
   if (
     normalized.includes("inventario") ||
+    normalized.includes("inventory") ||
     normalized.includes("logistica") ||
+    normalized.includes("logistics") ||
     normalized.includes("bodega") ||
+    normalized.includes("warehouse") ||
     normalized.includes("suministro") ||
-    normalized.includes("distribucion")
+    normalized.includes("supply") ||
+    normalized.includes("distribucion") ||
+    normalized.includes("distribution")
   ) {
-    return "Logística y operaciones";
+    return categories.logistics;
   }
 
-  // Administration
   if (
     normalized.includes("administracion") ||
+    normalized.includes("administration") ||
     normalized.includes("gestion") ||
+    normalized.includes("management") ||
     normalized.includes("documentacion") ||
+    normalized.includes("documentation") ||
     normalized.includes("procesos") ||
-    normalized.includes("organizacion")
+    normalized.includes("process") ||
+    normalized.includes("organizacion") ||
+    normalized.includes("organization")
   ) {
-    return "Gestión y administración";
+    return categories.administration;
   }
 
-  // Marketing / Design
   if (
     normalized.includes("marketing") ||
     normalized.includes("seo") ||
     normalized.includes("contenido") ||
+    normalized.includes("content") ||
     normalized.includes("diseno") ||
-    normalized.includes("campana")
+    normalized.includes("design") ||
+    normalized.includes("campana") ||
+    normalized.includes("campaign")
   ) {
-    return "Marketing y comunicación";
+    return categories.marketing;
   }
 
-  return "Otras habilidades profesionales";
+  return categories.other;
 }
 
 function cleanBulletLine(line = "") {
@@ -380,14 +470,16 @@ ${content}
 `;
 }
 
-function buildSkills(data = {}) {
+function buildSkills(data = {}, translations = getPdfTranslations("es")) {
   const skills = Array.isArray(data.skills) ? data.skills : [];
 
   const aiTechnicalSkills = Array.isArray(data.technicalSkills)
     ? data.technicalSkills
     : [];
 
-  const aiSoftSkills = Array.isArray(data.softSkills) ? data.softSkills : [];
+  const aiSoftSkills = Array.isArray(data.softSkills)
+    ? data.softSkills
+    : [];
 
   const hasAiTechnicalSkills = aiTechnicalSkills.some(
     (group) =>
@@ -425,7 +517,7 @@ function buildSkills(data = {}) {
     );
 
     const groupedTechnicalSkills = technicalSkills.reduce((groups, skill) => {
-      const category = categorizeTechnicalSkill(skill);
+      const category = categorizeTechnicalSkill(skill, translations);
 
       if (!groups[category]) {
         groups[category] = [];
@@ -461,31 +553,36 @@ function buildSkills(data = {}) {
       .map((skill) => {
         return `\\item \\textbf{${escapeLatex(
           capitalizeSkill(skill)
-        )}:} ${escapeLatex(getSoftSkillDescription(skill))}`;
+        )}:} ${escapeLatex(getSoftSkillDescription(skill, translations))}`;
       })
       .join("\n");
   }
 
   return `
-${technicalSection
-      ? `\\textbf{Habilidades técnicas}
+${
+  technicalSection
+    ? `\\textbf{${escapeLatex(translations.skills.technical)}}
 \\begin{itemize}
 ${technicalSection}
 \\end{itemize}`
-      : ""
-    }
+    : ""
+}
 
-${softSection
-      ? `\\textbf{Habilidades blandas}
+${
+  softSection
+    ? `\\textbf{${escapeLatex(translations.skills.soft)}}
 \\begin{itemize}
 ${softSection}
 \\end{itemize}`
-      : ""
-    }
+    : ""
+}
 `;
 }
 
-function buildLanguages(languages = []) {
+function buildLanguages(
+  languages = [],
+  translations = getPdfTranslations("es")
+) {
   if (!languages.length) return "";
 
   return languages
@@ -493,20 +590,23 @@ function buildLanguages(languages = []) {
     .map(
       (lang) =>
         `${escapeLatex(lang.name)} - ${escapeLatex(
-          formatLanguageLevel(lang.level)
+          formatLanguageLevel(lang.level, translations)
         )}`
     )
     .join(" \\\\\n");
 }
 
-function buildEducation(education = []) {
+function buildEducation(
+  education = [],
+  translations = getPdfTranslations("es")
+) {
   return education
     .filter((edu) => edu.institution || edu.degree)
     .map((edu) => {
       return `
 \\textbf{${escapeLatex(edu.degree)}} \\\\
 ${escapeLatex(edu.institution)} \\hfill ${escapeLatex(
-        formatEducationDate(edu.date)
+        formatEducationDate(edu.date, translations)
       )}
 \\vspace{0.3em}
 `;
@@ -514,12 +614,15 @@ ${escapeLatex(edu.institution)} \\hfill ${escapeLatex(
     .join("\n");
 }
 
-function buildExperience(experiences = []) {
+function buildExperience(
+  experiences = [],
+  translations = getPdfTranslations("es")
+) {
   return experiences
     .filter((exp) => exp.title || exp.location || exp.description)
     .map((exp) => {
       const bullets = sanitizeText(exp.description)
-        .split(/\n|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ])/g)
+        .split(/\n|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑA-Z])/g)
         .map(cleanBulletLine)
         .filter(Boolean)
         .map((line) => `\\item ${escapeLatex(line)}`)
@@ -528,7 +631,7 @@ function buildExperience(experiences = []) {
       return `
 \\textbf{${escapeLatex(exp.title)}} \\\\
 ${escapeLatex(exp.location)} \\hfill ${escapeLatex(
-        formatExperienceRange(exp.startDate, exp.endDate)
+        formatExperienceRange(exp.startDate, exp.endDate, translations)
       )}
 \\begin{itemize}
 ${bullets}

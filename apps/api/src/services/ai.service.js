@@ -159,14 +159,35 @@ function parseAiJson(text) {
   return JSON.parse(cleanJsonText(text));
 }
 
-function buildSummaryPrompt({ resumeData, jobDescription }) {
+function getLanguageInstructions(language = "es") {
+  if (language === "en") {
+    return `
+- Write entirely in English.
+- Use fluent, natural, professional English.
+- Do not mix Spanish and English.
+- Keep ATS-friendly wording.
+`;
+  }
+
+  return `
+- Escribe completamente en español.
+- Usa español natural, profesional y fluido.
+- No mezcles español e inglés.
+`;
+}
+
+function buildSummaryPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Eres un asistente experto en currículums profesionales y optimización ATS.
 
 Tu tarea es mejorar el resumen profesional del usuario.
 
 Reglas:
-- Escribe en español.
+${getLanguageInstructions(language)}
 - Mantén un tono profesional, claro y natural.
 - No inventes experiencia, empresas, títulos, certificaciones ni habilidades.
 - Usa únicamente información del CV proporcionado.
@@ -200,11 +221,16 @@ ${jobDescription || "No se proporcionó oferta laboral."}
 `;
 }
 
-async function optimizeSummary({ resumeData, jobDescription }) {
+async function optimizeSummary({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   const result = await generateWithFallback(
     buildSummaryPrompt({
       resumeData,
       jobDescription,
+      language,
     })
   );
 
@@ -215,7 +241,11 @@ async function optimizeSummary({ resumeData, jobDescription }) {
   };
 }
 
-function buildRecommendationsPrompt({ resumeData, jobDescription }) {
+function buildRecommendationsPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Eres un experto en reclutamiento, currículums y optimización ATS.
 
@@ -229,7 +259,7 @@ Tu tarea:
 5. Generar recomendaciones claras y accionables.
 
 Reglas:
-- Escribe en español.
+  ${getLanguageInstructions(language)}
 - No inventes experiencia, certificaciones, empresas ni habilidades.
 - Si una keyword falta, recomienda agregarla solo si el usuario realmente tiene esa experiencia.
 - No uses markdown.
@@ -288,11 +318,16 @@ ${jobDescription || ""}
 `;
 }
 
-async function generateAiRecommendations({ resumeData, jobDescription }) {
+async function generateAiRecommendations({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   const result = await generateWithFallback(
     buildRecommendationsPrompt({
       resumeData,
       jobDescription,
+      language,
     })
   );
 
@@ -312,14 +347,18 @@ async function generateAiRecommendations({ resumeData, jobDescription }) {
   };
 }
 
-function buildFullResumeOptimizationPrompt({ resumeData, jobDescription }) {
+function buildFullResumeOptimizationPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Eres un experto en currículums profesionales, redacción ATS y reclutamiento.
 
 Tu tarea es optimizar el CV completo del usuario para la oferta laboral proporcionada.
 
 Reglas estrictas:
-- Escribe en español.
+  ${getLanguageInstructions(language)}
 - No inventes experiencia, empresas, cargos, estudios, certificaciones ni habilidades.
 - Conserva los datos personales exactamente iguales.
 - Mejora redacción, claridad y alineación con la oferta.
@@ -442,12 +481,17 @@ function fallbackOptimizedResume(resumeData, jobDescription) {
   };
 }
 
-async function optimizeFullResume({ resumeData, jobDescription }) {
+async function optimizeFullResume({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   try {
     const result = await generateWithFallback(
       buildFullResumeOptimizationPrompt({
         resumeData,
         jobDescription,
+        language,
       })
     );
 
@@ -464,15 +508,24 @@ async function optimizeFullResume({ resumeData, jobDescription }) {
         phone: resumeData.phone,
         location: resumeData.location,
 
+        template: resumeData.template || "classic",
+        language: language || resumeData.language || "es",
+
         skills: Array.isArray(optimized.skills)
           ? optimized.skills
           : resumeData.skills || [],
 
-        technicalSkills: normalizeTechnicalSkills(optimized.technicalSkills),
-        softSkills: normalizeSoftSkills(optimized.softSkills),
+        technicalSkills: normalizeTechnicalSkills(
+          optimized.technicalSkills
+        ),
+
+        softSkills: normalizeSoftSkills(
+          optimized.softSkills
+        ),
 
         jobDescription,
       },
+
       source: result.provider,
     };
   } catch (error) {
@@ -481,20 +534,28 @@ async function optimizeFullResume({ resumeData, jobDescription }) {
     });
 
     return {
-      optimizedResumeData: fallbackOptimizedResume(resumeData, jobDescription),
+      optimizedResumeData: fallbackOptimizedResume(
+        resumeData,
+        jobDescription
+      ),
+
       source: "fallback",
     };
   }
 }
 
-function buildFinalAtsAnalysisPrompt({ resumeData, jobDescription }) {
+function buildFinalAtsAnalysisPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Actúa como un sistema ATS profesional y reclutador técnico.
 
 Tu tarea es analizar el CV final optimizado frente a la oferta laboral y devolver una calificación ATS.
 
 Reglas:
-- Escribe en español.
+  ${getLanguageInstructions(language)}
 - Evalúa únicamente la información del CV y la oferta.
 - No inventes experiencia, certificaciones, habilidades ni logros.
 - Sé estricto pero útil.
@@ -531,11 +592,16 @@ ${jobDescription || "No se proporcionó oferta laboral."}
 `;
 }
 
-async function analyzeFinalAts({ resumeData, jobDescription }) {
+async function analyzeFinalAts({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   const result = await generateWithFallback(
     buildFinalAtsAnalysisPrompt({
       resumeData,
       jobDescription,
+      language,
     })
   );
 
@@ -544,17 +610,27 @@ async function analyzeFinalAts({ resumeData, jobDescription }) {
   return {
     atsScore: Number(parsed.atsScore) || 0,
     summary: parsed.summary || "",
-    strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
-    weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
+
+    strengths: Array.isArray(parsed.strengths)
+      ? parsed.strengths
+      : [],
+
+    weaknesses: Array.isArray(parsed.weaknesses)
+      ? parsed.weaknesses
+      : [],
+
     matchedKeywords: Array.isArray(parsed.matchedKeywords)
       ? parsed.matchedKeywords
       : [],
+
     missingKeywords: Array.isArray(parsed.missingKeywords)
       ? parsed.missingKeywords
       : [],
+
     recommendations: Array.isArray(parsed.recommendations)
       ? parsed.recommendations
       : [],
+
     source: result.provider,
   };
 }

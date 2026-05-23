@@ -1,7 +1,7 @@
 const sanitizeHtml = require("sanitize-html");
 
 function sanitizeText(value = "") {
-  const normalizedLineBreaks = String(value)
+  const normalizedLineBreaks = String(value ?? "")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n");
@@ -16,6 +16,18 @@ function sanitizeText(value = "") {
 
 function normalizeArray(arr, fallback = []) {
   return Array.isArray(arr) ? arr : fallback;
+}
+
+function normalizeTemplate(template = "classic") {
+  return ["classic", "modern", "compact"].includes(template)
+    ? template
+    : "classic";
+}
+
+function normalizeLanguage(language = "es") {
+  return ["es", "en"].includes(language)
+    ? language
+    : "es";
 }
 
 function normalizeResumeData(data = {}) {
@@ -33,9 +45,20 @@ function normalizeResumeData(data = {}) {
 
     skills: normalizeArray(data.skills).map(sanitizeText),
 
+    technicalSkills: normalizeArray(data.technicalSkills).map((group) => ({
+      category: sanitizeText(group?.category),
+      items: normalizeArray(group?.items).map(sanitizeText).filter(Boolean),
+    })),
+
+    softSkills: normalizeArray(data.softSkills).map((skill) => ({
+      name: sanitizeText(skill?.name),
+      description: sanitizeText(skill?.description),
+    })),
+
     languages: normalizeArray(data.languages).map((lang) => ({
       ...lang,
       name: sanitizeText(lang?.name),
+      level: sanitizeText(lang?.level) || "Advanced",
     })),
 
     experiences: normalizeArray(data.experiences).map((exp) => ({
@@ -61,6 +84,11 @@ function normalizeResumeData(data = {}) {
       description: sanitizeText(proj?.description),
       link: sanitizeText(proj?.link),
     })),
+
+    jobDescription: sanitizeText(data.jobDescription),
+
+    template: normalizeTemplate(data.template),
+    language: normalizeLanguage(data.language),
   };
 }
 

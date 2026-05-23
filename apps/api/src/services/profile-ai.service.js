@@ -8,10 +8,39 @@ const {
   normalizeResumeData,
 } = require("../utils/resumeNormalizer");
 
+function normalizeTemplate(template = "classic") {
+  return ["classic", "modern", "compact"].includes(template)
+    ? template
+    : "classic";
+}
+
+function normalizeLanguage(language = "es") {
+  return ["es", "en"].includes(language)
+    ? language
+    : "es";
+}
+
+function getProfilePromptLanguageInstructions(language = "es") {
+  if (language === "en") {
+    return `
+- Write entirely in English.
+- Use fluent, natural, professional English.
+- Do not mix Spanish and English.
+`;
+  }
+
+  return `
+- Escribe completamente en español.
+- Usa español natural, profesional y fluido.
+- No mezcles español e inglés.
+`;
+}
+
 async function generateResumeFromCareerProfile({
   userId,
   jobDescription,
   template,
+  language = "es",
 }) {
   const profile = await prisma.userProfile.findUnique({
     where: { userId },
@@ -22,6 +51,13 @@ async function generateResumeFromCareerProfile({
   }
 
   const profileData = profile.data;
+  const normalizedLanguage = normalizeLanguage(
+    language || profileData.language
+  );
+
+  const normalizedTemplate = normalizeTemplate(
+    template || profileData.template
+  );
 
   const aiPrompt = `
 Eres un experto en optimización de currículums para sistemas ATS.
@@ -38,7 +74,7 @@ Tu tarea:
 - Devuelve una estructura JSON válida compatible con ResumeData.
 
 Reglas de contenido:
-- Escribe en español.
+${getProfilePromptLanguageInstructions(normalizedLanguage)}
 - Mantén un tono profesional, claro y natural.
 - No inventes experiencia, empresas, títulos, certificaciones, fechas, logros ni habilidades.
 - Usa únicamente información explícitamente presente en el perfil proporcionado.
@@ -74,7 +110,8 @@ Estructura esperada:
   "education": [],
   "projects": [],
   "jobDescription": "",
-  "template": ""
+  "template": "",
+  "language": ""
 }
 
 CAREER PROFILE:
@@ -84,21 +121,24 @@ JOB DESCRIPTION:
 ${jobDescription}
 `;
 
-  const normalizedProfileData = normalizeResumeData(profileData);
+  const normalizedProfileData = normalizeResumeData({
+    ...profileData,
+    template: normalizedTemplate,
+    language: normalizedLanguage,
+  });
 
   const optimized = await optimizeFullResume({
-    resumeData: normalizeResumeData(profileData),
+    resumeData: normalizedProfileData,
     jobDescription: aiPrompt,
+    language: normalizedLanguage,
   });
 
   return {
     resumeData: {
       ...optimized.optimizedResumeData,
       jobDescription,
-      template:
-        template ||
-        profileData.template ||
-        "classic-template",
+      template: normalizedTemplate,
+      language: normalizedLanguage,
     },
     source: optimized.source,
   };

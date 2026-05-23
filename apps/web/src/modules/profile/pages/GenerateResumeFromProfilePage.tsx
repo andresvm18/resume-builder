@@ -57,7 +57,8 @@ export default function GenerateResumeFromProfilePage() {
 
       const response = await generateResumeFromProfile(
         jobDescription,
-        "modern-template"
+        "modern",
+        "es"
       );
 
       const resumeData = {
@@ -72,6 +73,8 @@ export default function GenerateResumeFromProfilePage() {
         JSON.stringify(resumeData)
       );
 
+      localStorage.setItem("resume-builder-start-step", "configuration");
+      
       navigate("/resume-builder");
     } catch (error) {
       console.error(error);

@@ -31,7 +31,8 @@ const baseResume: ResumeData = {
   education: [],
   projects: [],
   jobDescription: "",
-  template: "classic"
+  template: "classic",
+  language: "es",
 };
 
 describe("ATS utils", () => {

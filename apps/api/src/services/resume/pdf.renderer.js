@@ -23,8 +23,12 @@ const {
   resolveTemplateName,
 } = require("./latex.helpers");
 
+const { getPdfTranslations } = require("./latex.i18n");
+
 async function removeTemporaryFiles(paths = []) {
-  await Promise.all(paths.map((filePath) => fs.unlink(filePath).catch(() => {})));
+  await Promise.all(
+    paths.map((filePath) => fs.unlink(filePath).catch(() => {}))
+  );
 }
 
 async function compileLatex({ outputDir, texPath }) {
@@ -39,6 +43,8 @@ async function compileLatex({ outputDir, texPath }) {
 
 async function renderResumePdf(data) {
   const templateName = resolveTemplateName(data.template);
+  const translations = getPdfTranslations(data.language);
+
   const templatePath = path.join(
     __dirname,
     "../../templates/resume",
@@ -59,35 +65,52 @@ async function renderResumePdf(data) {
     .replaceAll(
       "{{EXPERIENCE_SECTION}}",
       hasExperienceContent(data.experiences)
-        ? buildSection("EXPERIENCIA LABORAL", buildExperience(data.experiences))
+        ? buildSection(
+            translations.sections.experience,
+            buildExperience(data.experiences, translations)
+          )
         : ""
     )
     .replaceAll(
       "{{EDUCATION_SECTION}}",
       hasEducationContent(data.education)
-        ? buildSection("EDUCACIÓN", buildEducation(data.education))
+        ? buildSection(
+            translations.sections.education,
+            buildEducation(data.education, translations)
+          )
         : ""
     )
     .replaceAll(
       "{{SKILLS_SECTION}}",
       hasSkillsContent(data)
-        ? buildSection("HABILIDADES", buildSkills(data))
+        ? buildSection(
+            translations.sections.skills,
+            buildSkills(data, translations)
+          )
         : ""
     )
     .replaceAll(
       "{{LANGUAGES_SECTION}}",
       hasLanguageContent(data.languages)
-        ? buildSection("IDIOMAS", buildLanguages(data.languages))
+        ? buildSection(
+            translations.sections.languages,
+            buildLanguages(data.languages, translations)
+          )
         : ""
     )
     .replaceAll(
       "{{PROJECTS_SECTION}}",
       hasProjectContent(data.projects)
-        ? buildSection("PROYECTOS", buildProjects(data.projects))
+        ? buildSection(
+            translations.sections.projects,
+            buildProjects(data.projects)
+          )
         : ""
     );
 
-  const fileId = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+  const fileId = `${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(2, 8)}`;
 
   const texPath = path.join(outputDir, `cv-${fileId}.tex`);
   const pdfPath = path.join(outputDir, `cv-${fileId}.pdf`);
@@ -100,6 +123,7 @@ async function renderResumePdf(data) {
 
   logger.info("PDF", "Starting PDF generation", {
     template: templateName,
+    language: data.language || "es",
   });
 
   try {
@@ -113,6 +137,7 @@ async function renderResumePdf(data) {
 
     logger.info("PDF", "PDF generated successfully", {
       template: templateName,
+      language: data.language || "es",
       durationMs: Date.now() - start,
       sizeBytes: pdfBuffer.length,
     });
@@ -124,6 +149,7 @@ async function renderResumePdf(data) {
       stdout: error.stdout,
       stderr: error.stderr,
       template: templateName,
+      language: data.language || "es",
     });
 
     if (error.message === "PDF_EMPTY_OR_INVALID") {

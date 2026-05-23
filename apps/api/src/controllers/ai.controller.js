@@ -8,6 +8,14 @@ const {
 const asyncHandler = require("../utils/asyncHandler");
 const createHttpError = require("../utils/httpError");
 
+function normalizeLanguage(language = "es") {
+  return ["es", "en"].includes(language) ? language : "es";
+}
+
+function resolveLanguage(req) {
+  return normalizeLanguage(req.body.language || req.body.resumeData?.language);
+}
+
 const optimizeResumeSummary = asyncHandler(async (req, res) => {
   const { resumeData, jobDescription } = req.body;
 
@@ -18,6 +26,7 @@ const optimizeResumeSummary = asyncHandler(async (req, res) => {
   const result = await optimizeSummary({
     resumeData,
     jobDescription,
+    language: resolveLanguage(req),
   });
 
   return res.json(result);
@@ -36,6 +45,7 @@ const getAiRecommendations = asyncHandler(async (req, res) => {
   const result = await generateAiRecommendations({
     resumeData,
     jobDescription,
+    language: resolveLanguage(req),
   });
 
   return res.json(result);
@@ -51,6 +61,7 @@ const optimizeResume = asyncHandler(async (req, res) => {
   const result = await optimizeFullResume({
     resumeData,
     jobDescription,
+    language: resolveLanguage(req),
   });
 
   return res.json(result);
@@ -69,6 +80,7 @@ const analyzeFinalResumeAts = asyncHandler(async (req, res) => {
   const result = await analyzeFinalAts({
     resumeData,
     jobDescription,
+    language: resolveLanguage(req),
   });
 
   return res.json(result);

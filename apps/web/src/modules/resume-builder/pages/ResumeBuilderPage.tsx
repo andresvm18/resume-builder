@@ -5,13 +5,13 @@ import StepWizard from "../components/StepWizard";
 import StepNavigation from "../components/StepNavigation";
 import ResumeFormPanel from "../components/ResumeFormPanel";
 import AtsRecommendationsPanel from "../components/AtsRecommendationsPanel";
+import ResumeConfigurationPanel from "../components/ResumeConfigurationPanel";
 import { useResumeBuilder } from "../hooks/useResumeBuilder";
-import type { StepItem } from "../types/resume.types";
+import type { ResumeData, StepItem } from "../types/resume.types";
 import { useResumeValidation } from "../hooks/useResumeValidation";
 import { useAiRecommendations } from "../hooks/useAiRecommendations";
 import { optimizeSummary } from "../services/ai.service";
 import { updateResumeById } from "../services/resume.service";
-import TemplateSelector from "../components/TemplateSelector";
 import { useToast } from "../../../shared/context/useToast";
 import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./ResumeBuilderPage.css";
@@ -31,6 +31,8 @@ export default function ResumeBuilderPage() {
 
   const hasLoadedEditorRef = useRef(false);
   const isAutoSavingRef = useRef(false);
+
+  const initialData = routerLocation.state as ResumeData | null;
 
   const {
     resumeData,
@@ -86,8 +88,11 @@ export default function ResumeBuilderPage() {
 
     template,
     setTemplate,
+
+    language,
+    setLanguage,
   } = useResumeBuilder(id, {
-    initialData: routerLocation.state,
+    initialData,
     onResumeNotFound: () => {
       showToast(
         APP_MESSAGES.RESUME_BUILDER.RESUME_NOT_FOUND_ERROR,
@@ -193,6 +198,12 @@ export default function ResumeBuilderPage() {
       title: "Proyectos",
       description: "Trabajos destacados y personales",
     },
+    {
+      id: "configuration",
+      label: "Diseño",
+      title: "Diseño e idioma",
+      description: "Elegí la plantilla y el idioma del CV",
+    },
   ];
 
   const goToStep = (stepId: StepItem["id"]) => {
@@ -208,7 +219,11 @@ export default function ResumeBuilderPage() {
     try {
       setIsOptimizingSummary(true);
 
-      const result = await optimizeSummary(resumeData, jobDescription ?? "");
+      const result = await optimizeSummary(
+        resumeData,
+        jobDescription ?? "",
+        resumeData.language
+      );
 
       setSummary(result.optimizedSummary);
     } catch {
@@ -224,7 +239,11 @@ export default function ResumeBuilderPage() {
       return;
     }
 
-    const result = await generateRecommendations(resumeData, jobDescription);
+    const result = await generateRecommendations(
+      resumeData,
+      jobDescription,
+      resumeData.language
+    );
 
     if (!result) {
       showToast(
@@ -320,6 +339,7 @@ export default function ResumeBuilderPage() {
           <h1 className="resume-builder-page__title">
             {APP_MESSAGES.RESUME_BUILDER.HERO_TITLE}
           </h1>
+
           <p className="resume-builder-page__subtitle">
             {APP_MESSAGES.RESUME_BUILDER.HERO_SUBTITLE}
           </p>
@@ -336,50 +356,57 @@ export default function ResumeBuilderPage() {
             onStepClick={goToStep}
           />
 
-          <TemplateSelector template={template} setTemplate={setTemplate} />
-
-          <ResumeFormPanel
-            currentStep={currentStep}
-            fullName={fullName}
-            setFullName={setFullName}
-            email={email}
-            setEmail={setEmail}
-            phone={phone}
-            setPhone={setPhone}
-            location={resumeLocation}
-            setLocation={setLocation}
-            summary={summary}
-            setSummary={setSummary}
-            experiences={experiences}
-            addExperience={addExperience}
-            updateExperience={updateExperience}
-            removeExperience={removeExperience}
-            education={education}
-            addEducation={addEducation}
-            updateEducation={updateEducation}
-            removeEducation={removeEducation}
-            skills={skills}
-            skillInput={skillInput}
-            setSkillInput={setSkillInput}
-            addSkill={addSkill}
-            removeSkill={removeSkill}
-            languages={languages}
-            addLanguage={addLanguage}
-            updateLanguage={updateLanguage}
-            removeLanguage={removeLanguage}
-            projects={projects}
-            addProject={addProject}
-            updateProject={updateProject}
-            removeProject={removeProject}
-            jobDescription={jobDescription}
-            targetRole={targetRole}
-            setTargetRole={setTargetRole}
-            targetCompany={targetCompany}
-            setTargetCompany={setTargetCompany}
-            setJobDescription={setJobDescription}
-            isOptimizingSummary={isOptimizingSummary}
-            onOptimizeSummary={handleOptimizeSummary}
-          />
+          {currentStep === "configuration" ? (
+            <ResumeConfigurationPanel
+              template={template}
+              language={language}
+              setTemplate={setTemplate}
+              setLanguage={setLanguage}
+            />
+          ) : (
+            <ResumeFormPanel
+              currentStep={currentStep}
+              fullName={fullName}
+              setFullName={setFullName}
+              email={email}
+              setEmail={setEmail}
+              phone={phone}
+              setPhone={setPhone}
+              location={resumeLocation}
+              setLocation={setLocation}
+              summary={summary}
+              setSummary={setSummary}
+              experiences={experiences}
+              addExperience={addExperience}
+              updateExperience={updateExperience}
+              removeExperience={removeExperience}
+              education={education}
+              addEducation={addEducation}
+              updateEducation={updateEducation}
+              removeEducation={removeEducation}
+              skills={skills}
+              skillInput={skillInput}
+              setSkillInput={setSkillInput}
+              addSkill={addSkill}
+              removeSkill={removeSkill}
+              languages={languages}
+              addLanguage={addLanguage}
+              updateLanguage={updateLanguage}
+              removeLanguage={removeLanguage}
+              projects={projects}
+              addProject={addProject}
+              updateProject={updateProject}
+              removeProject={removeProject}
+              jobDescription={jobDescription}
+              targetRole={targetRole}
+              setTargetRole={setTargetRole}
+              targetCompany={targetCompany}
+              setTargetCompany={setTargetCompany}
+              setJobDescription={setJobDescription}
+              isOptimizingSummary={isOptimizingSummary}
+              onOptimizeSummary={handleOptimizeSummary}
+            />
+          )}
 
           {currentStep === "summary" &&
             (aiRecommendations || recommendationsFailed) && (
@@ -394,11 +421,16 @@ export default function ResumeBuilderPage() {
               <span
                 className={`resume-builder-page__save-status resume-builder-page__save-status--${saveStatus}`}
               >
-                {saveStatus === "idle" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_IDLE}
-                {saveStatus === "unsaved" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_UNSAVED}
-                {saveStatus === "saving" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_SAVING}
-                {saveStatus === "saved" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_SAVED}
-                {saveStatus === "error" && APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_ERROR}
+                {saveStatus === "idle" &&
+                  APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_IDLE}
+                {saveStatus === "unsaved" &&
+                  APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_UNSAVED}
+                {saveStatus === "saving" &&
+                  APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_SAVING}
+                {saveStatus === "saved" &&
+                  APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_SAVED}
+                {saveStatus === "error" &&
+                  APP_MESSAGES.RESUME_BUILDER.SAVE_STATUS_ERROR}
               </span>
 
               <button
@@ -419,7 +451,10 @@ export default function ResumeBuilderPage() {
             totalSteps={steps.length}
             onPrev={() => {
               const index = steps.findIndex((s) => s.id === currentStep);
-              if (index > 0) goToStep(steps[index - 1].id);
+
+              if (index > 0) {
+                goToStep(steps[index - 1].id);
+              }
             }}
             onNext={handleNext}
             onFinish={handleFinish}

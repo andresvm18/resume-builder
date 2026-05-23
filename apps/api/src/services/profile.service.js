@@ -1,18 +1,23 @@
 const { prisma } = require("../lib/prisma");
 const { normalizeResumeData } = require("../utils/resumeNormalizer");
 
+function normalizeStringArray(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => String(item ?? "").trim())
+    .filter(Boolean);
+}
+
 function normalizeProfileData(data = {}) {
   return {
     ...normalizeResumeData(data),
-    certifications: Array.isArray(data.certifications)
-      ? data.certifications.map((item) => String(item).trim()).filter(Boolean)
-      : [],
-    links: Array.isArray(data.links)
-      ? data.links.map((item) => String(item).trim()).filter(Boolean)
-      : [],
-    targetRoles: Array.isArray(data.targetRoles)
-      ? data.targetRoles.map((item) => String(item).trim()).filter(Boolean)
-      : [],
+
+    certifications: normalizeStringArray(data.certifications),
+
+    links: normalizeStringArray(data.links),
+
+    targetRoles: normalizeStringArray(data.targetRoles),
   };
 }
 

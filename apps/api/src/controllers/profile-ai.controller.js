@@ -9,6 +9,7 @@ const generateResumeFromProfile = asyncHandler(async (req, res) => {
     userId: req.user.userId,
     jobDescription: req.body.jobDescription,
     template: req.body.template,
+    language: req.body.language,
   });
 
   return res.json(result);

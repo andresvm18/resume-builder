@@ -3,8 +3,11 @@ import {
   type Education,
   type Experience,
   type Language,
+  type LanguageLevel,
   type Project,
   type ResumeData,
+  type ResumeLanguage,
+  type ResumeTemplate,
   type SoftSkill,
   type TechnicalSkillGroup,
 } from "../types/resume.types";
@@ -21,9 +24,17 @@ function sanitizeText(value: unknown): string {
 function normalizeStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
 
-  return value
-    .map((item) => sanitizeText(item))
-    .filter(Boolean);
+  return value.map((item) => sanitizeText(item)).filter(Boolean);
+}
+
+function normalizeTemplate(value: unknown): ResumeTemplate {
+  return value === "modern" || value === "compact" || value === "classic"
+    ? value
+    : "classic";
+}
+
+function normalizeLanguage(value: unknown): ResumeLanguage {
+  return value === "en" || value === "es" ? value : "es";
 }
 
 function normalizeExperiences(value: unknown): Experience[] {
@@ -56,8 +67,18 @@ function normalizeLanguages(value: unknown): Language[] {
   return value.map((item) => ({
     id: item?.id ?? crypto.randomUUID(),
     name: sanitizeText(item?.name),
-    level: item?.level || "Advanced",
+    level: isValidLanguageLevel(item?.level) ? item.level : "Advanced",
   }));
+}
+
+function isValidLanguageLevel(value: unknown): value is LanguageLevel {
+  return (
+    value === "Basic" ||
+    value === "Intermediate" ||
+    value === "Advanced" ||
+    value === "Fluent" ||
+    value === "Native"
+  );
 }
 
 function normalizeProjects(value: unknown): Project[] {
@@ -95,9 +116,10 @@ function normalizeSoftSkills(value: unknown): SoftSkill[] {
 }
 
 export function normalizeResumeData(value: unknown): ResumeData {
-  const data = typeof value === "object" && value !== null
-    ? (value as Partial<ResumeData>)
-    : {};
+  const data =
+    typeof value === "object" && value !== null
+      ? (value as Partial<ResumeData>)
+      : {};
 
   return {
     ...DEFAULT_RESUME_DATA,
@@ -122,9 +144,7 @@ export function normalizeResumeData(value: unknown): ResumeData {
 
     jobDescription: sanitizeText(data.jobDescription),
 
-    template:
-      data.template === "modern" || data.template === "compact"
-        ? data.template
-        : "classic",
+    template: normalizeTemplate(data.template),
+    language: normalizeLanguage(data.language),
   };
 }

@@ -1,5 +1,9 @@
 import { apiRequest } from "../../../shared/services/apiClient";
-import type { ResumeData } from "../../resume-builder/types/resume.types";
+import type {
+  ResumeData,
+  ResumeLanguage,
+  ResumeTemplate,
+} from "../../resume-builder/types/resume.types";
 
 type GenerateProfileResumeResponse = {
   resumeData: ResumeData;
@@ -7,7 +11,8 @@ type GenerateProfileResumeResponse = {
 
 export async function generateResumeFromProfile(
   jobDescription: string,
-  template: string
+  template: ResumeTemplate,
+  language: ResumeLanguage
 ) {
   return apiRequest<GenerateProfileResumeResponse>(
     "/profile/generate-resume",
@@ -16,6 +21,7 @@ export async function generateResumeFromProfile(
       body: JSON.stringify({
         jobDescription,
         template,
+        language,
       }),
     }
   );

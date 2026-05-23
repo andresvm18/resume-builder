@@ -19,7 +19,9 @@ export default function ResumeOptimizePage() {
   const rawResumeData = location.state as ResumeData | null;
   const resumeData = rawResumeData ? normalizeResumeData(rawResumeData) : null;
 
-  const [status, setStatus] = useState<string>(APP_MESSAGES.RESUME_OPTIMIZE.INITIAL_STATUS);
+  const [status, setStatus] = useState<string>(
+    APP_MESSAGES.RESUME_OPTIMIZE.INITIAL_STATUS
+  );
   const [error, setError] = useState("");
 
   const goToOriginalResume = () => {
@@ -56,7 +58,8 @@ export default function ResumeOptimizePage() {
 
         const result = await optimizeFullResume(
           resumeData,
-          resumeData.jobDescription ?? ""
+          resumeData.jobDescription ?? "",
+          resumeData.language
         );
 
         let finalAtsAnalysis = null;
@@ -67,7 +70,8 @@ export default function ResumeOptimizePage() {
 
             finalAtsAnalysis = await analyzeFinalAts(
               result.optimizedResumeData,
-              resumeData.jobDescription
+              resumeData.jobDescription,
+              resumeData.language
             );
           } catch {
             setStatus(APP_MESSAGES.PDF.OPTIMIZATION_ERROR);
@@ -79,6 +83,8 @@ export default function ResumeOptimizePage() {
         navigate("/resume/generate", {
           state: {
             ...result.optimizedResumeData,
+            template: resumeData.template,
+            language: resumeData.language,
             finalAtsAnalysis,
           },
           replace: true,
@@ -89,7 +95,7 @@ export default function ResumeOptimizePage() {
       }
     };
 
-    optimizeResume();
+    void optimizeResume();
   }, [resumeData, navigate]);
 
   return (
