@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { APP_MESSAGES } from "../../../shared/constants/appMessages";
 import "./ConfirmDialog.css";
 
 type ConfirmDialogProps = {
   isOpen: boolean;
   title: string;
-  description: React.ReactNode;
+  description: ReactNode;
   confirmLabel: string;
   cancelLabel?: string;
   isLoading?: boolean;
@@ -28,33 +29,42 @@ export default function ConfirmDialog({
 
   return (
     <div
-      className="confirm-dialog__backdrop"
+      className="confirm-dialog__modal-backdrop"
       role="presentation"
       onClick={onCancel}
     >
       <div
-        className="confirm-dialog"
+        className="confirm-dialog__modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="confirm-dialog__icon">!</div>
+        <div className="confirm-dialog__modal-icon">!</div>
 
-        <h3 id="confirm-dialog-title" className="confirm-dialog__title">
+        <h3
+          id="confirm-dialog-title"
+          className="confirm-dialog__modal-title"
+        >
           {title}
         </h3>
 
-        <p className="confirm-dialog__description">{description}</p>
+        <div className="confirm-dialog__modal-description">
+          {description}
+        </div>
 
-        {error && <p className="confirm-dialog__error">{error}</p>}
+        {error && (
+          <p className="confirm-dialog__modal-error">
+            {error}
+          </p>
+        )}
 
-        <div className="confirm-dialog__actions">
+        <div className="confirm-dialog__modal-actions">
           <button
             type="button"
             onClick={onCancel}
             disabled={isLoading}
-            className="confirm-dialog__cancel"
+            className="confirm-dialog__modal-cancel"
           >
             {cancelLabel}
           </button>
@@ -63,7 +73,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className="confirm-dialog__confirm"
+            className="confirm-dialog__modal-confirm"
           >
             {confirmLabel}
           </button>
