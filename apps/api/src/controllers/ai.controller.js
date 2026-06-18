@@ -3,7 +3,7 @@ const {
   generateAiRecommendations,
   optimizeFullResume,
   analyzeFinalAts,
-} = require("../services/ai.service");
+} = require("../services/ai/ai.service");
 
 const asyncHandler = require("../utils/asyncHandler");
 const createHttpError = require("../utils/httpError");

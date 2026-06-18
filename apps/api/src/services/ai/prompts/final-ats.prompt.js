@@ -1,11 +1,19 @@
-function buildFinalAtsAnalysisPrompt({ resumeData, jobDescription }) {
+const { getLanguageInstructions } = require("./language.helpers");
+
+function buildFinalAtsAnalysisPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Actúa como un sistema ATS profesional y reclutador técnico.
 
 Tu tarea es analizar el CV final optimizado frente a la oferta laboral.
 
+Idioma:
+${getLanguageInstructions(language)}
+
 Reglas:
-- Escribe en español.
 - Evalúa únicamente la información del CV y la oferta.
 - No inventes experiencia, certificaciones, habilidades ni logros.
 - Sé estricto, realista y útil.

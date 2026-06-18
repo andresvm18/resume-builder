@@ -1,4 +1,10 @@
-function buildRecommendationsPrompt({ resumeData, jobDescription }) {
+const { getLanguageInstructions } = require("./language.helpers");
+
+function buildRecommendationsPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Eres un reclutador técnico y especialista ATS.
 
@@ -7,9 +13,10 @@ Analiza la oferta laboral y compárala contra el CV del usuario.
 Objetivo:
 Identificar keywords relevantes y recomendaciones realistas, sin inventar experiencia, además las recomendaciones deben adaptarse al área profesional del usuario y a las expectativas reales de esa industria.
 
+Idioma:
+${getLanguageInstructions(language)}
 
 Reglas:
-- Escribe en español.
 - Devuelve únicamente JSON válido.
 - No uses markdown.
 - No inventes experiencia, certificaciones, empresas, herramientas ni habilidades.

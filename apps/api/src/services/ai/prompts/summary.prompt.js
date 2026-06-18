@@ -1,3 +1,5 @@
+const { getLanguageInstructions } = require("./language.helpers");
+
 function buildSummaryPrompt({
   resumeData,
   jobDescription,
@@ -10,7 +12,7 @@ Objetivo:
 Reescribir el resumen profesional para que suene natural, humano, específico y profesional.
 
 Estilo deseado:
-- Español natural, fluido y profesional.
+- Tono natural, fluido y profesional.
 - El texto debe sonar escrito por una persona real.
 - Usa vocabulario coherente con el área profesional detectada.
 - Evita frases genéricas como:
@@ -23,6 +25,9 @@ Estilo deseado:
 - No uses comillas.
 - No uses markdown.
 - Devuelve únicamente el resumen final.
+
+Idioma:
+${getLanguageInstructions(language)}
 
 Reglas estrictas:
 - No inventes experiencia, empresas, títulos, certificaciones, herramientas, fechas ni logros.

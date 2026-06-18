@@ -1,4 +1,10 @@
-function buildFullResumeOptimizationPrompt({ resumeData, jobDescription }) {
+const { getLanguageInstructions } = require("./language.helpers");
+
+function buildFullResumeOptimizationPrompt({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   return `
 Eres un redactor senior de currículums, reclutador técnico y especialista ATS.
 
@@ -8,7 +14,7 @@ Objetivo principal:
 Mejorar claridad, impacto, orden, precisión y alineación ATS sin que el texto suene artificial ni exagerado.
 
 Estilo de redacción:
-- Español natural, humano y profesional.
+- Tono natural, humano y profesional.
 - El texto debe sonar escrito por una persona real, no por una IA.
 - Evita frases genéricas típicas de IA como:
   "profesional altamente motivado",
@@ -34,9 +40,11 @@ Adaptación por industria:
 - Si el perfil es administrativo, prioriza organización, procesos y soporte operativo.
 - Si el perfil es creativo o marketing, prioriza comunicación, campañas, contenido o diseño.
 
+Idioma:
+${getLanguageInstructions(language)}
+
 Reglas de contenido:
 - Conserva los datos personales exactamente iguales.
-- Escribe en español.
 - Usa keywords de la oferta solo si son coherentes con la experiencia real del usuario.
 - No agregues habilidades técnicas que no aparezcan o no se evidencien.
 - No agregues habilidades blandas que no puedan justificarse.

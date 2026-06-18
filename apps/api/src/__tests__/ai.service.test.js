@@ -18,7 +18,7 @@ describe("AI Service", () => {
   });
 
   it("returns fallback resume when all AI providers fail during full optimization", async () => {
-    const { optimizeFullResume } = require("../services/ai.service");
+    const { optimizeFullResume } = require("../services/ai/ai.service");
 
     const resumeData = {
       fullName: "Test User",

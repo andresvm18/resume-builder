@@ -1,4 +1,4 @@
-jest.mock("../services/ai.service", () => ({
+jest.mock("../services/ai/ai.service", () => ({
   optimizeSummary: jest.fn(),
   generateAiRecommendations: jest.fn(),
   optimizeFullResume: jest.fn(),
@@ -14,7 +14,7 @@ const {
   generateAiRecommendations,
   optimizeFullResume,
   analyzeFinalAts,
-} = require("../services/ai.service");
+} = require("../services/ai/ai.service");
 
 async function createTestUserAndToken() {
   const email = `ai-${Date.now()}@test.com`;

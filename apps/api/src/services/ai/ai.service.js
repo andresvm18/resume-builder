@@ -19,11 +19,12 @@ const {
   buildFinalAtsAnalysisPrompt,
 } = require("./prompts/final-ats.prompt");
 
-async function optimizeSummary({ resumeData, jobDescription }) {
+async function optimizeSummary({ resumeData, jobDescription, language = "es" }) {
   const result = await generateWithFallback(
     buildSummaryPrompt({
       resumeData,
       jobDescription,
+      language,
     })
   );
 
@@ -34,11 +35,16 @@ async function optimizeSummary({ resumeData, jobDescription }) {
   };
 }
 
-async function generateAiRecommendations({ resumeData, jobDescription }) {
+async function generateAiRecommendations({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   const result = await generateWithFallback(
     buildRecommendationsPrompt({
       resumeData,
       jobDescription,
+      language,
     })
   );
 
@@ -58,12 +64,17 @@ async function generateAiRecommendations({ resumeData, jobDescription }) {
   };
 }
 
-async function optimizeFullResume({ resumeData, jobDescription }) {
+async function optimizeFullResume({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   try {
     const result = await generateWithFallback(
       buildFullResumeOptimizationPrompt({
         resumeData,
         jobDescription,
+        language,
       })
     );
 
@@ -79,6 +90,8 @@ async function optimizeFullResume({ resumeData, jobDescription }) {
         email: resumeData.email,
         phone: resumeData.phone,
         location: resumeData.location,
+
+        language: language || resumeData.language || "es",
 
         skills: Array.isArray(optimized.skills)
           ? optimized.skills
@@ -103,11 +116,16 @@ async function optimizeFullResume({ resumeData, jobDescription }) {
   }
 }
 
-async function analyzeFinalAts({ resumeData, jobDescription }) {
+async function analyzeFinalAts({
+  resumeData,
+  jobDescription,
+  language = "es",
+}) {
   const result = await generateWithFallback(
     buildFinalAtsAnalysisPrompt({
       resumeData,
       jobDescription,
+      language,
     })
   );
 

@@ -2,7 +2,7 @@ const prisma = require("../lib/prisma").prisma;
 
 const {
   optimizeFullResume,
-} = require("./ai.service");
+} = require("./ai/ai.service");
 
 const {
   normalizeResumeData,
@@ -31,7 +31,7 @@ function getProfilePromptLanguageInstructions(language = "es") {
 
   return `
 - Escribe completamente en español.
-- Usa español natural, profesional y fluido.
+- Usa español profesional y fluido.
 - No mezcles español e inglés.
 `;
 }
