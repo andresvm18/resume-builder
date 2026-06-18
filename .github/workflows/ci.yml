@@ -69,6 +69,8 @@ jobs:
         run: npm ci
       - name: Audit API dependencies (high+ severity, blocking)
         run: npm audit --audit-level=high
+      - name: Run API lint
+        run: npm run lint
       - name: Generate Prisma client
         run: npx prisma generate
       - name: Run database migrations
