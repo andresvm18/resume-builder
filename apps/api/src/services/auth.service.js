@@ -45,6 +45,19 @@ async function registerUser({ name, email, password }) {
   };
 }
 
+let dummyHashPromise = null;
+
+function getDummyHash() {
+  if (!dummyHashPromise) {
+    dummyHashPromise = bcrypt.hash(
+      "no-such-user-timing-safety-padding",
+      10
+    );
+  }
+
+  return dummyHashPromise;
+}
+
 async function loginUser({ email, password }) {
   const normalizedEmail = normalizeEmail(email);
 
@@ -52,13 +65,10 @@ async function loginUser({ email, password }) {
     where: { email: normalizedEmail },
   });
 
-  if (!user) {
-    throw new Error("INVALID_CREDENTIALS");
-  }
+  const passwordHash = user ? user.password : await getDummyHash();
+  const passwordMatches = await bcrypt.compare(password, passwordHash);
 
-  const passwordMatches = await bcrypt.compare(password, user.password);
-
-  if (!passwordMatches) {
+  if (!user || !passwordMatches) {
     throw new Error("INVALID_CREDENTIALS");
   }
 

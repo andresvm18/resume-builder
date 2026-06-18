@@ -20,8 +20,10 @@ const profileRoutes = require("./routes/profile.routes");
 const profileAiRoutes = require("./routes/profile-ai.routes");
 const requestLogger = require("./middleware/request-logger.middleware");
 const { notFoundHandler, errorHandler } = require("./middleware/error.middleware");
+const requireHealthToken = require("./middleware/health.middleware");
 
 const {
+  getBasicHealth,
   getSystemHealth,
 } = require("./services/system/health.service");
 
@@ -41,6 +43,17 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.get("/api/health", async (req, res) => {
+  const health = await getBasicHealth();
+
+  const statusCode =
+    health.status === "healthy"
+      ? 200
+      : 503;
+
+  return res.status(statusCode).json(health);
+});
+
+app.get("/api/health/detailed", requireHealthToken, async (req, res) => {
   const health = await getSystemHealth();
 
   const statusCode =
