@@ -493,8 +493,8 @@ function buildSkills(data = {}, translations = getPdfTranslations("es")) {
     (skill) => skill && skill.name && skill.description
   );
 
-  let technicalSection = "";
-  let softSection = "";
+  let technicalSection;
+  let softSection;
 
   if (hasAiTechnicalSkills) {
     technicalSection = aiTechnicalSkills

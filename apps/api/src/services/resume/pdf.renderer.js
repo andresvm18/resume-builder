@@ -156,7 +156,7 @@ async function renderResumePdf(data) {
       throw error;
     }
 
-    throw new Error("PDF_GENERATION_FAILED");
+    throw new Error("PDF_GENERATION_FAILED", { cause: error });
   } finally {
     await removeTemporaryFiles([texPath, auxPath, logPath, pdfPath]);
   }

@@ -9,7 +9,7 @@ function getSafeErrorMessage(err, statusCode) {
   return err.message || "Internal server error";
 }
 
-function notFoundHandler(req, res, next) {
+function notFoundHandler(req, res, _next) {
   return res.status(404).json({
     message: env.isProduction
       ? "Route not found"
@@ -18,7 +18,7 @@ function notFoundHandler(req, res, next) {
   });
 }
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res, _next) {
   const statusCode = err.statusCode || err.status || 500;
 
   logger.error("ERROR", err.message || "Unhandled server error", {

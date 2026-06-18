@@ -12,7 +12,9 @@
     "test:api": "npm test --prefix apps/api",
     "test:web": "npm test --prefix apps/web",
     "test": "npm run test:api && npm run test:web",
+    "lint:api": "npm run lint --prefix apps/api",
     "lint:web": "npm run lint --prefix apps/web",
+    "lint": "npm run lint:api && npm run lint:web",
     "typecheck:web": "npm run typecheck --prefix apps/web",
     "build:web": "npm run build --prefix apps/web"
   }
