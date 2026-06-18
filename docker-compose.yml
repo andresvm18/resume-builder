@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-resumebuilder}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-resumebuilder}
+      POSTGRES_DB: ${POSTGRES_DB:-resumebuilder}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-resumebuilder} -d ${POSTGRES_DB:-resumebuilder}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    restart: unless-stopped
+    env_file:
+      - apps/api/.env
+    environment:
+      # Overrides whatever DATABASE_URL is in apps/api/.env so the API
+      # talks to the "postgres" service over the compose network instead
+      # of localhost.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-resumebuilder}:${POSTGRES_PASSWORD:-resumebuilder}@postgres:5432/${POSTGRES_DB:-resumebuilder}
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    image: node:22-bookworm
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      # The browser on the host hits this URL directly, so it must be
+      # localhost (not the in-network "api" hostname).
+      VITE_API_URL: http://localhost:8080/api
+    volumes:
+      - ./apps/web:/app
+      - web_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  web_node_modules:

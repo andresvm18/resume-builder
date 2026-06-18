@@ -115,6 +115,17 @@ Includes:
 
 ResumeBuilder includes a local containerized development environment.
 
+## Prerequisites
+
+```bash
+cp apps/api/.env.example apps/api/.env
+```
+
+Fill in `apps/api/.env` with at least `JWT_SECRET` and one AI provider key
+(`GEMINI_API_KEY`, `OPENROUTER_API_KEY`, or `OPENAI_API_KEY`). You can leave
+`DATABASE_URL` as-is — `docker-compose.yml` overrides it so the API talks to
+the bundled PostgreSQL service instead.
+
 ## Run locally
 
 ```bash
@@ -122,9 +133,9 @@ docker compose up --build
 ```
 
 Services:
-- frontend
-- backend
-- PostgreSQL
+- `web` — frontend, http://localhost:5173
+- `api` — backend, http://localhost:8080
+- `postgres` — PostgreSQL, localhost:5432
 
 ---
 
