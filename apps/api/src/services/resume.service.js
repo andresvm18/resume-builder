@@ -1,1 +1,0 @@
-module.exports = require("./resume/resume.service");

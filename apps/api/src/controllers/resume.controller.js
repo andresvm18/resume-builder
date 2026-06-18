@@ -6,7 +6,7 @@ const {
   updateUserResume,
   duplicateUserResume,
   deleteUserResume,
-} = require("../services/resume.service");
+} = require("../services/resume/resume.service");
 
 const { normalizeResumeData } = require("../utils/resumeNormalizer");
 const asyncHandler = require("../utils/asyncHandler");

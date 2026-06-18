@@ -1,1 +1,19 @@
-{}
+{
+  "name": "resume-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered ATS Resume Builder. Monorepo with apps/api (Express + Prisma) and apps/web (React + Vite).",
+  "scripts": {
+    "dev:api": "npm run dev --prefix apps/api",
+    "dev:web": "npm run dev --prefix apps/web",
+    "install:api": "npm install --prefix apps/api",
+    "install:web": "npm install --prefix apps/web",
+    "install:all": "npm run install:api && npm run install:web",
+    "test:api": "npm test --prefix apps/api",
+    "test:web": "npm test --prefix apps/web",
+    "test": "npm run test:api && npm run test:web",
+    "lint:web": "npm run lint --prefix apps/web",
+    "typecheck:web": "npm run typecheck --prefix apps/web",
+    "build:web": "npm run build --prefix apps/web"
+  }
+}
