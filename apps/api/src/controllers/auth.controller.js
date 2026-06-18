@@ -22,7 +22,7 @@ const register = asyncHandler(async (req, res) => {
       throw createHttpError(409, "Email already exists");
     }
 
-    throw createHttpError(500, "Error registering user");
+    throw createHttpError(500, "Error registering user", { cause: error });
   }
 });
 
@@ -41,7 +41,7 @@ const login = asyncHandler(async (req, res) => {
       throw createHttpError(401, "Invalid email or password");
     }
 
-    throw createHttpError(500, "Error logging in");
+    throw createHttpError(500, "Error logging in", { cause: error });
   }
 });
 

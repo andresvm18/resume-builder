@@ -27,6 +27,7 @@ function errorHandler(err, req, res, next) {
     url: req.originalUrl,
     statusCode,
     userId: req.user?.userId,
+    cause: err.cause?.message,
   });
 
   const response = {
@@ -36,6 +37,11 @@ function errorHandler(err, req, res, next) {
 
   if (!env.isProduction) {
     response.stack = err.stack;
+
+    if (err.cause) {
+      response.causeMessage = err.cause.message;
+      response.causeStack = err.cause.stack;
+    }
   }
 
   return res.status(statusCode).json(response);

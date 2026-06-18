@@ -55,27 +55,38 @@ async function findUserResume(resumeId, userId) {
   });
 }
 
-async function updateResumeWithVersion(resumeId, title, data) {
-  return prisma.resume.update({
-    where: {
-      id: resumeId,
-    },
-    data: {
-      title,
-      versions: {
-        create: {
-          data,
+async function updateResumeWithVersion(resumeId, userId, title, data) {
+  return prisma.$transaction(async (tx) => {
+    const owned = await tx.resume.findFirst({
+      where: { id: resumeId, userId },
+      select: { id: true },
+    });
+
+    if (!owned) {
+      throw new Error("RESUME_NOT_FOUND");
+    }
+
+    return tx.resume.update({
+      where: {
+        id: resumeId,
+      },
+      data: {
+        title,
+        versions: {
+          create: {
+            data,
+          },
         },
       },
-    },
-    include: {
-      versions: {
-        orderBy: {
-          createdAt: "desc",
+      include: {
+        versions: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
         },
-        take: 1,
       },
-    },
+    });
   });
 }
 
@@ -101,11 +112,22 @@ async function createDuplicatedResume(title, userId, data) {
   });
 }
 
-async function deleteResumeById(resumeId) {
-  return prisma.resume.delete({
-    where: {
-      id: resumeId,
-    },
+async function deleteResumeById(resumeId, userId) {
+  return prisma.$transaction(async (tx) => {
+    const owned = await tx.resume.findFirst({
+      where: { id: resumeId, userId },
+      select: { id: true },
+    });
+
+    if (!owned) {
+      throw new Error("RESUME_NOT_FOUND");
+    }
+
+    return tx.resume.delete({
+      where: {
+        id: resumeId,
+      },
+    });
   });
 }
 

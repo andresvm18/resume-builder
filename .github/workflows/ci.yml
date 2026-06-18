@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches:
@@ -16,11 +15,18 @@ on:
       - master
       - develop
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   api-tests:
     name: API Tests
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16
@@ -35,79 +41,71 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-
     env:
       NODE_ENV: test
       JWT_SECRET: test_secret
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/resume_builder_test
       SENTRY_DSN_BACKEND: ""
-
     defaults:
       run:
         working-directory: apps/api
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        with:
+          persist-credentials: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/api/package-lock.json
-
+      - name: Cache Prisma engines
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/prisma
+          key: prisma-${{ runner.os }}-${{ hashFiles('apps/api/package-lock.json') }}
       - name: Install API dependencies
         run: npm ci
-
-      - name: Audit API dependencies
+      - name: Audit API dependencies (high+ severity, blocking)
         run: npm audit --audit-level=high
-        continue-on-error: true
-
       - name: Generate Prisma client
         run: npx prisma generate
-
       - name: Run database migrations
         run: npx prisma migrate deploy
-
       - name: Run API tests
         run: npm test
 
   web-checks:
     name: Web Checks
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     env:
       VITE_API_URL: http://localhost:8080/api
       VITE_SENTRY_DSN: ""
-
     defaults:
       run:
         working-directory: apps/web
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        with:
+          persist-credentials: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
-
       - name: Install Web dependencies
         run: npm ci
-
-      - name: Audit Web dependencies
+      - name: Audit Web dependencies (high+ severity, blocking)
         run: npm audit --audit-level=high
-        continue-on-error: true
-
       - name: Run Web lint
         run: npm run lint
-
+      - name: Run Web typecheck
+        run: npm run typecheck
       - name: Run Web tests
         run: npm test
-
       - name: Build Web app
         run: npm run build

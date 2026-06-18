@@ -50,7 +50,8 @@ const generateResume = asyncHandler(async (req, res) => {
   } catch (error) {
     throw createHttpError(
       500,
-      getPdfErrorMessage(error, "Error al generar el CV")
+      getPdfErrorMessage(error, "Error al generar el CV"),
+      { cause: error }
     );
   }
 });
@@ -79,7 +80,8 @@ const downloadResume = asyncHandler(async (req, res) => {
 
     throw createHttpError(
       500,
-      getDownloadPdfErrorMessage(error, "Error al descargar el CV")
+      getDownloadPdfErrorMessage(error, "Error al descargar el CV"),
+      { cause: error }
     );
   }
 });
@@ -113,7 +115,7 @@ const updateResume = asyncHandler(async (req, res) => {
       throw createHttpError(404, "CV no encontrado");
     }
 
-    throw createHttpError(500, "Error al actualizar el CV");
+    throw createHttpError(500, "Error al actualizar el CV", { cause: error });
   }
 });
 
@@ -130,7 +132,7 @@ const duplicateResume = asyncHandler(async (req, res) => {
       throw createHttpError(404, "CV no encontrado");
     }
 
-    throw createHttpError(500, "Error al duplicar el CV");
+    throw createHttpError(500, "Error al duplicar el CV", { cause: error });
   }
 });
 
@@ -146,7 +148,7 @@ const deleteResume = asyncHandler(async (req, res) => {
       throw createHttpError(404, "CV no encontrado");
     }
 
-    throw createHttpError(500, "Error al eliminar el CV");
+    throw createHttpError(500, "Error al eliminar el CV", { cause: error });
   }
 });
 

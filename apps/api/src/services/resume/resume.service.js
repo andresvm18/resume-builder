@@ -57,6 +57,7 @@ async function updateUserResume(resumeId, userId, data) {
 
   return updateResumeWithVersion(
     resumeId,
+    userId,
     cleanData.fullName || resume.title,
     cleanData
   );
@@ -84,7 +85,7 @@ async function deleteUserResume(resumeId, userId) {
     throw new Error("RESUME_NOT_FOUND");
   }
 
-  return deleteResumeById(resumeId);
+  return deleteResumeById(resumeId, userId);
 }
 
 module.exports = {
